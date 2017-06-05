@@ -47,7 +47,7 @@ def getResult(name, value):
         return
         
     rate = 0
-    # rate = 3
+    rate = 3
 
     for one in data :
         if one[4] == 1 :
@@ -58,7 +58,7 @@ def getResult(name, value):
             main_win += - 1
             client_win += one[7+rate] -1
             tie_win += -1
-        else :
+        elif one[4] == 0:
             main_win += - 1
             client_win += -1
             tie_win += one[8+rate] -1
@@ -69,7 +69,7 @@ def getResult(name, value):
     gameSize = len(data)
     if (mainResult > value or clientResult > value or tieResult > value)  and gameSize > 30:
         # print("")
-        print(str(main_win/len(data)), "    ",str(client_win/len(data)),"    ",str(tie_win/len(data)),"    ",str(len(data)),"    ",name)
+        print(str(round(main_win/len(data),2)), "    ",str(round(client_win/len(data),2)),"    ",str(round(tie_win/len(data),2)),"    ",str(len(data)),"    ",name)
         return True
     return False
 
@@ -123,14 +123,14 @@ def getResult_v2(name, value):
         print(str(round(main_win/size, 2)), "   ",str(round(client_win/size, 2)),"    ",str(round(tie_win/size, 2)),"    ",str(size),"    ",name, value)
 
 
-# def compare(name):
+def compare(name):
     
-#     if getResult(name, 0.03) == False :
-#         return
+    if getResult(name, 0.03) == False :
+        return
     # getResult_v2(name, 0.15)
    
-def compare(name):
-    getResult_v2(name, 0.1)
+# def compare(name):
+#     getResult_v2(name, 0.1)
 #     for index in range(20):
         # getResult_v2(name, 0.01*index)
 

@@ -71,4 +71,27 @@ class sqlMgr:
             return results 
         except:
             print ("query error ")
-         
+    
+    def queryCount(self, type, key, result):
+
+        SQL = u"select count(*) from "+ key +" where (( type = '" + type + "' ) and (result = "+ result +")) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def queryCountRate(self, type, key, result):
+
+        SQL = u"select count(*) from "+ key +" where (( type = '" + type + "' ) and (rate_result = "+ result +")) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")

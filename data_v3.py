@@ -93,11 +93,16 @@ class parser:
 
 
 
-timeStart = datetime.strptime("2017-05-20",'%Y-%m-%d')
-timeEnd = datetime.strptime("2017-05-22",'%Y-%m-%d')
-startUnix = time.mktime(timeStart.timetuple())
-endUnix = time.mktime(timeEnd.timetuple())
-while (startUnix < endUnix) :
+# timeStart = datetime.strptime("2017-05-23",'%Y-%m-%d')
+# timeEnd = datetime.strptime("2017-05-24",'%Y-%m-%d')
+# startUnix = time.mktime(timeStart.timetuple())
+# endUnix = time.mktime(timeEnd.timetuple())
+
+
+def getTodayData() :
+    endUnix = time.time()
+    startUnix = endUnix - 3600 * 24
+
     date = time.strftime('%Y%m%d', time.localtime(startUnix))
     dayOfWeek = time.strftime("%w",time.localtime(startUnix))
     if dayOfWeek == '0':
@@ -126,5 +131,23 @@ while (startUnix < endUnix) :
         except:
             print ("error :")
         time.sleep(1)
-    
-    startUnix += 3600 * 24
+
+
+
+SECONDS_PER_DAY = 24 * 60 * 60
+ 
+def getSleepTime():
+    from datetime import datetime, timedelta
+    curTime = datetime.now()
+    desTime = curTime.replace(hour=13, minute=0, second=0, microsecond=0)
+    delta = curTime - desTime
+    skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
+    print ("Must sleep %d seconds" % skipSeconds)
+    return skipSeconds
+
+        
+while 1:
+    sleepTime = getSleepTime()
+    time.sleep(sleepTime)
+    getTodayData()
+
