@@ -95,3 +95,25 @@ class sqlMgr:
             return results 
         except:
             print ("query error ")
+    
+    def queryTeamDataMain(self, gameName, teamName, key):
+        SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and (main like '%"+ teamName +"%')) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def queryTeamDataClient(self, gameName, teamName, key):
+        SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and (client like '%"+ teamName +"%')) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")

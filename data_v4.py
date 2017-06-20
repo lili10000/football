@@ -37,7 +37,7 @@ class parser:
         self.score = []
         self.param = []
 
-    def getData(self):
+    def getData(self, key):
         for title in self.soup.find_all('title') :
             if title.string.find('404') != -1:
                 return False
@@ -55,10 +55,9 @@ class parser:
             for client in tag.find_all('td', class_="texLeft") :
                 self.client.append(client.a.get('title'))
             for score in tag.find_all('td') :
-                if score.get('matchid') == None :
+                if score.get('hostid') == None :
                     continue
-                if len(score.text) < 4:
-                    self.score.append(score.text)
+                self.score.append(score.text)
             for param in tag.find_all('span') :
                 self.param.append(param.text)
 
@@ -73,16 +72,21 @@ class parser:
                 if self.score[index].find(':') == -1 :
                     continue
 
-                scoreTmp = (self.score[index])[:1]
-                data.main_score = int(scoreTmp)
+                scoreTmp = (self.score[index]).split(':'); 
 
-                scoreTmp = (self.score[index])[2:]
-                data.client_score = int(scoreTmp)
+                if int(scoreTmp[0]) < 0:
+                    continue
+                data.main_score = int(scoreTmp[0])
+
+                if int(scoreTmp[1]) < 0:
+                    continue
+
+                data.client_score = int(scoreTmp[1])
 
                 data.main = self.main[index]
                 data.client = self.client[index]
                 data.type = type_game
-                if len(self.param[index*3]) == 0 or self.param[index*3] == "-" :
+                if len(self.param[index*3]) == 0 or self.param[index*3] == "-"or self.param[index*3 + 1] == "-"or self.param[index*3 + 2] == "-" :
                     continue
                 data.win_rate = self.param[index*3 + 0]
                 data.rate = float(self.param[index*3 + 1])
@@ -105,12 +109,19 @@ class parser:
                 input = "'"+ data.main + "','" + data.client +"','" + str(data.main_score) +"','" + str(data.client_score) + "','" + str(data.result)+ "','" + str(data.rate_result)+ "','" + str(data.rate) + "','" + str(data.type)+"'"
                 input += ",'"+  str(data.win_rate) + "','" + str(data.lost_rate)+"'"
 
-                self.sql.insert(input, "k_163")
+                self.sql.insert(input, key)
+
+
+
 index = 1
-end = 34
+end = 9
+key = "k_163"
+# key = "k_163_15_16"
+# key = "k_163_14_15"
+# key = "k_163_16_17"
 while (index < end) :
     
-    url = "http://saishi.caipiao.163.com/136/11220.html?weekId=1&groupId=&roundId=30545&indexType=0&guestTeamId="
+    url = "http://saishi.caipiao.163.com/89/13403.html?weekId=1&groupId=&roundId=39675&indexType=0&guestTeamId="
     url = url.replace("weekId=1", "weekId="+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)
@@ -123,7 +134,7 @@ while (index < end) :
         continue
 
     try:   
-        if html.getData() == False :
+        if html.getData(key) == False :
             break
     except:
         print ("error :")
