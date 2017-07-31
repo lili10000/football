@@ -4,9 +4,9 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 
 
-def getResult_2(name, rate):
+def getResult_2(name, score, corner):
     data = sql.queryByType(name, "k_corner")
-
+    # data = sql.queryByTypeAll("k_corner")
     main_win = 0
     client_win = 0
     tie_win = 0
@@ -14,48 +14,62 @@ def getResult_2(name, rate):
     corner_All = 0
     corner_total = [0, 0, 0, 0, 0, 0]
 
+    score_all =0
+    corner_6 = 0
+    corner_6_8 = 0
+    corner_9_11 = 0
+    corner_12_14 = 0
+    corner_14 = 0
+
+
+    corner_else = 0
+    score_esle = 0
+
     size = 0
     if len(data) == 0 :
         return
     for one in data :
-        offset = 3
+        main_score = int(one[2])
+        client_score = int(one[3])
+        score_sum = main_score + client_score
+
         main_corner = int(one[6])
         client_corner = int(one[7])
 
         corner_Sum = int(one[8])
         rateDb = one[4]
-        if rateDb != rate :
-            continue
+        # if rateDb != rate :
+        #     continue
         size += 1
-        corner_All += corner_Sum
-        if corner_Sum < 6 :
-            corner_total[0] += 1 
+        # corner_All += corner_Sum
+        score_flag = score_sum < score
+        corner_flag = corner_Sum > corner
 
-        if corner_Sum >= 6 and corner_Sum <= 8 :
-            corner_total[1] += 1 
+        if score_flag:
+            score_all += 1
 
-        if corner_Sum >= 9 and corner_Sum <= 11 :
-            corner_total[2] += 1
+        if corner_flag :
+            corner_All += 1
+            if score_flag:
+                corner_6 += 1
+            else:
+                corner_else += 1
 
-        if corner_Sum >= 12 and corner_Sum <= 14 :
-            corner_total[3] += 1
+        # if corner_Sum >= 6 and corner_Sum <= 8 and score_sum <= score:
+        #     corner_6_8 += 1 
 
-        if corner_Sum > 14 :
-            corner_total[4] += 1
+        # if corner_Sum >= 9 and corner_Sum <= 11 and score_sum <= score:
+        #     corner_9_11 += 1
+
+        # if corner_Sum >= 12 and corner_Sum <= 14 and score_sum <= score:
+        #     corner_12_14 += 1
+
+        # if corner_Sum > 14 and score_sum <= score:
+        #     corner_14 += 1
 
 
-        if main_corner > client_corner :
-            main_win += 1
-        elif main_corner < client_corner:
-            client_win += 1
-        else :
-            tie_win += 1
-
-    if  size < 50 :
-        # print(key, winSize, lostSize)
-        return
-    # print("rate [",round(rate, 2),"]    ", round(corner_total[0]/size, 2), "     ", round(corner_total[1]/size, 2), "     ", round(corner_total[2]/size, 2), "     ", round(corner_total[3]/size, 2), "     ", round(corner_total[4]/size, 2), "     ", round(corner_total[5]/size, 2), "  size =",size,"   win",round(main_win/size, 2),"  lose",round(client_win/size, 2), "    ",name)
-    print("rate [",round(rate, 2),"]    ", round(corner_total[0]/size, 2), "     ", round(corner_total[1]/size, 2), "     ", round(corner_total[2]/size, 2), "     ", round(corner_total[3]/size, 2), "     ", round(corner_total[4]/size, 2),  "  size =",size,"   win",round(main_win/size, 2),"  lose",round(client_win/size, 2), "    ",name)
+    print("[<",score, " >", corner,"]    ", round(corner_6/size, 2), "  size =",size)
+    # print("score [",score,"]    ", round(corner_6/size, 2), "     ", round(corner_6_8/size, 2), "     ", round(corner_9_11/size, 2), "     ", round(corner_12_14/size, 2), "     ", round(corner_14/size, 2),  "  size =",size,name)
 
 
 def getResult_3(name):
@@ -115,15 +129,17 @@ def getResult_3(name):
   
 
 def compare(name): 
+    # getResult_2(name, 2.5)
     # getResult_2(name, 1, 1.3, 0.01) 
     # return
-    min_win = 0.25
-
-    for index in range(28) :
-        getResult_2(name, -3 + 0.25*index)
+    # min_win = 0.25
+    # getResult_2(name, 0.5, 7.5)
+    for i in range(4) :
+        for j in range(6) :
+            getResult_2(name, 0.5+i, 7.5+j)
     # getResult_3(name)
 # compare("J联赛")
-# compare("日职乙")
+compare("韩k联")
 # compare("日联杯")
 # compare("美职联")
 # compare("巴甲")
@@ -143,4 +159,4 @@ def compare(name):
 # compare("法甲")
 # compare("国际A级")
 # compare("中甲")
-compare("巴西乙")
+# compare("苏联杯")

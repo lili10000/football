@@ -115,14 +115,14 @@ class parser:
 
 
 index = 1
-end = 23
+end = 40
 key = "k_corner"
 # key = "k_163_15_16"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "http://www.dszuqiu.com/league/214/p.1"
+    url = "https://www.dszuqiu.com/league/649/p.1"
     url = url.replace("p.1", "p."+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)

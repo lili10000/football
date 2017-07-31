@@ -78,7 +78,7 @@ def getResult_1(gameName, mainName, clientName, type):
 
     # print("<= 1", round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3))
     rate_1 = round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3)
-    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0, 3)
+    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0 +  main_1*client_1, 3)
     rate_3 = round(rate_2 + main_0*client_3 + main_3*client_0 + main_1*client_2 + main_2*client_1, 3)
     print("<= 1", rate_1)
     print("<= 2", rate_2)
@@ -192,7 +192,7 @@ def getResult_2(gameName, mainName, clientName, type):
 
     # print("<= 1", round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3))
     rate_1 = round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3)
-    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0, 3)
+    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0 +  main_1*client_1, 3)
 
     # print(main_0*client_3)
     # print(main_3, client_0, main_3*client_0)
@@ -208,7 +208,7 @@ def compare(name, main, clien, type):
     getResult_1(name, main, clien, type)
     getResult_2(name, main, clien, type)
 
-
+compare("k联赛", "蔚山", "济州", 3)
 # compare("J联赛")
 # compare("J2联赛")
 # compare("日联杯")
@@ -237,4 +237,4 @@ def compare(name, main, clien, type):
 # compare("巴乙")
 # compare("爱超")
 # compare("欧U21")
-compare("巴乙", "维拉诺瓦", "塞阿拉", 1)
+

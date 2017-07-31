@@ -114,14 +114,14 @@ class parser:
 
 
 index = 1
-end = 9
+end = 35
 key = "k_163"
 # key = "k_163_15_16"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "http://saishi.caipiao.163.com/89/13403.html?weekId=1&groupId=&roundId=39675&indexType=0&guestTeamId="
+    url = "http://saishi.caipiao.163.com/11/11580.html?weekId=1&groupId=&roundId=31469&indexType=0&guestTeamId="
     url = url.replace("weekId=1", "weekId="+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)

@@ -174,8 +174,9 @@ def getResult_2(name, key, key_max, min_win,):
     #     j += 1
 
 
-def getResult_3(key, key_max, min_win,):
-    data = sql.queryByTypeAll("k_163")
+def getResult_3(name, key, key_max, min_win,):
+    # data = sql.queryByTypeAll("k_163")
+    data = sql.queryByType(name, "k_163")
 
     main_win = 0
     client_win = 0
@@ -190,6 +191,8 @@ def getResult_3(key, key_max, min_win,):
     size = 0
 
     scoreAll = 0
+    score_1 = 0
+    score_2 = 0
     score_total =[0, 0, 0, 0, 0, 0]
 
     if len(data) == 0 :
@@ -209,44 +212,16 @@ def getResult_3(key, key_max, min_win,):
             continue
         
         scoreAll += scoreSum
-        if scoreSum >= 5 :
-            score_total[5] += 1 
-        if scoreSum <= 0 :
-            score_total[0] += 1 
-        if scoreSum <= 1 :
-            score_total[1] += 1
-        if scoreSum <= 2 :
-            score_total[2] += 1
-        if scoreSum <= 3 :
-            score_total[3] += 1
-        if scoreSum <= 4 :
-            score_total[4] += 1
-        
-
+        if scoreSum % 2 == 1 :
+            score_1 += 1 
+        if scoreSum % 2 == 0 :
+            score_2 += 1 
 
         size += 1
-        if rate_result > 0 :
-            winScoreSum += scoreSum
-            winSize +=1
-        elif rate_result < 0 :
-            lostScoreSum += scoreSum
-            lostSize += 1
-
-        if rate_result > 0 :
-            main_win += rate_win - 1
-            client_win += -1
-            tie_win += -1
-        elif rate_result < 0 :
-            client_win += rate_lost - 1
-            main_win += -1
-            tie_win += -1
-        else :
-            tie_win += rate_tie - 1
-            main_win += -1
-            client_win += -1
-
-
-    print("key[",round(key, 2),round(key_max, 2), "]    ", round(score_total[1]/size, 2), "     ", round(score_total[2]/size, 2), "     ", round(score_total[3]/size, 2), "     ", round(score_total[4]/size, 2), "  size =",size, "    all")
+        
+    if size == 0 :
+        return
+    print("key[",round(key, 2),round(key_max, 2), "]    单", round(score_1/size, 2), "     双", round(score_2/size, 2), "  size =",size, "    ", name)
   
 
 def getResult_4( key, key_max, min_win,):
@@ -341,6 +316,11 @@ def compare(name):
     getResult_2(name, 1,1.1, min_win)
     getResult_2(name, 1.1,1.2, min_win)
 
+    #     getResult_3(name, key,key_max, min_win) 
+    # getResult_3(name, 4,100, min_win)
+    # getResult_3(name, 1,1.1, min_win)
+    # getResult_3(name, 1.1,1.2, min_win)
+
 def compare_1(): 
     # getResult_2(name, 1, 1.3, 0.01) 
     # return
@@ -373,28 +353,4 @@ def compare_2():
 # compare("J2联赛")
 # compare("日联杯")
 # compare("美职联")
-# compare("巴甲")
-# compare("阿甲")
-# compare("挪超")
-# compare("瑞典超")
-# compare("瑞典甲")
-# compare("冰岛超")
-# compare("k联赛")
-# compare("英超")
-# compare("英冠")
-# compare("英甲")
-# compare("意甲")
-# compare("意乙")
-# compare("德甲")
-# compare("西甲")
-# compare("法甲")
-# compare("国际A级")
-# compare("世界杯欧洲预选赛")
-# compare("澳A联")
-# compare("西乙")
-# compare("芬超")
-# compare("瑞典甲")
-compare("巴乙")
-# compare("爱超")
-# compare("欧U21")
-# compare_2()
+compare("德乙")
