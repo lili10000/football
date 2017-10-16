@@ -39,7 +39,7 @@ class sqlMgr:
         inserSQL += " VALUES ("
         inserSQL += data 
         inserSQL += ")"
-        # print(inserSQL)
+
         try:  
             self.cursor.execute(inserSQL)
             self.db.commit()

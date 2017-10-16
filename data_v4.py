@@ -30,7 +30,7 @@ class parser:
         req = requests.get(url)
         s = req.text
         self.sql = sqlMgr('localhost', 'root', '861217', 'football')
-        self.soup = BeautifulSoup(s)
+        self.soup = BeautifulSoup(s, "html.parser")
         self.url = url
         self.main = []
         self.client = []
@@ -114,14 +114,14 @@ class parser:
 
 
 index = 1
-end = 35
-key = "k_163"
-# key = "k_163_15_16"
+end = 30
+# key = "k_163_2016"
+key = "k_163_2017"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "http://saishi.caipiao.163.com/11/11580.html?weekId=1&groupId=&roundId=31469&indexType=0&guestTeamId="
+    url = "http://saishi.caipiao.163.com/109/13416.html?weekId=1&groupId=&roundId=39922&indexType=0&guestTeamId="
     url = url.replace("weekId=1", "weekId="+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)

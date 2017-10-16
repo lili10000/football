@@ -4,8 +4,9 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 
 
-def getResult_1(name, key_max, min_win):
-    data = sql.queryByType(name, "k_163")
+def getResult_1(name, rateMin, rateMax):
+    # data = sql.queryByType(name, "k_163_2016")
+    data = sql.queryByType(name, "k_163_2017")
 
     main_win = 0
     client_win = 0
@@ -18,86 +19,90 @@ def getResult_1(name, key_max, min_win):
     lostSize = 0 
 
     size = 0
+    sizeAll = 0
 
     scoreAll = 0
     score_total =[0, 0, 0, 0, 0, 0]
 
-    result_win_big = 0
-    result_win_big_size = 0
-    result_win_small = 0
-    result_win_small_size = 0
-    result_lost_big = 0
-    result_lost_big_size = 0
-    result_lost_small = 0
-    result_lost_small_size = 0
+    rate_1 = 0
+    rate_2 = 0
 
     if len(data) == 0 :
         return
     for one in data :
         offset = 3
-        main_score = int(one[2])
-        client_score = int(one[3])
+        main = one[0]
+        client = one[1]
 
-        scoreSum = main_score+client_score
-        result = one[4]
+        main_win =  one[8]
+        client_win = one[9]
 
-        rate_win = float(one[8])
-        rate_lost = float(one[9])
-        rate_tie = one[6]
-        if rate_win < min_win or  rate_win > key_max:
-            continue
-        size += 1
-        scoreAll += scoreSum
-        if scoreSum > 2.5 :
-            if result == -1 :
-                result_lost_big_size += 1
-                result_win_big -= 1
-                result_win_small -= 1
-                result_lost_big += (rate_win - 1 )
-                result_lost_small -= 1
-            elif result == 1 :
-                result_win_big_size += 1
-                result_win_big += (rate_win - 1 )
-                result_win_small -= 1
-                result_lost_big -= 1
-                result_lost_small -= 1
-            else :
-                result_win_big -= 1
-                result_win_small -= 1
-                result_lost_big -= 1
-                result_lost_small -= 1
-        else :
-            if result == -1 :
-                result_lost_small_size += 1
-                result_win_big -= 1
-                result_win_small -= 1
-                result_lost_big -= 1
-                result_lost_small += (rate_win - 1 )
-            elif result == 1 :
-                result_win_small_size += 1
-                result_win_big -= 1
-                result_win_small += (rate_win - 1 )
-                result_lost_big -= 1
-                result_lost_small -= 1
-            else :
-                result_win_big -= 1
-                result_win_small -= 1
-                result_lost_big -= 1
-                result_lost_small -= 1
-    if  size < 1 :
-        return
-    print("key[",round(min_win, 2),round(key_max, 2), "概率]    ",round(result_win_big_size/size, 2), "     ",round(result_lost_big_size/size, 2), "     ",round(result_win_small_size/size, 2), "     ", round(result_lost_small_size/size, 2), "  size =",size, "    ",name)
-    # print("key[",round(min_win, 2),round(key_max, 2), "胜率]    ", round(result_win_big,2), "     ",round(result_lost_big, 2), "     ",round(result_win_small,2), "     ",round(result_lost_small,2), "  size =",size, "    ",name)
+        result = int(one[4])
+
+        sizeAll += 1
+
+        # teamName = "佩斯卡拉"
+        # if (main == teamName) or (client == teamName):
+        #     continue
+
+        # teamName = "莱切斯特"
+        # if (main == teamName) or (client == teamName):
+        #     continue
+
+        # teamName = "斯托克城"
+        # if (main == teamName) or (client == teamName):
+        #     continue
+
+
+        # rateMax = 1.8
+        # rateMin = 1.5
+        condition_1 = (main_win < rateMax and main_win > rateMin and main_win < client_win)
+        condition_2 = (client_win < rateMax and client_win > rateMin and client_win < main_win )
+        if condition_1:
+            if result == 1:
+                rate_1 += main_win - 1
+            else:
+                rate_1 -= 1
+            size += 1 
+        elif  condition_2:
+            if result == -1:
+                rate_1 += client_win - 1
+            else:
+                rate_1 -= 1
+            size += 1 
+
+        if condition_1:
+            if result == -1:
+                rate_2 += client_win - 1
+            else:
+                rate_2 -= 1
+        elif  condition_2:
+            if result == 1:
+                rate_2 += main_win - 1
+            else:
+                rate_2 -= 1
+
+
+    print(name,round(rateMin, 2), "买赢：", rate_1, " 买输：", rate_2, " size = ", size, " size all = ",sizeAll)
+    #print(name, "买赢率：", rate_1/size, " 买输率：", rate_2/size)
+
+       
 
 
 def compare_1(name): 
-    # getResult_1(name, 1, 1.3, 0.01) 
-    # return
-    min_win = 0.01
-    for index in range(10) :
-        # print("start", 1 + 0.3*index)
-        key_min = 1 + 0.3*index
-        key_max = 1 + 0.3*(index+1)
-        getResult_1(name, key_max, key_min) 
+    for i in range(14) :
+        rateMin = i*0.1 + 1
+        rateMax = rateMin + 0.1*1
+        getResult_1(name, rateMin,  rateMax)
+def compare_2(name): 
+    getResult_1(name, 1.4,  2)
 
-compare_1("德乙")
+compare_2("英超")
+# compare_2("意甲")
+# compare_1("西甲")
+# compare_1("德甲")
+
+# compare_2("英冠")
+# compare_1("英甲")
+# compare_2("巴甲")
+# compare_2("J联赛")
