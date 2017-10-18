@@ -59,6 +59,18 @@ class sqlMgr:
             return results 
         except:
             print ("query error ")
+    
+    def queryByTypeNum(self, type, key, num):
+
+        SQL = u"select * from "+ key +" where ( type = '" + type + "' and num = '"+ num + "' ) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
 
     def queryByTypeAll(self, key):
 

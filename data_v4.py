@@ -7,6 +7,11 @@ from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from db.mysql import sqlMgr
 
+num = 1
+index = 1
+end = 30
+key = "k_163_2017"
+urlTmp = "http://saishi.caipiao.163.com/109/13416.html?weekId=1&groupId=&roundId=39922&indexType=0&guestTeamId="
 
 
 class parser:
@@ -107,21 +112,17 @@ class parser:
                     data.rate_result = -1
 
                 input = "'"+ data.main + "','" + data.client +"','" + str(data.main_score) +"','" + str(data.client_score) + "','" + str(data.result)+ "','" + str(data.rate_result)+ "','" + str(data.rate) + "','" + str(data.type)+"'"
-                input += ",'"+  str(data.win_rate) + "','" + str(data.lost_rate)+"'"
+                input += ",'"+  str(data.win_rate) + "','" + str(data.lost_rate)+ "','" + str(num) + "'"
 
                 self.sql.insert(input, key)
 
 
-
-index = 1
-end = 30
-# key = "k_163_2016"
-key = "k_163_2017"
+# key = "k_163_2017"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
 while (index < end) :
-    
-    url = "http://saishi.caipiao.163.com/109/13416.html?weekId=1&groupId=&roundId=39922&indexType=0&guestTeamId="
+    num = index
+    url = urlTmp
     url = url.replace("weekId=1", "weekId="+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)
@@ -140,5 +141,6 @@ while (index < end) :
         print ("error :")
     # time.sleep(1)
     index += 1
+    
         
 
