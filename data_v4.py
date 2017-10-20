@@ -9,9 +9,9 @@ from db.mysql import sqlMgr
 
 num = 1
 index = 1
-end = 30
+end = 11
 key = "k_163_2017"
-urlTmp = "http://saishi.caipiao.163.com/109/13416.html?weekId=1&groupId=&roundId=39922&indexType=0&guestTeamId="
+urlTmp = "http://saishi.caipiao.163.com/11/14008.html?weekId=1&groupId=&roundId=41486&indexType=0&guestTeamId="
 
 
 class parser:
@@ -130,7 +130,6 @@ while (index < end) :
     try:
         html =  parser(url)
     except:
-        time.sleep(10)
         print ("connect err")
         continue
 
