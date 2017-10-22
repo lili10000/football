@@ -51,19 +51,13 @@ class parser:
                 data["main"] = self.main[index]
                 data["client"] = self.client[index]
                 data["type"] = type_game
-                if len(self.param[index*3]) == 0 or self.param[index*3] == "-"or self.param[index*3 + 1] == "-"or self.param[index*3 + 2] == "-" :
-                    continue
-                data["win_rate"] = self.param[index*3 + 0]
-                data["rate"] = float(self.param[index*3 + 1])
-                data["lost_rate"] = self.param[index*3 + 2]
+
 
                 data = []
                 data.append(self.main[index])
                 data.append(self.client[index])
                 data.append(type_game)
-                data.append(self.param[index*3 + 0])
-                data.append(float(self.param[index*3 + 1]))
-                data.append( self.param[index*3 + 2])
+
 
                 game.append(data)
 

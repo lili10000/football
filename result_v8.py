@@ -4,7 +4,7 @@ from db.htmlParser import parser
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 
-Kong = 1
+Kong = 1 
 
 def getResult_1(name, rateMin, rateMax, num):
     db_name = "k_163_2017"
@@ -317,6 +317,7 @@ def getResult_4(name, rateMin, rateMax, num, url):
     for game in data :
         main = game[0]
         client = game[1]
+
         a =  rate[main]["rate"] * rate_1[client]["rate"]
         if a == 1:
             p = 100
@@ -333,7 +334,7 @@ def getResult_4(name, rateMin, rateMax, num, url):
     print(sorted(result, key=lambda x:x[2], reverse=False))
 
     # print(round(sizeAll/(sizeAll - size), 2))
-    # print(round(size/sizeAll, 2))
+    print(round((sizeAll - size)/sizeAll, 2))
     # print(num)
     # print(name, "做空：", rate)
 
@@ -377,4 +378,22 @@ def compare_7(name, url):
 # compare_4("英超")
 # compare_7("德乙",  "http://saishi.caipiao.163.com/11/14008.html?weekId=11&groupId=&roundId=41486&indexType=0&guestTeamId=")
 # compare_7("荷乙","http://saishi.caipiao.163.com/5/13843.html?weekId=10&groupId=&roundId=41039&indexType=0&guestTeamId=")
-compare_7("法乙","http://saishi.caipiao.163.com/17/14061.html?weekId=12&groupId=&roundId=41647&indexType=0&guestTeamId=")
+# compare_7("法乙","http://saishi.caipiao.163.com/17/14061.html?weekId=12&groupId=&roundId=41647&indexType=0&guestTeamId=")
+
+# compare_7("英超","http://saishi.caipiao.163.com/8/14029.html?weekId=9&groupId=&roundId=41547&indexType=0&guestTeamId=")
+# compare_7("意甲","http://saishi.caipiao.163.com/13/14181.html?weekId=9&groupId=&roundId=42011&indexType=0&guestTeamId=")
+# compare_7("西甲","http://saishi.caipiao.163.com/7/14018.html?weekId=9&groupId=&roundId=41509&indexType=0&guestTeamId=")
+# compare_7("德甲","http://saishi.caipiao.163.com/9/14007.html?weekId=9&groupId=&roundId=41485&indexType=0&guestTeamId=")
+# compare_7("英冠","http://saishi.caipiao.163.com/70/14218.html?weekId=13&groupId=&roundId=42070&indexType=0&guestTeamId=")
+# compare_7("J联赛","http://saishi.caipiao.163.com/109/13416.html?weekId=30&groupId=&roundId=39922&indexType=0&guestTeamId=")
+# compare_7("法甲","http://saishi.caipiao.163.com/16/14060.html?weekId=10&groupId=&roundId=41646&indexType=0&guestTeamId=")
+# compare_7("葡超","http://saishi.caipiao.163.com/63/14062.html?weekId=9&groupId=&roundId=41648&indexType=0&guestTeamId=")
+# compare_7("荷甲","http://saishi.caipiao.163.com/1/14264.html?weekId=9&groupId=&roundId=42274&indexType=0&guestTeamId=")
+# compare_7("比甲","http://saishi.caipiao.163.com/24/14046.html?weekId=11&groupId=&roundId=41608&indexType=0&guestTeamId=")
+# compare_7("意乙","http://saishi.caipiao.163.com/14/14391.html?weekId=10&groupId=&roundId=42672&indexType=0&guestTeamId=")
+# compare_7("巴乙","http://saishi.caipiao.163.com/89/13403.html?weekId=32&groupId=&roundId=39675&indexType=0&guestTeamId=")
+# compare_7("巴甲","http://saishi.caipiao.163.com/26/13464.html?weekId=30&groupId=&roundId=39899&indexType=0&guestTeamId=")
+# compare_7("中超","http://saishi.caipiao.163.com/51/13408.html?weekId=28&groupId=&roundId=39713&indexType=0&guestTeamId=")
+# compare_7("德乙","http://saishi.caipiao.163.com/11/14008.html?weekId=11&groupId=&roundId=41486&indexType=0&guestTeamId=")
+# compare_7("土超","http://saishi.caipiao.163.com/19/14277.html?weekId=9&groupId=&roundId=42332&indexType=0&guestTeamId=")
+compare_7("西乙","http://saishi.caipiao.163.com/12/14464.html?weekId=11&groupId=&roundId=42973&indexType=0&guestTeamId=")
