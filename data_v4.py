@@ -9,9 +9,9 @@ from db.mysql import sqlMgr
 
 num = 1
 index = 1
-end = 11
-key = "k_163_2017"
-urlTmp = "http://saishi.caipiao.163.com/11/14008.html?weekId=1&groupId=&roundId=41486&indexType=0&guestTeamId="
+end = 43
+key = "k_163_2016"
+urlTmp = "http://saishi.caipiao.163.com/12/12985.html?roundId=37748&weekId=1&groupId=&indexType=0&guestTeamId="
 
 
 class parser:

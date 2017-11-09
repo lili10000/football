@@ -6,6 +6,12 @@ sizeMin = 20
 
 Kong = 1
 
+def getRate(rate):
+    reduce = 1.05
+    return 1/(reduce*(1-1/(rate*reduce))) 
+
+
+
 def getResult_1(name, rateMin, rateMax, num):
     db_name = "k_163_2017"
 
@@ -220,7 +226,7 @@ def getResult_3(name, rateMin, rateMax, num):
 
 
 def getResult_4(name, rateMin, rateMax, num, url):
-    db_name = "k_163_2017"
+    db_name = "k_163_2016"
 
     data = sql.queryByTypeNum(name, db_name, str(num))
     if num == -1 :
@@ -289,17 +295,7 @@ def getResult_4(name, rateMin, rateMax, num, url):
 
         if mainScore > 0 and clientScore > 0:
             size += 1
-        # else:
-        #     size_1 += 1
-        #     rate[main] += 1
-        #     rate[client] += 1
-        # elif mainScore == 0:
-        #     rate[client] +=1
-        # elif clientScore == 0:
-        #     rate[main] +=1
-            
 
-    # sorted(rate.items(), key=lambda x:x[0], reverse=True)
     if 0:
         print("主场进球")
         rate = sorted(rate.items(), key=lambda e:e[1]["rate"], reverse=False)
@@ -337,6 +333,126 @@ def getResult_4(name, rateMin, rateMax, num, url):
     # print(num)
     # print(name, "做空：", rate)
 
+def getResult_5(name, rateMin, rateMax):
+# def getResult_5(name, rateMin, rateMax):
+    db_name = "k_163_2016"
+
+    data = sql.queryByType(name, db_name)
+    main_win = 0
+    client_win = 0
+
+    size = 0
+    size_1 = 0
+    sizeAll = 0
+
+    rate = 0
+    num = 0
+
+    if len(data) == 0 :
+        return
+    for one in data :
+        offset = 3
+        main = one[0]
+        client = one[1]
+
+        mainScore = one[2]
+        clientScore = one[3]
+
+        result = one[4]
+
+        ping = one[6]
+        main_win =  one[8]
+        client_win = one[9]
+
+        sizeAll += 1
+
+        # teamName = "利物浦"
+        # if main != teamName and client != teamName:
+        #     continue
+
+        if main_win < rateMax and main_win > rateMin:
+            if result == 1:
+                rate += main_win - 1
+            else:
+                rate += - 1 
+                size_1 += 1
+            size += 1
+        elif client_win < rateMax and client_win > rateMin:
+            if result == -1:
+                rate += client_win -1
+            else:
+                rate += - 1 
+                size_1 += 1
+            size += 1
+
+
+
+        # if main_win < rateMax:
+        #     if result == 1:
+        #         rate += -1
+        #     else:
+        #         rate += getRate(main_win) - 1 
+        #         size_1 += 1
+        #     size += 1
+        # elif client_win < rateMax:
+        #     if result == -1:
+        #         rate += -1
+        #     else:
+        #         rate += getRate(client_win)- 1 
+        #         size_1 += 1
+        #     size += 1
+  
+    print(name, round(rateMax,2), round(rate, 2), size_1, size, sizeAll)
+
+def getResult_6(name, rateMax):
+    db_name = "k_163_2016"
+
+    data = sql.queryByType(name, db_name)
+    main_win = 0
+    client_win = 0
+
+    size = 0
+    size_1 = 0
+    sizeAll = 0
+
+    rate = 0
+    rate_1 = 0
+    num = 0
+
+    if len(data) == 0 :
+        return
+    for one in data :
+        offset = 3
+        main = one[0]
+        client = one[1]
+
+        mainScore = one[2]
+        clientScore = one[3]
+
+        result = one[4]
+
+        ping = one[6]
+        main_win =  one[8]
+        client_win = one[9]
+
+        sizeAll += 1
+
+        # if main_win < rateMax:
+        #     continue
+
+
+        if result == 1:
+            rate += main_win - 1
+            size += 1
+            rate_1 += -1
+        else:
+            rate_1 += getRate(main_win) - 1
+            rate += -1
+
+
+    print(name,round(rateMax,2),round(size/sizeAll,2),"做多",round(rate, 2), "做空",round(rate_1, 2),size, sizeAll)
+
+
 def compare_1(name): 
     for i in range(17) :
         rateMin = i*0.1 + 1
@@ -363,11 +479,23 @@ def compare_6(name):
 def compare_7(name, url):
     getResult_4(name, 1,  2.6, -1, url)  
 
+def compare_8(name):
+    getResult_5(name, 1.5, 1.7)
+    # for i in range(9) :
+    #     rateMax = 1.1 + 0.1*i
+    #     getResult_5(name, 1, rateMax)  
 
-# compare_7("英超")
+# getResult_6("巴乙", 1.6)
+for i in range(1) :
+    rateMax = 1.3 + 0.1*i
+    getResult_6("西乙", rateMax)
+
+
+# compare_8("欧罗巴联赛")
+# compare_8("欧洲冠军联赛")
 # compare_7("意甲")
 # compare_7("西甲")
-# compare_7("德甲")
+# compare_8("德甲")
 
 # compare_6("英冠")
 # compare_6("英甲")
@@ -377,4 +505,4 @@ def compare_7(name, url):
 # compare_4("英超")
 # compare_7("德乙",  "http://saishi.caipiao.163.com/11/14008.html?weekId=11&groupId=&roundId=41486&indexType=0&guestTeamId=")
 # compare_7("荷乙","http://saishi.caipiao.163.com/5/13843.html?weekId=10&groupId=&roundId=41039&indexType=0&guestTeamId=")
-compare_7("法乙","http://saishi.caipiao.163.com/17/14061.html?weekId=12&groupId=&roundId=41647&indexType=0&guestTeamId=")
+# compare_7("法乙","http://saishi.caipiao.163.com/17/14061.html?weekId=12&groupId=&roundId=41647&indexType=0&guestTeamId=")
