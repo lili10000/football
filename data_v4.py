@@ -9,9 +9,15 @@ from db.mysql import sqlMgr
 
 num = 1
 index = 1
+<<<<<<< HEAD
 end = 43
 key = "k_163_2016"
 urlTmp = "http://saishi.caipiao.163.com/12/12985.html?roundId=37748&weekId=1&groupId=&indexType=0&guestTeamId="
+=======
+end = 11
+key = "k_163_2017"
+urlTmp = "http://saishi.caipiao.163.com/12/14464.html?weekId=1&groupId=&roundId=42973&indexType=0&guestTeamId="
+>>>>>>> a041ec1e59860f386f7ee9ae818d020b9741274e
 
 
 class parser:
@@ -91,11 +97,23 @@ class parser:
                 data.main = self.main[index]
                 data.client = self.client[index]
                 data.type = type_game
-                if len(self.param[index*3]) == 0 or self.param[index*3] == "-"or self.param[index*3 + 1] == "-"or self.param[index*3 + 2] == "-" :
+                if len(self.param[index*3]) == 0 :
                     continue
-                data.win_rate = self.param[index*3 + 0]
-                data.rate = float(self.param[index*3 + 1])
-                data.lost_rate = self.param[index*3 + 2]
+
+                if self.param[index*3 + 0] == "-":
+                    data.win_rate = 0
+                else:                    
+                    data.win_rate = self.param[index*3 + 0]
+
+                if self.param[index*3 + 1] == "-":
+                    data.rate = 0
+                else:
+                    data.rate = float(self.param[index*3 + 1])
+                    
+                if self.param[index*3 + 2] == "-":
+                    data.lost_rate = 0
+                else:
+                    data.lost_rate = self.param[index*3 + 2]
 
                 if data.main_score > data.client_score :
                     data.result = 1
