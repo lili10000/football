@@ -71,8 +71,14 @@ def getResult_2(name, score, corner):
     print("[<",score, " >", corner,"]    ", round(corner_6/size, 2), "  size =",size)
     # print("score [",score,"]    ", round(corner_6/size, 2), "     ", round(corner_6_8/size, 2), "     ", round(corner_9_11/size, 2), "     ", round(corner_12_14/size, 2), "     ", round(corner_14/size, 2),  "  size =",size,name)
 
+def getRate(rate):
+    # reduce = 1.05
+    # return 1/(reduce*(1-1/(rate*reduce))) 
+    if rate == 0:
+        return 0
+    return round(1/rate, 2)
 
-def getResult_3(name):
+def getResult_3(name, score):
     data = sql.queryByType(name, "k_corner")
 
     main_win = 0
@@ -88,7 +94,7 @@ def getResult_3(name):
     size = 0
 
     scoreAll = 0
-    score_total =[0, 0, 0, 0, 0, 0]
+    corner_total =[0, 0, 0, 0, 0, 0, 0, 0, 0]  # <6, 6, 7, 8,9, 10, 11, 12, >12
 
     if len(data) == 0 :
         return
@@ -97,24 +103,23 @@ def getResult_3(name):
         main_score = int(one[2])
         client_score = int(one[3])
 
-        scoreSum = main_score+client_score
-        rate_result = one[4]
-        
-        scoreAll += scoreSum
-        if scoreSum >= 5 :
-            score_total[5] += 1 
-        if scoreSum <= 0 :
-            score_total[0] += 1 
-        if scoreSum <= 1 :
-            score_total[1] += 1
-        if scoreSum <= 2 :
-            score_total[2] += 1
-        if scoreSum <= 3 :
-            score_total[3] += 1
-        if scoreSum <= 4 :
-            score_total[4] += 1
-        
+        rateDb = one[4]
+        if (float(rateDb) > -0.5 and float(rateDb) < 0.5):
+            continue
 
+        main_corner = int(one[6])
+        client_corner = int(one[7])
+
+        corner_Sum = int(one[8])
+        
+        index = corner_Sum - 5
+        if index > 8:
+            index = 8
+
+        if index <= 0:
+            index = 0
+
+        corner_total[index] += 1
 
         size += 1
         # if rate_result > 0 :
@@ -123,10 +128,39 @@ def getResult_3(name):
         # elif rate_result < 0 :
         #     lostScoreSum += scoreSum
         #     lostSize += 1
+    if size == 0:
+        return
 
+    print(name,"score:",score, " size:",size)
+    index = 0
+    rate = 0
+    rate += round(corner_total[index]/size, 2)
+    print("<6   ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("6    ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("7    ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("8    ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("9    ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("10   ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("11   ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print("12   ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
+    index +=1
+    rate += round(corner_total[index]/size, 2)
+    print(">12  ", round(corner_total[index]/size, 2), "    <=",getRate(rate), "    >", getRate(1-rate))
 
-    print(round(score_total[1]/size, 2), "     ", round(score_total[2]/size, 2), "     ", round(score_total[3]/size, 2), "     ", round(score_total[4]/size, 2), "  size =",size, "    all")
-  
 
 def compare(name): 
     # getResult_2(name, 2.5)
@@ -134,12 +168,14 @@ def compare(name):
     # return
     # min_win = 0.25
     # getResult_2(name, 0.5, 7.5)
-    for i in range(4) :
-        for j in range(6) :
-            getResult_2(name, 0.5+i, 7.5+j)
-    # getResult_3(name)
+    getResult_3(name, 1)
+    # for i in range(4) :
+    #     getResult_3(name, i)
+    #     for j in range(6) :
+    #         getResult_2(name, 0.5+i, 7.5+j)
+    # getResult_3(name, )
 # compare("J联赛")
-compare("韩k联")
+# compare("韩k联")
 # compare("日联杯")
 # compare("美职联")
 # compare("巴甲")
@@ -152,7 +188,7 @@ compare("韩k联")
 # compare("英超")
 # compare("英冠")
 # compare("英甲")
-# compare("意甲")
+compare("意甲")
 # compare("意乙")
 # compare("德甲")
 # compare("西甲")
