@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from db.mysql import sqlMgr
 
+id = 53
+
 def clearText(text):
     text = text.replace(" ", "")
     text = text.replace("\n", "")
@@ -104,9 +106,10 @@ index = 1
 end = 20
 key = "k_corner"
 
+
 while (index < end) :
     
-    url = "http://jq.chewtang.com/league/view/17/page:1"
+    url = "http://jq.chewtang.com/league/view/"+str(id)+"/page:1"
     url = url.replace("page:1", "page:"+ str(index) )
     # url = url.replace("indexType=0", "indexType=1")
     print(url)
