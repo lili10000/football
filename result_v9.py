@@ -3,7 +3,7 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 check_rate = 0.05
-
+name = "日联杯"
 
 # def getRate(rate):
 #     if rate == 0:
@@ -88,36 +88,9 @@ def getResult(name, rate):
 
         size += 1
 
-
-        # if main_score > client_score:
-        #     start_rate_win += start_win_rate - 1
-        #     end_rate_win += end_win_rate -1
-
-        #     start_rate_ping -= 1
-        #     end_rate_ping -= 1
-        #     start_rate_lost -= 1
-        #     end_rate_lost -= 1
-
-        # elif main_score == client_score:
-        #     start_rate_ping += start_ping_rate-1
-        #     end_rate_ping += end_ping_rate-1
-
-        #     start_rate_win -= 1
-        #     end_rate_win -= 1
-        #     start_rate_lost -= 1
-        #     end_rate_lost -= 1
-
-        # elif main_score < client_score:
-        #     start_rate_lost += start_lost_rate-1
-        #     end_rate_lost += end_lost_rate-1
-
-        #     start_rate_win -= 1
-        #     end_rate_win -= 1
-        #     start_rate_ping -= 1
-        #     end_rate_ping -= 1
     if size == 0:
         return 
-    print(rate, " ",name, "   test = ",round( test/size, 4), "    reTest = ",round( reTest/size, 4) ,"    size =", size)
+    print(rate, " ",name, "   买降水 = ",round( test/size, 4), "    买升水 = ",round( reTest/size, 4) ,"    size =", size)
     
     # print("start:   ",round( start_rate_win, 2),"   ",round(start_rate_ping, 2),"   ",round(start_rate_lost, 2) )
     # print("end:   ",round( end_rate_win, 2),"   ",round(end_rate_ping, 2),"   ",round(end_rate_lost, 2) )
@@ -132,4 +105,4 @@ for i in range(20):
     # getResult("意甲", rate)
     # getResult("德甲", rate)
     # getResult("法甲", rate)
-    getResult("荷乙", rate)
+    getResult(name, rate)
