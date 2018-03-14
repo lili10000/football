@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from db.mysql import sqlMgr
 
-id = 53
-
+id = 3
+end = 6
 def clearText(text):
     text = text.replace(" ", "")
     text = text.replace("\n", "")
@@ -103,7 +103,7 @@ class parser:
 
 
 index = 1
-end = 20
+
 key = "k_corner"
 
 

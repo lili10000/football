@@ -2,13 +2,26 @@ from db.mysql import sqlMgr
 
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
+score_check = 2.5
+corner_check = 9.5
+
+# name = ["意大利甲级", "英格兰超级", "西班牙甲级", "德国甲级","法国甲级"]
+name = ["英格兰冠军"]
+# name=["法国甲级"]
+# name = "英格兰超级"
+# name = "西班牙甲级"
+# name = "德国甲级"
+# name = "法国甲级"
+# name = "荷兰乙级"
+# name = "亚足联冠军联赛"
+
 
 def getRate(rate):
     # reduce = 1.05
     # return 1/(reduce*(1-1/(rate*reduce))) 
     if rate == 0:
         return 0
-    return rate
+    # return rate
     return round(1/rate, 2)
 
 def getResult_3(name, score):
@@ -20,6 +33,9 @@ def getResult_3(name, score):
 
     size_big = 0
     size_small = 0
+
+    size_low_corner = 0
+    size_high_corner = 0
     
     score_corner_map_small={}
     score_corner_map_big={}
@@ -42,58 +58,51 @@ def getResult_3(name, score):
 
         corner_Sum = int(one[8])
 
+        is_score = (main_score > 0) and (client_score > 0)
+
+
+        # if float(rateDb) >= -1 and float(rateDb) <= 1:
+        #     continue
+
+        # if float(rateDb) < -1 or float(rateDb) > 1:
+        #     continue
+
+        if float(rateDb) <= 0 :
+            continue
 
         def tmpFun(score_corner_map):
-            score_check = 2.5
-            corner_check = 8.5
-            key = ""
-            # if scoreSum > score_check and  corner_Sum > corner_check:
-            #     key="大球大角"
-            # if scoreSum > score_check and  corner_Sum < corner_check:
-            #     key="大球小角"
-            # if scoreSum < score_check and  corner_Sum > corner_check:
-            #     key="小球大角"
-            # if scoreSum < score_check and  corner_Sum < corner_check:
-            #     key="小球小角"
-            # if not(score_corner_map.__contains__(key)):
-            #     score_corner_map[key] = 0
-            # score_corner_map[key] += 1
-
-            # result = main_score - client_score + float(rateDb)
-
-            # if result > 0 and  corner_Sum > corner_check:
-            #     key="主胜 大球"
-            # elif result > 0 and  corner_Sum < corner_check:
-            #     key="主胜 小球"
-            # elif result <= 0 and corner_Sum > corner_check:
-            #     key="主败 大球"
-            # elif result <= 0 and  corner_Sum < corner_check:
-            #     key="主败 小球"
+           
             rateTmp = float(rateDb)
             result = main_score - client_score + rateTmp
             tmp = (rateTmp < 0 and result > 0) or (rateTmp > 0 and  result <= 0) or (rateTmp == 0)
+
+            key = ""
             if False:
                 key = ""
-            elif tmp and  corner_Sum > corner_check:
-                key="让球赢，大角"
-            # elif not tmp and  corner_Sum < corner_check:
-            #     key="让球输，小角"
-            # elif scoreSum < score_check and corner_Sum < corner_check:
-            #     key="小球，小角"          
-            elif (rateTmp < 0 and client_score > 0) or (rateTmp > 0 and main_score > 0) and  corner_Sum < corner_check:
-                key="劣势进球， 小角"
-            # elif (rateTmp < 0 and client_score > 0) or (rateTmp > 0 and main_score > 0) and  corner_Sum > corner_check:
-            #     key="劣势进球， 大角"
+            elif is_score and scoreSum > score_check and corner_Sum > corner_check:
+                key="都进球 大球 大角"
+            elif not is_score and scoreSum < score_check:
+                key="非都进球 小球"
             else:
                 key="极端情况"
 
+        
 
             if not(score_corner_map.__contains__(key)):
                 score_corner_map[key] = 0
             score_corner_map[key] += 1
 
-                
-        
+
+            # if is_score and scoreSum > score_check and corner_Sum > corner_check:
+            #     key="都进球 大球 大角"
+            # elif is_score and scoreSum > score_check and corner_Sum < corner_check:
+            #     key="都进球 大球 小角"
+            # else:
+            #     return
+            # if not(score_corner_map.__contains__(key)):
+            #     score_corner_map[key] = 0
+            # score_corner_map[key] += 1
+
         if small:
             tmpFun(score_corner_map_small)
             size_small += 1
@@ -101,21 +110,25 @@ def getResult_3(name, score):
             tmpFun(score_corner_map_big)
             size_big += 1
 
-
-    print("rate < 0.5")
+        if corner_Sum < corner_check :
+            size_low_corner += 1
+        else:
+            size_high_corner += 1
+    
     size = size_small
-    if size == 0:
-        return
-    for key in score_corner_map_small:
-        print(key," ", getRate(round(score_corner_map_small[key]/size, 2)))
+    if size != 0:
+        print("rate < 0.5   size=",size)
+        for key in score_corner_map_small:
+            print(key," ", getRate(round(score_corner_map_small[key]/size, 2)))
 
-    print("rate > 0.5")
+    
     size = size_big 
-    if size == 0:
-        return
-    for key in score_corner_map_big:
-        print(key," ", getRate(round(score_corner_map_big[key]/size, 2)))
+    if size != 0:
+        print("rate > 0.5   size=",size)
+        for key in score_corner_map_big:
+            print(key," ", getRate(round(score_corner_map_big[key]/size, 2)))
 
+    print("大角 : 小角 = ", round( size_high_corner/size_low_corner, 3))
 
 def compare(name): 
     # getResult_2(name, 2.5)
@@ -131,9 +144,11 @@ def compare(name):
     #         getResult_2(name, 0.5+i, 7.5+j)
     # getResult_3(name, )
 
-compare("俄罗斯")
+# compare("俄罗斯")
 # compare("中超")
-# compare("德国乙级")
+
+for i in name :
+    compare(i)
 # compare("法国乙级")
 # compare("英超")
 # compare("德甲")

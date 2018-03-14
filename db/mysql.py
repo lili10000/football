@@ -48,6 +48,21 @@ class sqlMgr:
             print ("error :" + data )
             self.db.rollback()
 
+    def update(self, id, data, tableName):
+        inserSQL = "UPDATE "
+        inserSQL += tableName
+        inserSQL += " SET "
+        inserSQL += data 
+        inserSQL += "where id = " + id
+
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :" + data )
+            self.db.rollback()
+
     def queryByType(self, type, key):
 
         SQL = u"select * from "+ key +" where ( type like '%" + type + "%' ) "
