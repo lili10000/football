@@ -128,7 +128,8 @@ for i in range(20):
     rate = 0.01*i
     # getResult(None, rate)
     # getResult("英超", rate)
-    getResult("西甲", rate)
+    # getResult("西甲", rate)
     # getResult("意甲", rate)
     # getResult("德甲", rate)
     # getResult("法甲", rate)
+    getResult("荷乙", rate)
