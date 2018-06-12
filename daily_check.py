@@ -1,11 +1,12 @@
 import requests
 import time
 
-rate = 0.04
+rate = 0.03
 
 date = time.strftime("%Y-%m-%d",time.localtime())
 
 url = "http://www.365rich.com/handle/football/1x2.aspx?companyid=0&date="+date
+# print(url)
 req = requests.get(url)
 s = req.text
 while not(s.find('i') == -1):
@@ -26,10 +27,12 @@ while not(s.find('i') == -1):
 
     start_rate = 1/start_win_rate
     end_rate = 1/end_win_rate
-    if (start_rate - end_rate) > rate:
+    if (start_rate - end_rate) >= rate:
         print(id[4:], round(abs(start_rate - end_rate),2), "主队升水， 客队降水")
     elif (end_rate - start_rate) > rate:
         print(id[4:], round(abs(start_rate - end_rate),2), "主队降水， 客队升水")
+    # else:
+    #     print(id[4:], round(start_rate,2), round(end_rate,2), round(abs(start_rate - end_rate),2))
     
     
 
