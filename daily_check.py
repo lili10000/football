@@ -26,8 +26,11 @@ while not(s.find('i') == -1):
 
     start_rate = 1/start_win_rate
     end_rate = 1/end_win_rate
-    if abs(start_rate - end_rate) > rate:
-        print(id[4:])
+    if (start_rate - end_rate) > rate:
+        print(id[4:], round(abs(start_rate - end_rate),2), "主队升水， 客队降水")
+    elif (end_rate - start_rate) > rate:
+        print(id[4:], round(abs(start_rate - end_rate),2), "主队降水， 客队升水")
+    
     
 
 

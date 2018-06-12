@@ -3,7 +3,7 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 check_rate = 0.05
-name = "日联杯"
+name = "自由杯"
 
 # def getRate(rate):
 #     if rate == 0:
