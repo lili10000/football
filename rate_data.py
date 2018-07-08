@@ -12,7 +12,7 @@ import codecs
 index = 1
 end = 30
 year="2017"
-month = "09"
+month = "05"
 scoreTmp = "-"
 
 
