@@ -67,7 +67,8 @@ def doCheck(rowData):
         
         
         if ('f_ld' in oneData) :
-            if('hdx' in oneData['f_ld']):
+            rateTmp = oneData['f_ld']['hdx']
+            if rateTmp != None:
                 newRate = float(oneData['f_ld']['hdx'])
         newElement = dataElement(score_sum,newRate, name)
 
