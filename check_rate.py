@@ -67,7 +67,8 @@ def doCheck(rowData):
         
         
         if ('f_ld' in oneData) :
-            newRate = float(oneData['f_ld']['hdx'])
+            if('hdx' in oneData['f_ld']):
+                newRate = float(oneData['f_ld']['hdx'])
         newElement = dataElement(score_sum,newRate, name)
 
         if dataRecord.__contains__(key) == False:
