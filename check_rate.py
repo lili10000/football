@@ -24,8 +24,13 @@ class dataElement():
         self.rate = rate
 
 dataRecord = {}
-def doCheck(data):
-    jsonData = json.loads(data)
+def doCheck(rowData):
+    try:
+        jsonData = json.loads(rowData)
+    except Exception as e:
+        print("err:"+ repr(e)+" data:" + rowData)
+        return ""
+    
     dataArray = jsonData['rs']
     for oneData in dataArray:
         if ('host' in oneData) == False: 
@@ -51,6 +56,8 @@ def doCheck(data):
         guest_score = int(oneData[dataKey]['gg'])
         score_sum = host_score + guest_score
         
+        if ('f_ld' in oneData) == False :
+            continue
         newRate = float(oneData['f_ld']['hdx'])
         newElement = dataElement(score_sum,newRate)
 
@@ -86,7 +93,11 @@ while(True):
                 'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
             }
     req = requests.get(url=url , headers=headers)
-    mt = doCheck(req.text)
+    if req.status_code == 200:
+        mt = doCheck(req.text)
+    elif req.status_code == 304:
+        print("data not modify")
+
     nowTime = datetime.now().strftime('%H:%M:%S')
     print(nowTime," start check. url:",url)
     time.sleep(10)
