@@ -16,7 +16,7 @@ import ctypes
 # with open("tmp.txt", 'w') as f:
 #     f.write(req.text)
 
-
+mt = ""
 
 class dataElement():
     def __init__(self, score = 0, rate = 0):
@@ -28,9 +28,15 @@ def doCheck(data):
     jsonData = json.loads(data)
     dataArray = jsonData['rs']
     for oneData in dataArray:
+        if ('host' in oneData) == False: 
+            continue
+        if ('events_graph' in oneData) == False:
+            continue
+
         host = oneData['host']['n']
         guest = oneData['guest']['n']
         key = host + "_" + guest
+
         time = oneData['events_graph']['status']
         if int(time) > 80:
             if dataRecord.__contains__(key):
@@ -62,7 +68,9 @@ def doCheck(data):
             ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
             
         dataRecord[key] = newElement
-
+    if 'mt' in jsonData:
+        mt = "?mt=" + jsonData['mt']
+        return mt
 # data=""
 # with open("tmp.txt", 'r') as f:
 #     data = f.read()
@@ -70,11 +78,17 @@ def doCheck(data):
 
 
 while(True):
-    url = 'https://live.dszuqiu.com/ajax/score/data'
-    req = requests.get(url)
-    doCheck(req.text)
+    url = 'https://live.dszuqiu.com/ajax/score/data' + mt
+
+    headers = {'accept':'application/json, text/javascript, */*; q=0.01',\
+                'accept-encoding':'gzip, deflate',\
+                'accept-language': 'zh-CN,zh;q=0.9', \
+                'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
+            }
+    req = requests.get(url=url , headers=headers)
+    mt = doCheck(req.text)
     nowTime = datetime.now().strftime('%H:%M:%S')
-    print(nowTime," start check")
+    print(nowTime," start check. url:",url)
     time.sleep(10)
 
 
