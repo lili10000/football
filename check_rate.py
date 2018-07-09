@@ -19,9 +19,10 @@ import ctypes
 mt = ""
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0):
+    def __init__(self, score = 0, rate = 0, name=""):
         self.score = score
         self.rate = rate
+        self.name = name
 
 dataRecord = {}
 def doCheck(rowData):
@@ -33,44 +34,52 @@ def doCheck(rowData):
     
     dataArray = jsonData['rs']
     for oneData in dataArray:
-        if ('host' in oneData) == False: 
+        if ('id' in oneData) == False: 
             continue
-        if ('events_graph' in oneData) == False:
-            continue
+        key = oneData['id']
 
-        host = oneData['host']['n']
-        guest = oneData['guest']['n']
-        key = host + "_" + guest
+        name = ""
+        if ('host' in oneData): 
+            host = oneData['host']['n']
+            guest = oneData['guest']['n']
+            name = host + " vs " + guest
 
-        time = oneData['events_graph']['status']
-        if int(time) > 80:
-            if dataRecord.__contains__(key):
-                dataRecord.pop(key)
-            continue
+        score_sum = -1
+        newRate = 0
+
+        if dataRecord.__contains__(key):
+            name = dataRecord[key].name
+            score_sum = dataRecord[key].score
+            newRate = dataRecord[key].rate
+
+        if ('events_graph' in oneData):
+            time = int(oneData['events_graph']['status'])
+            if time > 89:
+                if dataRecord.__contains__(key):
+                    dataRecord.pop(key)
+                continue
 
         dataKey = 'rd'
-        if (dataKey in oneData) == False :
-            continue
-
-        host_score = int(oneData[dataKey]['hg'])
-        guest_score = int(oneData[dataKey]['gg'])
-        score_sum = host_score + guest_score
+        if (dataKey in oneData):
+            host_score = int(oneData[dataKey]['hg'])
+            guest_score = int(oneData[dataKey]['gg'])
+            score_sum = host_score + guest_score
         
-        if ('f_ld' in oneData) == False :
-            continue
-        newRate = float(oneData['f_ld']['hdx'])
-        newElement = dataElement(score_sum,newRate)
+        
+        if ('f_ld' in oneData) :
+            newRate = float(oneData['f_ld']['hdx'])
+        newElement = dataElement(score_sum,newRate, name)
 
         if dataRecord.__contains__(key) == False:
             dataRecord[key] = newElement
-
         oldElement = dataRecord[key]
-        
         conditionScore = bool(newElement.score == oldElement.score)
         conditionRate = bool(newElement.rate >= oldElement.rate + 0.5)
+
+        nowTime = datetime.now().strftime('%H:%M:%S')
+        # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
         if conditionScore and  conditionRate:
-            nowTime = datetime.now().strftime('%H:%M:%S')
-            msg = nowTime + " " + key + " new:" + newElement.rate +  " old:" + oldElement.rate
+            msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
             print(msg)
             ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
             
