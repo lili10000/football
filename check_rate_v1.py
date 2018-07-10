@@ -36,11 +36,18 @@ class dataCheck():
     def startCheck(self):
         
         url = 'https://live.dszuqiu.com/ajax/score/data' + self.mt
-        req = requests.get(url=url , headers=self.headers)
-        if req.status_code == 200:
-            self.doCheck(req.text)
-        elif req.status_code == 304:
-            print("data not modify")
+
+        try:
+            req = requests.get(url=url , headers=self.headers)
+            if req.status_code == 200:
+                self.doCheck(req.text)
+            elif req.status_code == 304:
+                print("data not modify")
+        except Exception as e:
+            print("connect err:"+ repr(e))
+            return
+       
+        
         nowTime = datetime.now().strftime('%H:%M:%S')
         print(nowTime," start check. url:",url)
 
@@ -128,7 +135,7 @@ class dataCheck():
             return msg
 
         conditionScore = bool(newElement.score == oldElement.score)
-        conditionRate = bool(newElement.rate >= oldElement.rate + 0.5)
+        conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
 
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
