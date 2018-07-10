@@ -8,8 +8,6 @@ import json
 import ctypes
 
 
-
-
 class dataElement():
     def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False):
         self.score = score
@@ -144,7 +142,8 @@ class dataCheck():
         return msg
 
     def sendMsg(self, key, newElement, msg):
-        if msg != "" and newElement.notify == False:
+        if msg != "":
+        # if msg != "" and newElement.notify == False:
             print(msg)
             t =threading.Thread(target=notifyMsg,args=(msg,))
             t.start()
