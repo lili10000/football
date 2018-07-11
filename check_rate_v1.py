@@ -151,8 +151,8 @@ class dataCheck():
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
         
-        if conditionScore and  conditionRate:
-            msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
+        # if conditionScore and  conditionRate:
+        #     msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
         
         LowInfo = self.checkLowRate(oneData, key)
         if LowInfo != "":
