@@ -98,9 +98,10 @@ class dataCheck():
 
         LowInfo = ""
         if ('f_ld' in oneData) :
-            rateTmp = oneData['f_ld']['hdx']
-            if rateTmp != None:
-                newRate = float(oneData['f_ld']['hdx'])
+            if ('hdx' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['hdx']
+                if rateTmp != None:
+                    newRate = float(oneData['f_ld']['hdx'])
         return newRate
 
 
@@ -111,12 +112,14 @@ class dataCheck():
             return LowInfo
 
         if ('f_ld' in oneData) :
-            rateTmp = oneData['f_ld']['hdxsp']
-            if rateTmp != None and float(rateTmp) < self.lowValue:
-                LowInfo = " 主队赔率:" +rateTmp
-            rateTmp = oneData['f_ld']['gdxsp']
-            if rateTmp != None and float(rateTmp) < self.lowValue:
-                LowInfo = " 客队赔率:" +rateTmp
+            if ('hdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['hdxsp']
+                if rateTmp != None and float(rateTmp) < self.lowValue:
+                    LowInfo = " 主队赔率:" +rateTmp
+            if ('gdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['gdxsp']
+                if rateTmp != None and float(rateTmp) < self.lowValue:
+                    LowInfo = " 客队赔率:" +rateTmp
         return LowInfo
 
     def getTime(self, oneData, key):
