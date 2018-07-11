@@ -18,7 +18,8 @@ class dataElement():
         self.updata = int(time.time())
 
 def notifyMsg(msg):
-    ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
+    # ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
+    return
 
 class dataCheck():
     def __init__(self):
@@ -66,6 +67,9 @@ class dataCheck():
 
     def getName(self, oneData, key):
         name = ""
+        if ('league' in oneData):
+            name += oneData['league']['n'] + '  '
+            
         if ('host' in oneData): 
             host = oneData['host']['n']
             guest = oneData['guest']['n']
@@ -102,6 +106,10 @@ class dataCheck():
 
     def checkLowRate(self,oneData, key):
         LowInfo = ""
+        timeNow = self.dataRecord[key].time
+        if timeNow <70 and timeNow >3:
+            return LowInfo
+
         if ('f_ld' in oneData) :
             rateTmp = oneData['f_ld']['hdxsp']
             if rateTmp != None and float(rateTmp) < self.lowValue:
