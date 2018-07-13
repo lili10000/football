@@ -34,6 +34,8 @@ class dataCheck():
         self.index = 0
         self.timeCmp = 80
 
+        self.scoreStatic = {}
+
     def startCheck(self):
         
         url = 'https://live.dszuqiu.com/ajax/score/data' + self.mt
@@ -55,14 +57,19 @@ class dataCheck():
         self.index += 1
         if self.index % 540 == 0:
             print("[+] start clear dataRecord")
+            deleteKeys = []
             for key in self.dataRecord:
                 oneData = self.dataRecord[key]
                 now = int(time.time())
                 if (now - oneData.updata) > 5400:
-                    self.dataRecord.pop(key)
-                    print("delete "+ key)
+                    deleteKeys.append(key)
+                    
+            for key in deleteKeys:
+                self.dataRecord.pop(key)
+                print("delete "+ key)
             print("[-] end clear dataRecord")
 
+        # if self.index % 60 == 0:
 
 
     def getName(self, oneData, key):
@@ -104,7 +111,6 @@ class dataCheck():
                     newRate = float(oneData['f_ld']['hdx'])
         return newRate
 
-
     def checkLowRate(self,oneData, key):
         LowInfo = ""
         timeNow = self.dataRecord[key].time
@@ -120,6 +126,16 @@ class dataCheck():
                 rateTmp = oneData['f_ld']['gdxsp']
                 if rateTmp != None and float(rateTmp) < self.lowValue:
                     LowInfo = " 客队赔率:" +rateTmp
+
+        # if LowInfo != "" :
+        #     score = self.dataRecord[key].score
+        #     name = self.dataRecord[key].name
+        #     if score == -1:
+        #         return LowInfo
+
+            # if self.scoreStatic.__contains__(score) == False :
+            #     self.scoreStatic[score] = {}
+            # self.scoreStatic[score][key] = name
         return LowInfo
 
     def getTime(self, oneData, key):
@@ -151,8 +167,8 @@ class dataCheck():
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
         
-        # if conditionScore and  conditionRate:
-        #     msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
+        if conditionScore and  conditionRate:
+            msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
         
         LowInfo = self.checkLowRate(oneData, key)
         if LowInfo != "":
