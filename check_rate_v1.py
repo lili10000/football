@@ -52,7 +52,8 @@ class dataCheck():
        
         
         nowTime = datetime.now().strftime('%H:%M:%S')
-        print(nowTime," start check. url:",url)
+        # print(nowTime," start check. url:",url)
+        print(nowTime)
 
         self.index += 1
         if self.index % 540 == 0:
@@ -114,7 +115,8 @@ class dataCheck():
     def checkLowRate(self,oneData, key):
         LowInfo = ""
         timeNow = self.dataRecord[key].time
-        if timeNow <70 and timeNow >3:
+        score = self.dataRecord[key].score
+        if timeNow <70 :
             return LowInfo
 
         if ('f_ld' in oneData) :
@@ -126,6 +128,7 @@ class dataCheck():
                 rateTmp = oneData['f_ld']['gdxsp']
                 if rateTmp != None and float(rateTmp) < self.lowValue:
                     LowInfo = " 客队赔率:" +rateTmp
+
 
         # if LowInfo != "" :
         #     score = self.dataRecord[key].score
@@ -166,18 +169,18 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
-        
+        '''
         if conditionScore and  conditionRate:
             msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
-        
+        '''
         LowInfo = self.checkLowRate(oneData, key)
         if LowInfo != "":
             msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
         return msg
 
     def sendMsg(self, key, newElement, msg):
-        if msg != "":
-        # if msg != "" and newElement.notify == False:
+        # if msg != "":
+        if msg != "" and newElement.notify == False:
             print(msg)
             t =threading.Thread(target=notifyMsg,args=(msg,))
             t.start()
