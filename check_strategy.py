@@ -24,10 +24,7 @@ class checkStartegy():
         self.startegy['美职联']=data(time=80,score=0,small_do="",else_do="买大球")
         self.startegy['天皇杯']=data(time=80,score=0,small_do="",else_do="买大球")
 
-        self.startegy['日职乙']=data(time=80,score=3,small_do="买小球",else_do="")
-        self.startegy['日职联']=data(time=80,score=3,small_do="买小球",else_do="")
 
-    
 
         # 黑名单就是啥也不干
         blackList = data(time=80,score=0,small_do="",else_do="") 
