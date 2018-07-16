@@ -133,7 +133,7 @@ class dataCheck():
         LowInfo = ""
         timeNow = self.dataRecord[key].time
         score = self.dataRecord[key].score
-        if timeNow <70 and  timeNow >= 80:
+        if timeNow <70 or  timeNow >= 80:
             return LowInfo
 
         if ('f_ld' in oneData) :
