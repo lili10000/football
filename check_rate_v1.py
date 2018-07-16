@@ -6,16 +6,23 @@ import threading
 from datetime import datetime
 import json
 import ctypes
+from check_strategy import checkStartegy
 
+
+def clearStr(str):
+    str = str.replace(" ", "")
+    str = str.replace("\n", "")
+    return str
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType=""):
         self.score = score
         self.rate = rate
         self.name = name
         self.time = matchTime
         self.notify = notify
         self.updata = int(time.time())
+        self.type = matchType
 
 def notifyMsg(msg):
     # ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
@@ -32,9 +39,10 @@ class dataCheck():
                 'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
             }
         self.index = 0
-        self.timeCmp = 80
+        self.timeCmp = 85
 
         self.scoreStatic = {}
+        self.strategy = checkStartegy()
 
     def startCheck(self):
         
@@ -72,6 +80,15 @@ class dataCheck():
 
         # if self.index % 60 == 0:
 
+
+    def getType(self, oneData, key):
+        matchType = ""
+        if ('league' in oneData):
+            matchType += oneData['league']['n'] + '  '
+        if self.dataRecord.__contains__(key):
+            matchType = self.dataRecord[key].type
+        matchType = clearStr(matchType)
+        return matchType
 
     def getName(self, oneData, key):
         name = ""
@@ -164,8 +181,12 @@ class dataCheck():
         if newElement.time >= self.timeCmp:
             return msg
 
-        conditionScore = bool(newElement.score == oldElement.score)
-        conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
+        retnStr = self.strategy.check(type=newElement.type, score=newElement.score, time=newElement.time)
+        if retnStr != None:
+            return retnStr
+
+        # conditionScore = bool(newElement.score == oldElement.score)
+        # conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
 
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
@@ -199,13 +220,14 @@ class dataCheck():
             if ('id' in oneData) == False: 
                 continue
             key = oneData['id']
+            matchType = self.getType(oneData, key)
             name = self.getName(oneData, key)
             score_sum = self.getScoreSum(oneData, key)
             newRate = self.getRate(oneData, key)
             timeNow = self.getTime(oneData, key)
             notify = self.getNotify(oneData, key)
 
-            newElement = dataElement(score_sum,newRate, name, timeNow, notify)
+            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType)
             msg = self.getNotifyMsg(oneData, key, newElement)
             self.sendMsg(key, newElement, msg)
 

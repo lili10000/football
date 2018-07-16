@@ -104,9 +104,12 @@ class ouToAsia:
         self.map[3.15]=[1.075,0]
         self.map[3.2]=[1.1,0]
 
+    def getRate(self, rate):
+        reduce = 1.05
+        return 1/(reduce*(1-1/(rate*reduce))) 
 
     def getData(self, rate):
-        if rate < 1.3 or rate > 3.2:
+        if rate < 1.3 or rate > 3.5:
             return None
         
         for i in range(5):
@@ -116,6 +119,8 @@ class ouToAsia:
 
         return None
 
+    
+
     def getRateResult(self, rate, main_score, client_score):
         data = self.getData(rate)
         if data == None:
@@ -123,6 +128,7 @@ class ouToAsia:
             
         rate = data[0]    
         score = data[1]
+        # score = 0
 
         score = (main_score - client_score) + score
         if score >= 1:
@@ -145,3 +151,19 @@ class ouToAsia:
             return rate
         else :
             return None
+
+    def getWinResult(self, rate, main_score, client_score):
+        # data = self.getData(rate)
+        # if data == None:
+        #     return None
+            
+        # rate = data[0]    
+        # score = data[1]
+        score = 0
+        score = (main_score - client_score) + score
+        if score > 0:
+            return 1;
+        if score < 0:
+            return -1;
+        else:
+            return 0

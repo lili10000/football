@@ -5,14 +5,17 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 sizeMin = 20
 check_rate = 0.03
 name = None
+# name = "国际友谊"
+
+
 
 # def getRate(rate):
 #     if rate == 0:
 #         return 0
 #     return round(1/rate, 2)
-def getRate(rate):
-    reduce = 1.05
-    return 1/(reduce*(1-1/(rate*reduce))) 
+
+
+
 
 def getResult(name, rate):
     data = []
@@ -27,76 +30,103 @@ def getResult(name, rate):
     conver = ouToAsia()
 
 
-    start_rate_win = 0
-    start_rate_ping = 0
-    start_rate_lost = 0
 
-    end_rate_win = 0
-    end_rate_ping = 0
-    end_rate_lost = 0
 
-    test = 0
-    reTest = 0
-    test_ping = 0
-    re_test_ping = 0
-    size = 0
-    for one in data :
-        main_score = int(one[3])
-        client_score = int(one[4])
-        scoreSum = main_score + client_score
+    for i in range(10):
+        check_rate = 1.5 + i*0.1
+        start_rate_win = 0
+        start_rate_ping = 0
+        start_rate_lost = 0
 
-        start_win_rate = float(one[6])
-        start_ping_rate = float(one[7])
-        start_lost_rate = float(one[8])
+        end_rate_win = 0
+        end_rate_ping = 0
+        end_rate_lost = 0
 
-        end_win_rate = float(one[9])
-        end_ping_rate = float(one[10])
-        end_lost_rate = float(one[11])
+        test = 0
+        reTest = 0
+        result = {}
 
-        start_rate = 1/start_win_rate
-        end_rate = 1/end_win_rate
-        # if abs(start_rate - end_rate) <= rate or (abs(start_rate - end_rate) > rate + 0.01):
-        #     continue
-        if abs(start_rate - end_rate) <= rate:
-            continue
+        size = 0
+        for one in data :
+            main_score = int(one[3])
+            client_score = int(one[4])
+            scoreSum = main_score + client_score
 
-        if (end_rate - start_rate) > rate or start_lost_rate > 3.6 or start_lost_rate < 2 :
-            continue
+            start_win_rate = float(one[6])
+            start_ping_rate = float(one[7])
+            start_lost_rate = float(one[8])
 
-        if (start_rate - end_rate) > rate and main_score < client_score:            
-            rateGet = conver.getRateResult(start_lost_rate, client_score, main_score) 
-            if rateGet == None:
-                continue
-            test += rateGet
-            reTest -= 1
-        elif (start_rate - end_rate) > rate and main_score > client_score:
-            rateGet = conver.getRateResult(start_win_rate, main_score, client_score) 
-            if rateGet == None:
-                continue
-            reTest += rateGet
-            test -= 1
-        elif (end_rate - start_rate) > rate and main_score < client_score:
-            rateGet = conver.getRateResult(start_lost_rate, client_score, main_score) 
-            if rateGet == None:
-                continue
-            reTest += rateGet
-            test -= 1
-        elif (end_rate - start_rate) > rate and main_score > client_score:
-            rateGet = conver.getRateResult(start_win_rate, main_score, client_score) 
-            if rateGet == None:
-                continue
-            test += rateGet
-            reTest -= 1
-        else:
-            test -= 1
-            reTest -= 1
+            end_win_rate = float(one[9])
+            end_ping_rate = float(one[10])
+            end_lost_rate = float(one[11])
 
-        size += 1
+            start_rate = 1/start_win_rate
+            end_rate = 1/end_win_rate
+            # if abs(start_rate - end_rate) <= rate or (abs(start_rate - end_rate) > rate + 0.01):
+            #     continue
+            # if abs(start_rate - end_rate) <= rate:
+            #     continue
 
-    if size == 0:
-        return 
-    print(rate, " ",name, "   买降水 = ",round( test/size, 4), "    买升水 = ",round( reTest/size, 4) ,"    size =", size)
+            # if (end_rate - start_rate) > rate or start_lost_rate > 3.6 or start_lost_rate < 2 :
+            #     continue
 
+            checkCondition_1 = (main_score + client_score)%2
+            # checkCondition_2 = (main_score + client_score)%2
+            if end_win_rate > end_lost_rate:
+                tmp = end_win_rate
+                end_win_rate = end_lost_rate
+                end_lost_rate = tmp
+
+                tmp = main_score
+                main_score = client_score
+                client_score = tmp
+
+            
+            if (end_win_rate < check_rate):
+                    continue
+
+            if conver.getWinResult(end_win_rate, main_score, client_score) == 1 and (checkCondition_1 == 1) :
+                key = "强奇胜"
+                if result.__contains__(key) == False:
+                    result[key] = 0
+                result[key] += 1
+            elif conver.getWinResult(end_win_rate, main_score, client_score) == 1 and (checkCondition_1 == 0) :
+                key = "强偶胜"
+                if result.__contains__(key) == False:
+                    result[key] = 0
+                result[key] += 1
+            elif conver.getWinResult(end_win_rate, main_score, client_score) == -1 and (checkCondition_1 == 1) :
+                key = "强奇败"
+                if result.__contains__(key) == False:
+                    result[key] = 0
+                result[key] += 1
+
+            elif conver.getWinResult(end_win_rate, main_score, client_score) == -1 and (checkCondition_1 == 0) :
+                key = "强偶败"
+                if result.__contains__(key) == False:
+                    result[key] = 0
+                result[key] += 1
+
+            elif conver.getWinResult(end_win_rate, main_score, client_score) == 0 and (checkCondition_1 == 0) :
+                key = "偶平"
+                if result.__contains__(key) == False:
+                    result[key] = 0
+                result[key] += 1
+
+    
+            else:
+                test -= 1
+                # reTest -= 1
+
+            size += 1
+
+        if size == 0:
+            return 
+
+        print("check_rate = ",check_rate)
+        for tmp in result:
+            print(check_rate, " key = ",tmp ,"    rate = ",round(result[tmp]/size, 2),"    size =", size)
+        print("")
 
 
 getResult(name, check_rate)
