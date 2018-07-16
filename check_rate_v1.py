@@ -133,7 +133,7 @@ class dataCheck():
         LowInfo = ""
         timeNow = self.dataRecord[key].time
         score = self.dataRecord[key].score
-        if timeNow <70 :
+        if timeNow <70 and  timeNow >= 80:
             return LowInfo
 
         if ('f_ld' in oneData) :
@@ -181,14 +181,18 @@ class dataCheck():
         if newElement.time >= self.timeCmp:
             return msg
 
+        nowTime = datetime.now().strftime('%H:%M:%S')
         retnStr = self.strategy.check(type=newElement.type, score=newElement.score, time=newElement.time)
         if retnStr != None:
-            return retnStr
+            if retnStr == "":
+                return retnStr
+            msg = nowTime + " " + newElement.name + retnStr
+            return msg
 
         # conditionScore = bool(newElement.score == oldElement.score)
         # conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
 
-        nowTime = datetime.now().strftime('%H:%M:%S')
+        
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
         '''
         if conditionScore and  conditionRate:
