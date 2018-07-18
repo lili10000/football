@@ -21,8 +21,10 @@ class checkStartegy():
         self.startegy['越VL']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
         self.startegy['韩甲挑']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
         self.startegy['冰岛女甲']=data(time=timeCheck,score=2,small_do="买小球",else_do="买大球")  
-        self.startegy['智利乙']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
-        self.startegy['中超']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
+
+        self.startegy['智利乙']=data(time=timeCheck,score=2,small_do="",else_do="买大球") 
+        self.startegy['俄甲']=data(time=timeCheck,score=2,small_do="",else_do="买大球")   
+         
         self.startegy['墨女超']=data(time=timeCheck,score=2,small_do="买小球",else_do="买大球")  
         self.startegy['印IFA盾']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
 
@@ -62,14 +64,11 @@ class checkStartegy():
         self.startegy['冰岛超']=blackList
         self.startegy['厄瓜锦']=blackList
         self.startegy['欧罗巴']=blackList
-        self.startegy['印尼杯']=blackList
-        self.startegy['马来超']=blackList
-        self.startegy['俄甲']=blackList
-        self.startegy['喀麦隆E2']=blackList
-        
-        
-        
+	self.startegy['印尼杯']=blackList
+	self.startegy['中超']=blackList
 
+        
+        
     def check(self,type='',score=0,time=0):
         if self.startegy.__contains__(type) == False:
             return 
