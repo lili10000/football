@@ -64,8 +64,8 @@ class checkStartegy():
         self.startegy['冰岛超']=blackList
         self.startegy['厄瓜锦']=blackList
         self.startegy['欧罗巴']=blackList
-	self.startegy['印尼杯']=blackList
-	self.startegy['中超']=blackList
+        self.startegy['印尼杯']=blackList
+        self.startegy['中超']=blackList
 
         
         
