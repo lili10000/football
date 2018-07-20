@@ -23,13 +23,15 @@ class checkStartegy():
         self.startegy['智利乙']=data(time=timeCheck,score=2,small_do="",else_do="买大球") 
         self.startegy['俄甲']=data(time=timeCheck,score=2,small_do="",else_do="买大球")   
         self.startegy['南俱杯']=data(time=timeCheck,score=2,small_do="",else_do="买大球") 
+        self.startegy['澳昆士兰']=data(time=timeCheck,score=2,small_do="",else_do="买大球") 
 
         self.startegy['冰岛女甲']=data(time=timeCheck,score=2,small_do="买小球",else_do="买大球")  
         self.startegy['墨女超']=data(time=timeCheck,score=2,small_do="买小球",else_do="买大球")  
         self.startegy['印IFA盾']=data(time=timeCheck,score=2,small_do="",else_do="买大球")  
 
-        self.startegy['韩国女K']=data(time=timeCheck,score=1,small_do="",else_do="买大球")  
-
+        self.startegy['韩国女K']=data(time=timeCheck,score=1,small_do="",else_do="买大球") 
+        self.startegy['南澳女超']=data(time=timeCheck,score=1,small_do="",else_do="买大球")  
+    
 
         self.startegy['瑞典北甲']=data(time=timeCheck,score=0,small_do="",else_do="买大球")
         self.startegy['哈萨超']=data(time=timeCheck,score=0,small_do="",else_do="买大球")
@@ -69,7 +71,10 @@ class checkStartegy():
         self.startegy['印尼杯']=blackList
         self.startegy['中超']=blackList
         self.startegy['越V2联']=blackList
-        
+        self.startegy['斐济杯']=blackList
+        self.startegy['印尼L2']=blackList
+        self.startegy['加尔联']=blackList
+        self.startegy['澳维超']=blackList
 
         
         

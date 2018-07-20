@@ -178,10 +178,16 @@ class dataCheck():
             self.dataRecord[key] = newElement
         oldElement = self.dataRecord[key]
         self.dataRecord[key] = newElement
+
+        nowTime = datetime.now().strftime('%H:%M:%S')
+
+        if newElement.time < 20 and self.dataRecord[key].rate < 1 and self.dataRecord[key].rate > 0:
+            msg = nowTime +" " + newElement.name + " rate <= 1"
+            return msg
         if newElement.time >= self.timeCmp:
             return msg
 
-        nowTime = datetime.now().strftime('%H:%M:%S')
+        
         retnStr = self.strategy.check(type=newElement.type, score=newElement.score, time=newElement.time)
         if retnStr != None:
             if retnStr == "":
