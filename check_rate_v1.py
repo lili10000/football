@@ -207,9 +207,9 @@ class dataCheck():
         if conditionScore and  conditionRate:
             msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
 
-        # LowInfo = self.checkLowRate(oneData, key)
-        # if LowInfo != "":
-        #     msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
+        LowInfo = self.checkLowRate(oneData, key)
+        if LowInfo != "":
+            msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
         return msg
 
     def sendMsg(self, key, newElement, msg):
