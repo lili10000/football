@@ -6,6 +6,7 @@ import threading
 from datetime import datetime
 import json
 import ctypes
+import itchat
 from check_strategy import checkStartegy
 
 
@@ -24,8 +25,9 @@ class dataElement():
         self.updata = int(time.time())
         self.type = matchType
 
-def notifyMsg(msg):
-    # ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
+# def notifyMsg(msg):
+def notifyMsg(msg, userName):
+    itchat.send(msg,toUserName = userName)
     return
 
 class dataCheck():
@@ -43,6 +45,10 @@ class dataCheck():
 
         self.scoreStatic = {}
         self.strategy = checkStartegy()
+
+        itchat.auto_login(hotReload=True)
+        users = itchat.search_friends(name='在路上')
+        self.userName = users[0]['UserName']
 
     def startCheck(self):
         
@@ -98,7 +104,7 @@ class dataCheck():
         if ('host' in oneData): 
             host = oneData['host']['n']
             guest = oneData['guest']['n']
-            name = host + " vs " + guest
+            name += host + " vs " + guest
         if self.dataRecord.__contains__(key):
             name = self.dataRecord[key].name
         return name
@@ -133,7 +139,7 @@ class dataCheck():
         LowInfo = ""
         timeNow = self.dataRecord[key].time
         score = self.dataRecord[key].score
-        if timeNow <70 or  timeNow >= 80:
+        if timeNow <70 or  timeNow >= 80 and score >3:
             return LowInfo
 
         if ('f_ld' in oneData) :
@@ -192,28 +198,25 @@ class dataCheck():
         if retnStr != None:
             if retnStr == "":
                 return retnStr
-            msg = nowTime + " " + newElement.name + retnStr
+            msg = nowTime + " " + newElement.name + "   "+retnStr
             return msg
 
-        # conditionScore = bool(newElement.score == oldElement.score)
-        # conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
+        conditionScore = bool(newElement.score == oldElement.score)
+        conditionRate = bool(abs(newElement.rate - oldElement.rate) >= 0.5)
 
-        
-        # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
-        '''
         if conditionScore and  conditionRate:
             msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
-        '''
-        LowInfo = self.checkLowRate(oneData, key)
-        if LowInfo != "":
-            msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
+
+        # LowInfo = self.checkLowRate(oneData, key)
+        # if LowInfo != "":
+        #     msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
         return msg
 
     def sendMsg(self, key, newElement, msg):
-        # if msg != "":
         if msg != "" and newElement.notify == False:
             print(msg)
-            t =threading.Thread(target=notifyMsg,args=(msg,))
+            t =threading.Thread(target=notifyMsg,args=(msg,self.userName,))
+            # t =threading.Thread(target=notifyMsg,args=(msg,))
             t.start()
             newElement.notify = True
             self.dataRecord[key] = newElement
