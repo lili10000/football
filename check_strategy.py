@@ -28,7 +28,7 @@ class checkStartegy():
 
         self.startegy = {}
         for obj in self.results:        
-            type = obj[0]
+            type = str(obj[0])
             time = obj[1] 
             score = obj[2]
             small_do = obj[3]
