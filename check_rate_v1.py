@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 import json
 import ctypes
-import itchat
+# import itchat
 from check_strategy import checkStartegy
 
 
@@ -25,9 +25,9 @@ class dataElement():
         self.updata = int(time.time())
         self.type = matchType
 
-# def notifyMsg(msg):
-def notifyMsg(msg, userName):
-    itchat.send(msg,toUserName = userName)
+def notifyMsg(msg):
+# def notifyMsg(msg, userName):
+    # itchat.send(msg,toUserName = userName)
     return
 
 class dataCheck():
@@ -46,9 +46,9 @@ class dataCheck():
         self.scoreStatic = {}
         self.strategy = checkStartegy()
 
-        itchat.auto_login(hotReload=True)
-        users = itchat.search_friends(name='在路上')
-        self.userName = users[0]['UserName']
+        # itchat.auto_login(hotReload=True)
+        # users = itchat.search_friends(name='在路上')
+        # self.userName = users[0]['UserName']
 
     def startCheck(self):
         
@@ -215,8 +215,8 @@ class dataCheck():
     def sendMsg(self, key, newElement, msg):
         if msg != "" and newElement.notify == False:
             print(msg)
-            t =threading.Thread(target=notifyMsg,args=(msg,self.userName,))
-            # t =threading.Thread(target=notifyMsg,args=(msg,))
+            # t =threading.Thread(target=notifyMsg,args=(msg,self.userName,))
+            t =threading.Thread(target=notifyMsg,args=(msg,))
             t.start()
             newElement.notify = True
             self.dataRecord[key] = newElement
