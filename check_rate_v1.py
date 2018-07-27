@@ -25,13 +25,16 @@ class dataElement():
         self.updata = int(time.time())
         self.type = matchType
 
+weixin = False
+# weixin = True
+
 # def notifyMsg(msg):
 def notifyMsg(msg, userName):
-    itchat.send(msg,toUserName = userName)
+    # itchat.send(msg,toUserName = userName)
     return
 
 class dataCheck():
-    def __init__(self):
+    def __init__(self, weixin):
         self.dataRecord = {}
         self.mt = ""
         self.lowValue = 1.68
@@ -46,9 +49,13 @@ class dataCheck():
         self.scoreStatic = {}
         self.strategy = checkStartegy()
 
-        itchat.auto_login(hotReload=True)
-        users = itchat.search_friends(name='在路上')
-        self.userName = users[0]['UserName']
+        self.weixin = weixin
+        self.userName = ''
+
+        if self.weixin:
+            itchat.auto_login(hotReload=True)
+            users = itchat.search_friends(name='在路上')
+            self.userName = users[0]['UserName']
 
     def startCheck(self):
         
@@ -193,23 +200,33 @@ class dataCheck():
         if newElement.time >= self.timeCmp:
             return msg
 
-        
-        retnStr = self.strategy.check(type=newElement.type, score=newElement.score, time=newElement.time)
-        if retnStr != None:
-            if retnStr == "":
-                return retnStr
-            msg = nowTime + " " + newElement.name + "   "+retnStr
+        if newElement.time == 45 \
+        and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1.5 \
+        and self.dataRecord[key].score < 2:
+            msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买小" 
             return msg
+        elif newElement.time == 45 \
+        and (self.dataRecord[key].rate - self.dataRecord[key].score) > 1.5 \
+        and self.dataRecord[key].score < 2:
+            msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买大" 
+            return msg
+        # if newElement.time == 45:
+        #     retnStr = self.strategy.check_v2(type=newElement.type, score=newElement.score, rate=newElement.rate)
+        #     if retnStr != None:
+        #         if retnStr == "":
+        #             return retnStr
+        #         msg = nowTime + " " + newElement.name + "   "+retnStr
+        #         return msg
 
-        conditionScore = bool(newElement.score == oldElement.score)
-        conditionRate = bool((abs(newElement.rate - oldElement.rate) >= 0.5)and oldElement.rate != 0)
+        # conditionScore = bool(newElement.score == oldElement.score)
+        # conditionRate = bool((abs(newElement.rate - oldElement.rate) >= 0.5)and oldElement.rate != 0)
 
-        if conditionScore and  conditionRate:
-            msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
+        # if conditionScore and  conditionRate:
+        #     msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
 
-        LowInfo = self.checkLowRate(oneData, key)
-        if LowInfo != "":
-            msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
+        # LowInfo = self.checkLowRate(oneData, key)
+        # if LowInfo != "":
+        #     msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
         return msg
 
     def sendMsg(self, key, newElement, msg):
@@ -249,7 +266,7 @@ class dataCheck():
 
 
 index = 0
-checkImpl = dataCheck()
+checkImpl = dataCheck(weixin)
 while(True):
     index += 1
     

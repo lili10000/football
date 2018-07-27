@@ -115,3 +115,4 @@ INSERT INTO `k_startegy` VALUES ('中甲', '75', '0', '', '');
 INSERT INTO `k_startegy` VALUES ('澳洲特区超', '75', '0', '', '');
 INSERT INTO `k_startegy` VALUES ('捷2L', '75', '0', '', '');
 INSERT INTO `k_startegy` VALUES ('澳亚布超', '75', '0', '', '');
+INSERT INTO `k_startegy` VALUES ('马来总统杯', '75', '0', '', '');
