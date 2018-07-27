@@ -41,3 +41,7 @@ INSERT INTO `k_startegy_v2` VALUES ('澳维U20', '2', '2', '买小', '');
 INSERT INTO `k_startegy_v2` VALUES ('印尼超', '1.4', '2', '买小', '买大');
 INSERT INTO `k_startegy_v2` VALUES ('南澳女超', '1.9', '2', '', '买小');
 INSERT INTO `k_startegy_v2` VALUES ('泰丁', '1.5', '2', '', '买大');
+INSERT INTO `k_startegy_v2` VALUES ('南澳女超', '1.75', '2', '买大', '买小');
+INSERT INTO `k_startegy_v2` VALUES ('马来超', '1.4', '2', '', '= 1.5 买小');
+INSERT INTO `k_startegy_v2` VALUES ('芬K', '1.5', '2', '', '买大');
+
