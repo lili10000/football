@@ -194,22 +194,27 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        if newElement.time < 20 and self.dataRecord[key].rate < 1 and self.dataRecord[key].rate > 0:
-            msg = nowTime +" " + newElement.name + " rate <= 1"
-            return msg
-        if newElement.time >= self.timeCmp:
-            return msg
+        # if newElement.time < 20 and self.dataRecord[key].rate < 1 and self.dataRecord[key].rate > 0:
+        #     msg = nowTime +" " + newElement.name + " rate <= 1"
+        #     return msg
+        # if newElement.time >= self.timeCmp:
+        #     return msg
 
         if newElement.time == 45 \
-        and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1.5 \
-        and self.dataRecord[key].score < 2:
-            msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买小" 
+        and self.dataRecord[key].score == 0:
+            msg = nowTime +" " + newElement.name + " 0:0  rate:" + str(self.dataRecord[key].rate) + " 买小" 
             return msg
-        elif newElement.time == 45 \
-        and (self.dataRecord[key].rate - self.dataRecord[key].score) > 1.5 \
-        and self.dataRecord[key].score < 2:
-            msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买大" 
-            return msg
+
+        # if newElement.time == 45 \
+        # and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1.5 \
+        # and self.dataRecord[key].score < 2:
+        #     msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买小" 
+        #     return msg
+        # elif newElement.time == 45 \
+        # and (self.dataRecord[key].rate - self.dataRecord[key].score) > 1.5 \
+        # and self.dataRecord[key].score < 2:
+        #     msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买大" 
+        #     return msg
         # if newElement.time == 45:
         #     retnStr = self.strategy.check_v2(type=newElement.type, score=newElement.score, rate=newElement.rate)
         #     if retnStr != None:
