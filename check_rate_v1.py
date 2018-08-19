@@ -111,7 +111,7 @@ class dataCheck():
         if ('host' in oneData): 
             host = oneData['host']['n']
             guest = oneData['guest']['n']
-            name += host + " vs " + guest
+            name += "A " + host + " vs B " + guest  + " C"
         if self.dataRecord.__contains__(key):
             name = self.dataRecord[key].name
         return name
@@ -203,7 +203,7 @@ class dataCheck():
         if newElement.time == 45 \
         and self.dataRecord[key].score == 0 \
         and self.dataRecord[key].rate > 1:
-            msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
+            msg = nowTime +"    " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
             return msg
 
         # if newElement.time < 70 \

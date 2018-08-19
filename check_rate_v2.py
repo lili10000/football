@@ -26,12 +26,12 @@ class dataElement():
         self.type = matchType
 
 weixin = True
-#weixin = False
+weixin = False
 
 
 # def notifyMsg(msg):
 def notifyMsg(msg, userName):
-    itchat.send(msg,toUserName = userName)
+    #itchat.send(msg,toUserName = userName)
     return
 
 class dataCheck():
@@ -112,7 +112,7 @@ class dataCheck():
         if ('host' in oneData): 
             host = oneData['host']['n']
             guest = oneData['guest']['n']
-            name += host + " vs " + guest
+            name += "A " + host + " vs B " + guest  + " C"
         if self.dataRecord.__contains__(key):
             name = self.dataRecord[key].name
         return name
@@ -208,10 +208,10 @@ class dataCheck():
         #     return msg
 
         if newElement.time < 70 \
-        and newElement.time > 60 \
-        and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1 \
-        and self.dataRecord[key].score > 0 :
-            msg = nowTime +" " + newElement.name + " 买大  rate:" + str(self.dataRecord[key].rate)  
+        and newElement.time > 55 \
+        and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
+        and self.dataRecord[key].score < 4 :
+            msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
             return msg
 
         # if newElement.time == 70 \
