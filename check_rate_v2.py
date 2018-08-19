@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 import json
 import ctypes
-# import itchat
+import itchat
 from check_strategy import checkStartegy
 
 
@@ -24,13 +24,14 @@ class dataElement():
         self.notify = notify
         self.updata = int(time.time())
         self.type = matchType
+
 weixin = True
-weixin = False
+#weixin = False
 
 
 # def notifyMsg(msg):
 def notifyMsg(msg, userName):
-    # itchat.send(msg,toUserName = userName)
+    itchat.send(msg,toUserName = userName)
     return
 
 class dataCheck():
@@ -200,15 +201,22 @@ class dataCheck():
         # if newElement.time >= self.timeCmp:
         #     return msg
 
-        if newElement.time == 45 \
-        and self.dataRecord[key].score == 0 \
-        and self.dataRecord[key].rate > 1:
-            msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
+        # if newElement.time == 45 \
+        # and self.dataRecord[key].score == 0 \
+        # and self.dataRecord[key].rate > 1:
+        #     msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
+        #     return msg
+
+        if newElement.time < 70 \
+        and newElement.time > 60 \
+        and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1 \
+        and self.dataRecord[key].score > 0 :
+            msg = nowTime +" " + newElement.name + " 买大  rate:" + str(self.dataRecord[key].rate)  
             return msg
 
-        # if newElement.time < 70 \
-        # and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1:
-        # # and self.dataRecord[key].rate > 1:
+        # if newElement.time == 70 \
+        # and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
+        # and self.dataRecord[key].score > 0 :
         #     msg = nowTime +" " + newElement.name + " 买大  rate:" + str(self.dataRecord[key].rate)  
         #     return msg
 
