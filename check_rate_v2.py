@@ -207,10 +207,13 @@ class dataCheck():
         #     msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
         #     return msg
 
+        if self.strategy.check_v3(type=self.dataRecord[key].type):
+            return msg
+
         if newElement.time < 70 \
         and newElement.time > 55 \
         and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
-        and self.dataRecord[key].score < 4 :
+        and self.dataRecord[key].score < 3 :
             msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
             return msg
 

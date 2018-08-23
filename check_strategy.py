@@ -21,7 +21,16 @@ class checkStartegy():
         self.db = MySQLdb.connect('localhost', 'root', '861217', 'football', charset="utf8")
         self.cursor = self.db.cursor()
         self.updataStartegy()
+        self.blackList = self.initBlackList()
         
+    def initBlackList(self):
+        blackList = []
+        blackList.extend(['巴','澳','新','美','国际','英U23发展','苏格兰后备','比利时后','英超2','荷后备','墨女超','波兰乙','友谊'])
+
+
+        return blackList
+
+
     def updataStartegy(self):
         # SQL = u"select * from k_startegy "
         SQL = u"select * from k_startegy_v2 "
@@ -67,3 +76,9 @@ class checkStartegy():
             return tmp.small_do
         else:
             return tmp.else_do
+
+    def check_v3(self,type=''):
+        for blackName in self.blackList:
+            if blackName in type:
+                return True
+        return False
