@@ -25,8 +25,8 @@ class checkStartegy():
         
     def initBlackList(self):
         blackList = []
-        blackList.extend(['巴','澳','新','美','国际','英U23发展','苏格兰后备','比利时后','英超2','荷后备','墨女超','波兰乙','友谊'])
-
+        blackList.extend(['澳','新','美','国际','英U23发展','苏格兰后备','比利时后','英超2','荷后备','墨女超','波兰乙','友谊'])
+        blackList.extend(['阿塞甲','加尔联'])
 
         return blackList
 
