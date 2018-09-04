@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 import json
 import ctypes
-import itchat
+# import itchat
 from check_strategy import checkStartegy
 
 
@@ -201,21 +201,24 @@ class dataCheck():
         # if newElement.time >= self.timeCmp:
         #     return msg
 
-        # if newElement.time == 45 \
-        # and self.dataRecord[key].score == 0 \
-        # and self.dataRecord[key].rate > 1:
-        #     msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
+                # if self.strategy.check_v3(type=self.dataRecord[key].type):
         #     return msg
 
-        if self.strategy.check_v3(type=self.dataRecord[key].type):
+        if newElement.time > 80 \
+        and self.dataRecord[key].score > 1 \
+        and self.strategy.check_v3(type=self.dataRecord[key].type):
+            msg = nowTime +" " + newElement.name + " 买大  "
             return msg
 
-        if newElement.time < 70 \
-        and newElement.time > 55 \
-        and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
-        and self.dataRecord[key].score < 3 :
-            msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
-            return msg
+        # if self.strategy.check_v3(type=self.dataRecord[key].type):
+        #     return msg
+
+        # if newElement.time < 70 \
+        # and newElement.time > 55 \
+        # and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
+        # and self.dataRecord[key].score < 3 :
+        #     msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
+        #     return msg
 
         # if newElement.time == 70 \
         # and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \

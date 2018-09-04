@@ -22,6 +22,7 @@ class checkStartegy():
         self.cursor = self.db.cursor()
         self.updataStartegy()
         self.blackList = self.initBlackList()
+        self.whiteList = self.initWhiteList()
         
     def initBlackList(self):
         blackList = []
@@ -30,6 +31,12 @@ class checkStartegy():
 
         return blackList
 
+    def initWhiteList(self):
+        whiteList = []
+        whiteList.extend(['日职联','日职乙','韩K联','中超','新加坡联','澳','伊朗超','伊朗甲','泰超','泰甲'])
+        whiteList.extend([])
+
+        return whiteList
 
     def updataStartegy(self):
         # SQL = u"select * from k_startegy "
@@ -80,5 +87,11 @@ class checkStartegy():
     def check_v3(self,type=''):
         for blackName in self.blackList:
             if blackName in type:
+                return True
+        return False
+
+    def check_v4(self,type=''):
+        for whiteName in self.whiteList:
+            if whiteName in type:
                 return True
         return False
