@@ -34,8 +34,9 @@ class checkStartegy():
     def initWhiteList(self):
         whiteList = []
         whiteList.extend(['日职联','日职乙','韩K联','中超','新加坡联','澳','伊朗超','伊朗甲','泰超','泰甲','奥甲'])
-        whiteList.extend(['奥乙','芬超','芬甲','葡超','苏超','苏冠','苏甲','苏乙'])
-
+        whiteList.extend(['奥乙','芬超','芬甲','葡超','苏超','苏冠','苏甲','苏乙','丹超','丹甲','奥超','瑞士超'])
+        whiteList.extend(['瑞士甲','爱超','爱甲','北爱超','北爱I锦','波兰超','冰岛超','拉脱超','立陶甲','威超'])
+        whiteList.extend(['匈牙利甲','土超','土1L','克罗甲','保加PFG','哈萨超','厄瓜甲'])
         return whiteList
 
     def updataStartegy(self):
