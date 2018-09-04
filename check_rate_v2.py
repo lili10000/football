@@ -206,7 +206,7 @@ class dataCheck():
 
         if newElement.time > 80 \
         and self.dataRecord[key].score > 1 \
-        and self.strategy.check_v3(type=self.dataRecord[key].type):
+        and self.strategy.check_v4(type=self.dataRecord[key].type):
             msg = nowTime +" " + newElement.name + " 买大  "
             return msg
 

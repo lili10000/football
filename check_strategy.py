@@ -33,8 +33,8 @@ class checkStartegy():
 
     def initWhiteList(self):
         whiteList = []
-        whiteList.extend(['日职联','日职乙','韩K联','中超','新加坡联','澳','伊朗超','伊朗甲','泰超','泰甲'])
-        whiteList.extend([])
+        whiteList.extend(['日职联','日职乙','韩K联','中超','新加坡联','澳','伊朗超','伊朗甲','泰超','泰甲','奥甲'])
+        whiteList.extend(['奥乙','芬超','芬甲','葡超','苏超','苏冠','苏甲','苏乙'])
 
         return whiteList
 
