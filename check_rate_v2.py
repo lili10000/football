@@ -10,13 +10,14 @@ import ctypes
 from check_strategy import checkStartegy
 
 
+
 def clearStr(str):
     str = str.replace(" ", "")
     str = str.replace("\n", "")
     return str
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType=""):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=0, hostScore=0, guestScore=0):
         self.score = score
         self.rate = rate
         self.name = name
@@ -24,6 +25,9 @@ class dataElement():
         self.notify = notify
         self.updata = int(time.time())
         self.type = matchType
+        self.initRate = initRate
+        self.hostScore = hostScore
+        self.guestScore = guestScore
 
 weixin = True
 weixin = False
@@ -94,6 +98,19 @@ class dataCheck():
 
         # if self.index % 60 == 0:
 
+    def getInitRate(self, oneData, key):
+        initRate = 0
+        if ('sd' in oneData):
+            if ('f' in oneData['sd']):
+                if ('hrf' in oneData['sd']['f']):
+                    tmpStr = oneData['sd']['f']['hrf']
+                    if isinstance(tmpStr, str):
+                        initRate = float(tmpStr)
+        if self.dataRecord.__contains__(key):
+            initRate = self.dataRecord[key].initRate
+        return initRate
+
+
 
     def getType(self, oneData, key):
         matchType = ""
@@ -120,7 +137,8 @@ class dataCheck():
     def getScoreSum(self, oneData, key):
         score_sum = -1
         dataKey = 'rd'
-
+        host_score = 0
+        guest_score = 0
         if self.dataRecord.__contains__(key):
             score_sum = self.dataRecord[key].score
 
@@ -128,7 +146,8 @@ class dataCheck():
             host_score = int(oneData[dataKey]['hg'])
             guest_score = int(oneData[dataKey]['gg'])
             score_sum = host_score + guest_score
-        return score_sum
+        return score_sum, host_score, guest_score
+    
 
     def getRate(self, oneData, key):
         newRate = 0     
@@ -195,6 +214,14 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
+        if newElement.score > 1:
+            return msg
+
+        if newElement.time < 45:
+            if (newElement.initRate <= -0.5 and newElement.guestScore > 0) or \
+            (newElement.initRate >= 0.5 and newElement.hostScore > 0):
+                msg = nowTime +" " + newElement.name
+
         # if newElement.time < 20 and self.dataRecord[key].rate < 1 and self.dataRecord[key].rate > 0:
         #     msg = nowTime +" " + newElement.name + " rate <= 1"
         #     return msg
@@ -204,47 +231,7 @@ class dataCheck():
                 # if self.strategy.check_v3(type=self.dataRecord[key].type):
         #     return msg
 
-        if newElement.time > 80 \
-        and self.strategy.check_v4(type=self.dataRecord[key].type):
-        # and self.dataRecord[key].score > 1 \
-        
-            msg = nowTime +" " + newElement.name + " 买大  "
-            return msg
-
-        # if self.strategy.check_v3(type=self.dataRecord[key].type):
-        #     return msg
-
-        # if newElement.time < 70 \
-        # and newElement.time > 55 \
-        # and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
-        # and self.dataRecord[key].score < 3 :
-        #     msg = nowTime +" " + newElement.name + " 买小  rate:" + str(self.dataRecord[key].rate)  
-        #     return msg
-
-        # if newElement.time == 70 \
-        # and (self.dataRecord[key].rate - self.dataRecord[key].score) == 0.75 \
-        # and self.dataRecord[key].score > 0 :
-        #     msg = nowTime +" " + newElement.name + " 买大  rate:" + str(self.dataRecord[key].rate)  
-        #     return msg
-
-
-        # if newElement.time == 45 \
-        # and (self.dataRecord[key].rate - self.dataRecord[key].score) < 1.5 \
-        # and self.dataRecord[key].score < 2:
-        #     msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买小" 
-        #     return msg
-        # elif newElement.time == 45 \
-        # and (self.dataRecord[key].rate - self.dataRecord[key].score) > 1.5 \
-        # and self.dataRecord[key].score < 2:
-        #     msg = nowTime +" " + newElement.name + " rate:" + str(self.dataRecord[key].rate) + " 买大" 
-        #     return msg
-        # if newElement.time == 45:
-        #     retnStr = self.strategy.check_v2(type=newElement.type, score=newElement.score, rate=newElement.rate)
-        #     if retnStr != None:
-        #         if retnStr == "":
-        #             return retnStr
-        #         msg = nowTime + " " + newElement.name + "   "+retnStr
-        #         return msg
+   
 
         # conditionScore = bool(newElement.score == oldElement.score)
         # conditionRate = bool((abs(newElement.rate - oldElement.rate) >= 0.5)and oldElement.rate != 0)
@@ -275,17 +262,19 @@ class dataCheck():
         
         dataArray = jsonData['rs']
         for oneData in dataArray:
+            # print(oneData)
             if ('id' in oneData) == False: 
                 continue
             key = oneData['id']
             matchType = self.getType(oneData, key)
             name = self.getName(oneData, key)
-            score_sum = self.getScoreSum(oneData, key)
+            score_sum, host_score, guest_score = self.getScoreSum(oneData, key)
             newRate = self.getRate(oneData, key)
             timeNow = self.getTime(oneData, key)
             notify = self.getNotify(oneData, key)
+            initRate = self.getInitRate(oneData, key)
 
-            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType)
+            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score)
             msg = self.getNotifyMsg(oneData, key, newElement)
             self.sendMsg(key, newElement, msg)
 
