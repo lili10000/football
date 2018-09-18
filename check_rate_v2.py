@@ -17,7 +17,7 @@ def clearStr(str):
     return str
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=0, hostScore=0, guestScore=0):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=-1, hostScore=0, guestScore=0):
         self.score = score
         self.rate = rate
         self.name = name
@@ -99,7 +99,7 @@ class dataCheck():
         # if self.index % 60 == 0:
 
     def getInitRate(self, oneData, key):
-        initRate = 0
+        initRate = -1
         if ('sd' in oneData):
             if ('f' in oneData['sd']):
                 if ('hrf' in oneData['sd']['f']):
@@ -107,7 +107,8 @@ class dataCheck():
                     if isinstance(tmpStr, str):
                         initRate = float(tmpStr)
         if self.dataRecord.__contains__(key):
-            initRate = self.dataRecord[key].initRate
+            if self.dataRecord[key].initRate != -1:
+                initRate = self.dataRecord[key].initRate
         return initRate
 
 
@@ -217,7 +218,7 @@ class dataCheck():
         if newElement.score > 1:
             return msg
 
-        if newElement.time < 45:
+        if newElement.time <= 45:
             if (newElement.initRate <= -0.5 and newElement.guestScore > 0) or \
             (newElement.initRate >= 0.5 and newElement.hostScore > 0):
                 msg = nowTime +" " + newElement.name
