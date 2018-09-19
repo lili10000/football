@@ -17,7 +17,7 @@ def clearStr(str):
     return str
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=-1, hostScore=0, guestScore=0):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=-1, hostScore=0, guestScore=0, param={}):
         self.score = score
         self.rate = rate
         self.name = name
@@ -28,6 +28,7 @@ class dataElement():
         self.initRate = initRate
         self.hostScore = hostScore
         self.guestScore = guestScore
+        self.param = param
 
 weixin = True
 weixin = False
@@ -112,6 +113,53 @@ class dataCheck():
         return initRate
 
 
+
+    def getParam(self, oneData, key):
+        param = {}
+        if ('plus' in oneData):
+            def getData(key, param):
+                if(key in oneData['plus']):
+                    param[key] = int(oneData['plus'][key])
+                return param
+            
+            param = getData('ha', param)            
+            param = getData('hd', param)            
+            param = getData('hqq', param)            
+            param = getData('hsf', param)    
+            param = getData('hso', param)
+
+            param = getData('ga', param)
+            param = getData('gd', param)
+            param = getData('gqq', param)
+            param = getData('gsf', param)
+            param = getData('gso', param)
+            return param
+
+        if self.dataRecord.__contains__(key):
+            if self.dataRecord[key].param != {}:
+                param = self.dataRecord[key].param
+        return param
+
+    def checkParam(self, param):
+        hostBig = True
+        guestBig = True
+
+        def dataCompare(hostKey, guestKey,hostBig, guestBig):
+            if param.__contains__(hostKey) and param.__contains__(guestKey):
+                if param[hostKey] > param[guestKey]:
+                    guestBig = False
+                elif param[hostKey] < param[guestKey]:
+                    hostBig = False
+                else:
+                    guestBig = False
+                    hostBig = False
+            return hostBig, guestBig
+        hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hqq','gqq',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig)
+        return hostBig,guestBig
 
     def getType(self, oneData, key):
         matchType = ""
@@ -218,31 +266,13 @@ class dataCheck():
         if newElement.score > 1:
             return msg
 
+        hostBig, guestBig = self.checkParam(newElement.param)
+
         if newElement.time <= 45:
-            if (newElement.initRate <= -0.5 and newElement.guestScore > 0) or \
-            (newElement.initRate >= 0.5 and newElement.hostScore > 0):
+            if (newElement.initRate <= -0.5 and newElement.guestScore > 0 and hostBig) or \
+            (newElement.initRate >= 0.5 and newElement.hostScore > 0 and guestBig):
                 msg = nowTime +" " + newElement.name
 
-        # if newElement.time < 20 and self.dataRecord[key].rate < 1 and self.dataRecord[key].rate > 0:
-        #     msg = nowTime +" " + newElement.name + " rate <= 1"
-        #     return msg
-        # if newElement.time >= self.timeCmp:
-        #     return msg
-
-                # if self.strategy.check_v3(type=self.dataRecord[key].type):
-        #     return msg
-
-   
-
-        # conditionScore = bool(newElement.score == oldElement.score)
-        # conditionRate = bool((abs(newElement.rate - oldElement.rate) >= 0.5)and oldElement.rate != 0)
-
-        # if conditionScore and  conditionRate:
-        #     msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
-
-        # LowInfo = self.checkLowRate(oneData, key)
-        # if LowInfo != "":
-        #     msg = nowTime + " " + newElement.name + " rate <" + str(self.lowValue)  + LowInfo
         return msg
 
     def sendMsg(self, key, newElement, msg):
@@ -274,8 +304,9 @@ class dataCheck():
             timeNow = self.getTime(oneData, key)
             notify = self.getNotify(oneData, key)
             initRate = self.getInitRate(oneData, key)
+            param = self.getParam(oneData, key)
 
-            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score)
+            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param)
             msg = self.getNotifyMsg(oneData, key, newElement)
             self.sendMsg(key, newElement, msg)
 
