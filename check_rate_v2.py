@@ -215,8 +215,8 @@ class dataCheck():
         LowInfo = ""
         timeNow = self.dataRecord[key].time
         score = self.dataRecord[key].score
-        if timeNow <70 or  timeNow >= 80 and score >3:
-            return LowInfo
+        # if timeNow <70 or  timeNow >= 80 and score >3:
+        #     return LowInfo
 
         if ('f_ld' in oneData) :
             if ('hdxsp' in oneData['f_ld']):
@@ -263,17 +263,23 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        if newElement.score > 1:
-            return msg
+        msg = self.checkLowRate(oneData, key)
+        # if newElement.time < 85:
+        #     return msg
 
-        hostBig, guestBig = self.checkParam(newElement.param)
-
-        if newElement.time <= 45:
-            if (newElement.initRate <= -0.5 and newElement.guestScore > 0 and hostBig) or \
-            (newElement.initRate >= 0.5 and newElement.hostScore > 0 and guestBig):
-                msg = nowTime +" " + newElement.name
-
+        # if self.strategy.check_v4(newElement.type):
+        #     msg = nowTime +" " + newElement.name
+        
         return msg
+
+        # hostBig, guestBig = self.checkParam(newElement.param)
+
+        # if newElement.time <= 45:
+        #     if (newElement.initRate <= -0.5 and newElement.guestScore > 0 and hostBig) or \
+        #     (newElement.initRate >= 0.5 and newElement.hostScore > 0 and guestBig):
+        #         msg = nowTime +" " + newElement.name
+
+        # return msg
 
     def sendMsg(self, key, newElement, msg):
         if msg != "" and newElement.notify == False:
