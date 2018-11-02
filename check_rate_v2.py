@@ -219,6 +219,7 @@ class dataCheck():
         #     return LowInfo
 
         if ('f_ld' in oneData) :
+            print(oneData)
             if ('hdxsp' in oneData['f_ld']):
                 rateTmp = oneData['f_ld']['hdxsp']
                 if rateTmp != None and float(rateTmp) < self.lowValue:
@@ -263,7 +264,17 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        msg = self.checkLowRate(oneData, key)
+        if newElement.time < 2:
+            return msg
+
+        if(newElement.initRate != 0):
+            return msg
+        if newElement.score == 1:
+            msg = newElement.name
+
+        
+
+        # msg = self.checkLowRate(oneData, key)
         # if newElement.time < 85:
         #     return msg
 
