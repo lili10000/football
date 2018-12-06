@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 from bs4 import BeautifulSoup
 from html.parser import HTMLParser
-
+from db.mysql import sqlMgr
 
 
 # recordName = "tmp.txt"
@@ -14,6 +14,8 @@ from html.parser import HTMLParser
 # s = req.text
 # with open(recordName, 'w',encoding='utf-8') as f:
 #     f.write(req.text)
+key = "k_rate_check"
+sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 def clearStr(str):
     str = str.replace(" ", "")
@@ -28,25 +30,45 @@ def clearStr(str):
 # data = ""
 # with open(recordName, 'r',encoding='utf-8') as f:
 #     data = f.read()
+# date = time.strftime('%Y%m%d', time.localtime(time.time()+24*60*60))
 
 check = True
 check = False
 
-url = 'https://www.dszuqiu.com/diary'
-if check:
-    url = 'https://www.dszuqiu.com/diary/20181204'
-    
-req = requests.get(url) 
-data = req.text
-soup = BeautifulSoup(data)
-table = soup.find('table', class_="live-list-table diary-table")
-tbody = table.find('tbody')
+win_sum = 0
+lost_sum = 0
+game_sum = 0
+buy_main_win = 0
+buy_main_lost = 0
+buy_client_win = 0
+buy_client_lost = 0
 
-for index in range(1):
-    win_sum = 0
-    lost_sum = 0
-    game_sum = 0
+rate_compare = 0.5
+
+loopSize = 1
+if check:
+    loopSize = 14
+
+for index in range(loopSize):
+    tmp = -1
+    if check:
+        tmp = index + 1
+    date = time.strftime('%Y%m%d', time.localtime(time.time() - tmp*24*60*60))
+    
+    url = 'https://www.dszuqiu.com/diary/' + date
+    if check:
+        url = 'https://www.dszuqiu.com/diary/'+ date  
+    print('start:   ', url)
+    req = requests.get(url) 
+    data = req.text
+    soup = BeautifulSoup(data)
+    table = soup.find('table', class_="live-list-table diary-table")
+    tbody = table.find('tbody')
+    time.sleep(5)
+
+
     for tr in soup.find_all('tr') :
+
         main_score = -1
         client_score = -1
         if check:
@@ -71,11 +93,21 @@ for index in range(1):
         leagueRank_main = -10
         leagueRank_client = -10
         
+
+
         for td in tr.find_all('td', class_="text-right BR0"):
             for a in td.find_all('a', target="_blank"):
                 main = clearStr(a.text)
             for leagueRank in td.find_all('span', class_="leagueRank"):
                 leagueRank_main = int(clearStr(leagueRank.text))
+        
+        type_game = ''
+
+
+        for td in tr.find_all('td'):
+            # for a in td.find_all('a', target="_blank"):
+            type_game = clearStr(td.text)
+            break
             
 
         for td in tr.find_all('td', class_="text-left"):
@@ -131,7 +163,7 @@ for index in range(1):
         try:
             rate = float(rate)
             rateTmp = rateValid - rate
-            if abs(rateTmp) < 0.5:
+            if abs(rateTmp) < rate_compare:
                 continue
             if abs(rate) > 1.25:
                 continue
@@ -139,13 +171,15 @@ for index in range(1):
             # print("err:"+ repr(e)+" rate:" + rate)
             continue
 
-
+        buyMain = False
 
         buyTmp = ""
-        if rateTmp >= 0.5:
+        re_rate_compare = -1 *rate_compare
+        if rateTmp >= rate_compare:
             buyTmp = "  买  " + client 
-        elif rateTmp <= -0.5:
+        elif rateTmp <= re_rate_compare:
             buyTmp = "  买  " + main 
+            buyMain = True
 
         if check == False:
             print(main, "vs", client,buyTmp," rate:",rate)
@@ -158,24 +192,41 @@ for index in range(1):
             elif main_score - client_score + rate == 0:
                 continue
                 
-            if rateTmp >= 0.5 and main_win == False:
+            if rateTmp >= rate_compare and main_win == False:
                 win_sum += 1
                 result = True
-            elif rateTmp <= -0.5 and main_win == True:
+                buy_client_win += 1
+            elif rateTmp <= re_rate_compare and main_win == True:
                 win_sum += 1
                 result = True
+                buy_main_win += 1
             else:
                 lost_sum += 1
+                if buyMain:
+                    buy_main_lost += 1
+                else:
+                    buy_client_lost += 1
         
             if result :
                 result = "赢"
             else:
                 result = "输"
 
-            print(main, "vs", client,buyTmp," rate:",rate,result)
+            
 
-    if check :
-        print("win_sum:",win_sum,"lost_sum",lost_sum)        
+            if buyMain:
+                buyTmp='主'
+            else:
+                buyTmp='客'
+                print(type_game,'   ', main, "vs", client,buyTmp," rate:",rate,result)
+
+            if check:
+                input = "'"+ main + "','" + client +"','" + type_game +"','" + buyTmp +"','" + str(rate) + "','" + str(result) + "'"
+                sql.insert(input, key)
+if check :
+    print("win_sum:",win_sum,"lost_sum",lost_sum)  
+    print("buy_main     win:",buy_main_win,"    lost:",buy_main_lost)    
+    print("buy_client   win:",buy_client_win,"  lost",buy_client_lost)      
 
 
 
