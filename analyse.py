@@ -44,10 +44,12 @@ buy_client_win = 0
 buy_client_lost = 0
 
 rate_compare = 0.5
+main_rang = 0.5
+rate_max = 1.5
 
 loopSize = 1
 if check:
-    loopSize = 14
+    loopSize = 30
 
 for index in range(loopSize):
     tmp = -1
@@ -58,7 +60,7 @@ for index in range(loopSize):
     url = 'https://www.dszuqiu.com/diary/' + date
     if check:
         url = 'https://www.dszuqiu.com/diary/'+ date  
-    print('start:   ', url)
+    # print('start:   ', url)
     req = requests.get(url) 
     data = req.text
     soup = BeautifulSoup(data)
@@ -66,9 +68,14 @@ for index in range(loopSize):
     tbody = table.find('tbody')
     time.sleep(5)
 
+    buySize = 0
+
+    buy_client_win_tmp = 0
+    buy_client_lost_tmp = 0
+    buy_main_win_tmp = 0
+    buy_main_lost_tmp = 0
 
     for tr in soup.find_all('tr') :
-
         main_score = -1
         client_score = -1
         if check:
@@ -108,7 +115,9 @@ for index in range(loopSize):
             # for a in td.find_all('a', target="_blank"):
             type_game = clearStr(td.text)
             break
-            
+        
+        if '欧' in type_game:
+            continue
 
         for td in tr.find_all('td', class_="text-left"):
             for a in td.find_all('a', target="_blank"):
@@ -136,7 +145,7 @@ for index in range(loopSize):
         else:
             rateValid = 0.75
 
-        rateValid -= 0.25
+        rateValid -= main_rang
 
 
         game_sum += 1
@@ -165,7 +174,7 @@ for index in range(loopSize):
             rateTmp = rateValid - rate
             if abs(rateTmp) < rate_compare:
                 continue
-            if abs(rate) > 1.25:
+            if abs(rate) > rate_max:
                 continue
         except Exception as e:
             # print("err:"+ repr(e)+" rate:" + rate)
@@ -181,8 +190,11 @@ for index in range(loopSize):
             buyTmp = "  买  " + main 
             buyMain = True
 
-        if check == False:
-            print(main, "vs", client,buyTmp," rate:",rate)
+
+        # if check == False:
+        if check == False and buyMain == False:
+            buySize += 1
+            print(buySize, main, "vs", client,buyTmp," rate:",rate)
 
         if check :
             main_win = True
@@ -192,37 +204,42 @@ for index in range(loopSize):
             elif main_score - client_score + rate == 0:
                 continue
                 
-            if rateTmp >= rate_compare and main_win == False:
+            if buyMain == False and main_win == False:
                 win_sum += 1
                 result = True
                 buy_client_win += 1
-            elif rateTmp <= re_rate_compare and main_win == True:
+                buy_client_win_tmp += 1
+            elif buyMain and main_win == True:
                 win_sum += 1
                 result = True
                 buy_main_win += 1
+                buy_main_win_tmp += 1
             else:
                 lost_sum += 1
                 if buyMain:
                     buy_main_lost += 1
+                    buy_main_lost_tmp += 1
                 else:
                     buy_client_lost += 1
+                    buy_client_lost_tmp += 1
         
             if result :
                 result = "赢"
             else:
                 result = "输"
 
-            
+            buySize += 1
+            # print(buySize,type_game, main, "vs", client,buyTmp," rate:",rate, main_score,":",client_score,result)
 
             if buyMain:
                 buyTmp='主'
             else:
                 buyTmp='客'
-                print(type_game,'   ', main, "vs", client,buyTmp," rate:",rate,result)
 
             if check:
                 input = "'"+ main + "','" + client +"','" + type_game +"','" + buyTmp +"','" + str(rate) + "','" + str(result) + "'"
-                sql.insert(input, key)
+                # sql.insert(input, key)
+    print(date,"buy_client   win:",buy_client_win_tmp,"  lost",buy_client_lost_tmp)
 if check :
     print("win_sum:",win_sum,"lost_sum",lost_sum)  
     print("buy_main     win:",buy_main_win,"    lost:",buy_main_lost)    
