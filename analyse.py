@@ -173,7 +173,10 @@ for index in range(loopSize):
         try:
             rate = float(rate)
             rateTmp = rateValid - rate
-            if abs(rateTmp) < rate_compare_min or  abs(rateTmp) > rate_compare_max:
+            # if abs(rateTmp) < rate_compare_min or  abs(rateTmp) > rate_compare_max :
+            if rate == 0.25 or rate <= -0.75:
+                rateTmp = rateValid - rate
+            else:
                 continue
             if abs(rate) > rate_max:
                 continue
@@ -192,10 +195,11 @@ for index in range(loopSize):
             buyMain = True
 
 
-        # if check == False:
-        if check == False and buyMain == False:
-            buySize += 1
-            print(buySize, main, "vs", client,buyTmp," rate:",rate)
+        if check == False:
+        # if check == False and buyMain == False:
+            if abs(rateTmp) == 0.5:
+                buySize += 1
+                print(buySize, main, "vs", client,buyTmp," rate:",rate)
 
         if check :
             main_win = True
