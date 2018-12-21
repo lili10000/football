@@ -43,13 +43,14 @@ buy_main_lost = 0
 buy_client_win = 0
 buy_client_lost = 0
 
-rate_compare = 0.5
+rate_compare_min = 0.5
+rate_compare_max = 0.5
 main_rang = 0.5
 rate_max = 1.5
 
 loopSize = 1
 if check:
-    loopSize = 30
+    loopSize = 20
 
 for index in range(loopSize):
     tmp = -1
@@ -172,7 +173,7 @@ for index in range(loopSize):
         try:
             rate = float(rate)
             rateTmp = rateValid - rate
-            if abs(rateTmp) < rate_compare:
+            if abs(rateTmp) < rate_compare_min or  abs(rateTmp) > rate_compare_max:
                 continue
             if abs(rate) > rate_max:
                 continue
@@ -183,8 +184,8 @@ for index in range(loopSize):
         buyMain = False
 
         buyTmp = ""
-        re_rate_compare = -1 *rate_compare
-        if rateTmp >= rate_compare:
+        re_rate_compare = -1 *rate_compare_min
+        if rateTmp >= rate_compare_min:
             buyTmp = "  买  " + client 
         elif rateTmp <= re_rate_compare:
             buyTmp = "  买  " + main 
@@ -204,41 +205,41 @@ for index in range(loopSize):
             elif main_score - client_score + rate == 0:
                 continue
                 
-            if buyMain == False and main_win == False:
-                win_sum += 1
-                result = True
-                buy_client_win += 1
-                buy_client_win_tmp += 1
-            elif buyMain and main_win == True:
-                win_sum += 1
-                result = True
-                buy_main_win += 1
-                buy_main_win_tmp += 1
-            else:
-                lost_sum += 1
-                if buyMain:
-                    buy_main_lost += 1
-                    buy_main_lost_tmp += 1
-                else:
-                    buy_client_lost += 1
-                    buy_client_lost_tmp += 1
+            # if buyMain == False and main_win == False:
+            #     win_sum += 1
+            #     result = True
+            #     buy_client_win += 1
+            #     buy_client_win_tmp += 1
+            # elif buyMain and main_win == True:
+            #     win_sum += 1
+            #     result = True
+            #     buy_main_win += 1
+            #     buy_main_win_tmp += 1
+            # else:
+            #     lost_sum += 1
+            #     if buyMain:
+            #         buy_main_lost += 1
+            #         buy_main_lost_tmp += 1
+            #     else:
+            #         buy_client_lost += 1
+            #         buy_client_lost_tmp += 1
         
-            if result :
-                result = "赢"
-            else:
-                result = "输"
+            # if result :
+            #     result = "赢"
+            # else:
+            #     result = "输"
 
             buySize += 1
             # print(buySize,type_game, main, "vs", client,buyTmp," rate:",rate, main_score,":",client_score,result)
 
-            if buyMain:
-                buyTmp='主'
-            else:
-                buyTmp='客'
+            # if buyMain:
+            #     buyTmp='主'
+            # else:
+            #     buyTmp='客'
 
             if check:
-                input = "'"+ main + "','" + client +"','" + type_game +"','" + buyTmp +"','" + str(rate) + "','" + str(result) + "'"
-                # sql.insert(input, key)
+                input = "'"+ main + "','" + client +"','" + type_game +"','" + str(leagueRank_main) +"','" + str(leagueRank_client)+"','" + str(main_score)+"','" + str(client_score)+"','"+ str(rate)  + "'"
+                sql.insert(input, key)
     print(date,"buy_client   win:",buy_client_win_tmp,"  lost",buy_client_lost_tmp)
 if check :
     print("win_sum:",win_sum,"lost_sum",lost_sum)  
