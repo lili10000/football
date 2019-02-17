@@ -76,8 +76,8 @@ class dataCheck():
             req = requests.get(url=url , headers=self.headers)
             if req.status_code == 200:
                 self.doCheck(req.text)
-            elif req.status_code == 304:
-                print("data not modify")
+            # elif req.status_code == 304:
+            #    print("data not modify")
         except Exception as e:
             print("connect err:"+ repr(e))
             return
@@ -85,7 +85,7 @@ class dataCheck():
         
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime," start check. url:",url)
-        print(nowTime)
+        # print(nowTime)
 
         self.index += 1
         if self.index % 540 == 0:
@@ -96,10 +96,10 @@ class dataCheck():
                 now = int(time.time())
                 if (now - oneData.updata) > 5400:
                     deleteKeys.append(key)
-                    
+            print("delete data size =", len(deleteKeys))
             for key in deleteKeys:
                 self.dataRecord.pop(key)
-                print("delete "+ key)
+                # print("delete "+ key)
             print("[-] end clear dataRecord")
 
         # if self.index % 60 == 0:
