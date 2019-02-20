@@ -33,6 +33,9 @@ class dataElement():
         self.haveScore = 0
         self.timestamp = int(time.time())
 
+        self.buyBig = False
+        self.buySmall = False
+
 weixin = True
 weixin = False
 
@@ -62,6 +65,13 @@ class dataCheck():
         self.weixin = weixin
         self.userName = ''
 
+        self.buyBigWin = 0
+        self.buyBigLost = 0
+        self.buySmallWin = 0
+        self.buySmallLost = 0
+
+        self.timeSave = 0
+
         self.sql = sqlMgr('localhost', 'root', '861217', 'football')
         if self.weixin:
             itchat.auto_login(hotReload=True)
@@ -85,7 +95,10 @@ class dataCheck():
         
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime," start check. url:",url)
-        # print(nowTime)
+        now = int(time.time())
+        if now >  self.timeSave + (15*60) :
+            self.timeSave = now
+            print(datetime.now().strftime('%H:%M:%S'),"saveDataSize:",len(self.DBSave), "buyBigWin:",self.buyBigWin, "buyBigLost:",self.buyBigLost,"buySmallWin:",self.buySmallWin,"buySmallLost:",self.buySmallLost)
 
         self.index += 1
         if self.index % 540 == 0:
@@ -96,7 +109,8 @@ class dataCheck():
                 now = int(time.time())
                 if (now - oneData.updata) > 5400:
                     deleteKeys.append(key)
-            print("delete data size =", len(deleteKeys))
+            
+            print("delete size:",len(deleteKeys))
             for key in deleteKeys:
                 self.dataRecord.pop(key)
                 # print("delete "+ key)
@@ -276,14 +290,31 @@ class dataCheck():
             return msg
 
         if newElement.time < 37 and newElement.notify == False:
-        # if newElement.time >= 35 and newElement.time < 45:
+            # if newElement.time >= 35 and newElement.time < 45:
             newElement.notify = True
             self.timestamp = now
+
+
+            rateDiv = newElement.rate - newElement.score
+            condition = (rateDiv == 1.5 and newElement.score == 1)
+            # #condition = condition or (rateDiv == 1.25 and newElement.score == 0)
+            
+            if condition:
+                msg = ' A '  + "    score:"+ str(newElement.score) + " 小"
+                newElement.buySmall = True
+            condition = (rateDiv == 1.75 and newElement.score == 1)
+            if condition:
+                msg = ' ---->'  + "    score:"+ str(newElement.score) + " 大" 
+                newElement.buyBig = True
+                
             self.DBSave[key] = newElement
             self.dataRecord[key] = newElement
-
+            if msg != '':
+                msg = nowTime + "save data:  " + newElement.name + msg
+                print(msg)
         
         if newElement.notify == True:
+          
             if self.DBSave.__contains__(key):
                 saveData = self.DBSave[key]
 
@@ -293,11 +324,25 @@ class dataCheck():
                 if newElement.score > saveData.score:
                     saveData.haveScore = 1
                     self.DBSave[key] = saveData
+
+                    if saveData.buyBig:
+                        self.buyBigWin += 1
+                    elif saveData.buySmall:
+                        self.buySmallLost += 1
+                else:
+                    if saveData.buyBig:
+                        self.buyBigLost += 1
+                    elif saveData.buySmall:
+                        self.buySmallWin += 1
+
+
                 input = "'"+ key + "','" + saveData.name + "','" + str(saveData.rate) +"','" + str(saveData.hostScore) +"','" + str(saveData.guestScore) 
                 input += "','"  + str(saveData.haveScore) +"'" 
-                print("insert data:", input)
+                #print(nowTime, "insert data:" + input)
                 self.sql.insert(input, "k_endScore")
                 self.DBSave.pop(key)
+
+                
 
         # if(newElement.initRate != 0):
         #     return msg
