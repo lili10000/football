@@ -17,7 +17,7 @@ def clearStr(str):
     return str
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=-1, hostScore=0, guestScore=0, param={}):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False, matchType="", initRate=-1, hostScore=0, guestScore=0, param={}, mainRate=0,clientRate=0):
         self.score = score
         self.rate = rate
         self.name = name
@@ -35,6 +35,10 @@ class dataElement():
 
         self.buyBig = False
         self.buySmall = False
+
+        self.mainRate = mainRate
+        self.clientRate = clientRate
+        self.scoreTime = 0
 
 weixin = True
 weixin = False
@@ -73,6 +77,11 @@ class dataCheck():
         self.timeSave = 0
 
         self.sql = sqlMgr('localhost', 'root', '861217', 'football')
+
+
+        self.keyGame = self.sql.queryByTypeAll('k_namerate')
+
+
         if self.weixin:
             itchat.auto_login(hotReload=True)
             users = itchat.search_friends(name='在路上')
@@ -98,6 +107,7 @@ class dataCheck():
         now = int(time.time())
         if now >  self.timeSave + (15*60) :
             self.timeSave = now
+            self.keyGame = self.sql.queryByTypeAll('k_namerate')
             print(datetime.now().strftime('%H:%M:%S'),"saveDataSize:",len(self.DBSave), "buyBigWin:",self.buyBigWin, "buyBigLost:",self.buyBigLost,"buySmallWin:",self.buySmallWin,"buySmallLost:",self.buySmallLost)
 
         self.index += 1
@@ -220,6 +230,8 @@ class dataCheck():
 
     def getRate(self, oneData, key):
         newRate = 0     
+        mainRate = 0
+        clientRate = 0
         if self.dataRecord.__contains__(key):
             newRate = self.dataRecord[key].rate
 
@@ -229,7 +241,15 @@ class dataCheck():
                 rateTmp = oneData['f_ld']['hdx']
                 if rateTmp != None:
                     newRate = float(oneData['f_ld']['hdx'])
-        return newRate
+            if ('hdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['hdxsp']
+                if rateTmp != None:
+                    mainRate = float(rateTmp)
+            if ('gdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['gdxsp']
+                if rateTmp != None:
+                    clientRate = float(rateTmp)
+        return newRate,mainRate,clientRate
 
     def checkLowRate(self,oneData, key):
         LowInfo = ""
@@ -292,26 +312,49 @@ class dataCheck():
         if newElement.time < 37 and newElement.notify == False:
             # if newElement.time >= 35 and newElement.time < 45:
             newElement.notify = True
-            self.timestamp = now
+
+            for dataTmp in self.keyGame:
+                dataName = dataTmp[0]
+                rate = float(dataTmp[1])
+
+                if dataName in newElement.name:
+                    msg = nowTime + "【key】:  " + newElement.name
+                    if rate <= 2:
+                        msg += '    大'
+                        newElement.buyBig = True
+                    else:
+                        msg += '    小'
+                        newElement.buySmall = True
+                    print(msg)
 
 
-            rateDiv = newElement.rate - newElement.score
-            condition = (rateDiv == 1.5 and newElement.score == 1)
-            # #condition = condition or (rateDiv == 1.25 and newElement.score == 0)
-            
-            if condition:
-                msg = ' A '  + "    score:"+ str(newElement.score) + " 小"
-                newElement.buySmall = True
-            condition = (rateDiv == 1.75 and newElement.score == 1)
-            if condition:
-                msg = ' ---->'  + "    score:"+ str(newElement.score) + " 大" 
+            timeArray = time.localtime(int(time.time()))
+            hour = timeArray[3]
+            if hour >= 15 and hour <= 17:
+                msg = nowTime + "   【time】:  " + newElement.name
+                msg += '    大'
                 newElement.buyBig = True
+                print(msg)
+
+            self.timestamp = now
+            rateDiv = newElement.rate - newElement.score
+            # condition = (rateDiv == 1.5 and newElement.score == 1)
+            # # #condition = condition or (rateDiv == 1.25 and newElement.score == 0)
+            
+            # if condition:
+            #     msg = ' A '  + "    score:"+ str(newElement.score) + " 小"
+            #     newElement.buySmall = True
+            condition = (rateDiv == 1.75 and newElement.score == 1)
+            # condition = condition or (rateDiv == 1.5 and newElement.score == 0)
+            if condition:
+                msg = ' A '  + "    score:"+ str(newElement.score) + " 大" 
+                # newElement.buyBig = True
                 
             self.DBSave[key] = newElement
             self.dataRecord[key] = newElement
             if msg != '':
                 msg = nowTime + "save data:  " + newElement.name + msg
-                print(msg)
+                # print(msg)
         
         if newElement.notify == True:
           
@@ -319,6 +362,9 @@ class dataCheck():
                 saveData = self.DBSave[key]
 
                 if now - saveData.timestamp < 20*60:
+                    if newElement.score == saveData.score + 1:
+                        saveData.scoreTime = now - saveData.timestamp
+                        self.DBSave[key] = saveData
                     return msg
 
                 if newElement.score > saveData.score:
@@ -337,7 +383,8 @@ class dataCheck():
 
 
                 input = "'"+ key + "','" + saveData.name + "','" + str(saveData.rate) +"','" + str(saveData.hostScore) +"','" + str(saveData.guestScore) 
-                input += "','"  + str(saveData.haveScore) +"'" 
+                input += "','"  + str(saveData.haveScore) +"','"  + str(saveData.mainRate) +"','"  + str(saveData.clientRate) +"','"  + str(saveData.scoreTime)
+                input += "','"  + str(saveData.timestamp) +"'"
                 #print(nowTime, "insert data:" + input)
                 self.sql.insert(input, "k_endScore")
                 self.DBSave.pop(key)
@@ -383,7 +430,7 @@ class dataCheck():
         try:
             jsonData = json.loads(rowData)
         except Exception as e:
-            print("err:"+ repr(e)+" data:" + rowData)
+            print("err:"+ repr(e))
             return ""
         
         dataArray = jsonData['rs']
@@ -395,13 +442,13 @@ class dataCheck():
             matchType = self.getType(oneData, key)
             name = self.getName(oneData, key)
             score_sum, host_score, guest_score = self.getScoreSum(oneData, key)
-            newRate = self.getRate(oneData, key)
+            newRate,mainRate,clientRate = self.getRate(oneData, key)
             timeNow = self.getTime(oneData, key)
             notify = self.getNotify(oneData, key)
             initRate = self.getInitRate(oneData, key)
             param = self.getParam(oneData, key)
 
-            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param)
+            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param,mainRate,clientRate)
             msg = self.getNotifyMsg(oneData, key, newElement)
             # self.sendMsg(key, newElement, msg)
 

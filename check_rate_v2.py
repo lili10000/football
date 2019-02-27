@@ -71,8 +71,8 @@ class dataCheck():
             req = requests.get(url=url , headers=self.headers)
             if req.status_code == 200:
                 self.doCheck(req.text)
-            elif req.status_code == 304:
-                print("data not modify")
+            # elif req.status_code == 304:
+             #   print("data not modify")
         except Exception as e:
             print("connect err:"+ repr(e))
             return
@@ -80,7 +80,8 @@ class dataCheck():
         
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime," start check. url:",url)
-        print(nowTime)
+        if time.time() % (60*10) == 0 :
+            print(nowTime)
 
         self.index += 1
         if self.index % 540 == 0:
@@ -91,10 +92,11 @@ class dataCheck():
                 now = int(time.time())
                 if (now - oneData.updata) > 5400:
                     deleteKeys.append(key)
-                    
+            
+            print("delete size"+ len(deleteKeys))
             for key in deleteKeys:
                 self.dataRecord.pop(key)
-                print("delete "+ key)
+                # print("delete "+ key)
             print("[-] end clear dataRecord")
 
         # if self.index % 60 == 0:
@@ -264,25 +266,23 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        if newElement.time < 2:
+        if newElement.time > 52 or newElement.time < 35:
             return msg
+        if newElement.time < 37 and newElement.notify == False:
+            newElement.notify = True
+            rateDiv = newElement.rate - newElement.score
+            condition = (rateDiv == 1.5 and newElement.score == 1)
+            condition = condition or (rateDiv == 1.25 and newElement.score == 0)
+            # condition = condition or (rateDiv == 2.5 and newElement.score == 0)
 
-        if(newElement.initRate != 0):
-            return msg
-        if newElement.score == 1:
-            msg = newElement.name
+            if condition:
+                msg = nowTime +" " + newElement.name + "    score:"+ str(newElement.score) + " 小"
 
-        
+            condition = (rateDiv == 1.75 and newElement.score == 1)
+            if condition:
+                msg = nowTime +" " + newElement.name + "    score:"+ str(newElement.score) + " 大"
 
-        # msg = self.checkLowRate(oneData, key)
-        # if newElement.time < 85:
-        #     return msg
-
-        # if self.strategy.check_v4(newElement.type):
-        #     msg = nowTime +" " + newElement.name
-        
         return msg
-
         # hostBig, guestBig = self.checkParam(newElement.param)
 
         # if newElement.time <= 45:
