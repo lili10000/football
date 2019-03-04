@@ -3,7 +3,7 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
-name = "意甲"
+# name = "英超"
 
 
 def getResult(name):
@@ -41,46 +41,42 @@ def getResult(name):
         client = one[1]
         main_score = one[2]
         client_score = one[3]
-        rate = one[4]
+        rate = float(one[4])
         gameType = one[5]
         gameTime = one[9]
 
-        if main_score - client_score > 0:
-            key = main
+
+        def addData(result_slice, key, gameTime, value):
             if result_slice.__contains__(key) == False:
                 result_slice[key] = {}
-            result_slice[key][gameTime] = 1
+            result_slice[key][gameTime] = value
+            return result_slice
+
+        if main_score - client_score + rate> 0:
+            key = main
+            result_slice = addData(result_slice, key, gameTime, 1)
 
             key = client
-            if result_slice.__contains__(key) == False:
-                result_slice[key] = {}
-            result_slice[key][gameTime] = -1
-        elif main_score - client_score < 0:
+            result_slice = addData(result_slice, key, gameTime, -1)
+
+        elif main_score - client_score + rate < 0:
             key = client
-            if result_slice.__contains__(key) == False:
-                result_slice[key] = {}
-            result_slice[key][gameTime] = 1
+            result_slice = addData(result_slice, key, gameTime, 1)
 
             key = main
-            if result_slice.__contains__(key) == False:
-                result_slice[key] = {}
-            result_slice[key][gameTime] = -1
+            result_slice = addData(result_slice, key, gameTime, -1)
         else :
             key = client
-            if result_slice.__contains__(key) == False:
-                result_slice[key] = {}
-            result_slice[key][gameTime] = 0
+            result_slice = addData(result_slice, key, gameTime, 0)
 
             key = main
-            if result_slice.__contains__(key) == False:
-                result_slice[key] = {}
-            result_slice[key][gameTime] = 0
+            result_slice = addData(result_slice, key, gameTime, 0)
         
     rateMax = -1
     loopSize = 10
     for gameTotal in range(loopSize + 1):
-        for chechSum in range(1):
-            chechSum = gameTotal - 1
+        for chechSum in range(gameTotal):
+            # chechSum = gameTotal - 1
 
 
             winSum = 0
@@ -89,13 +85,14 @@ def getResult(name):
                 tmp = result_slice[result]
                 sorted(tmp.keys(),reverse=True)
                 index = 0
-                values = list(tmp.values())
+                keys = list(tmp.keys())
+                keys.sort()
                 # print(result)
                 gameTmp = []
-                while index + gameTotal < len(values):
+                while index + gameTotal < len(keys):
                     for add in range(gameTotal):
-                        gameTmp.append(values[index + add])
-                    game_check = values[index + gameTotal]
+                        gameTmp.append(tmp[keys[index + add]])
+                    game_check = tmp[keys[index + gameTotal]] 
 
                     lost = 0
 
@@ -107,7 +104,7 @@ def getResult(name):
                     for tmp_1 in gameTmp:
                         lost += chechResult(tmp_1, lost)
 
-                    if lost == chechSum and game_check >= 0:
+                    if lost == chechSum and game_check > 0:
                         winSum += 1
                     elif lost == chechSum and game_check == -1:
                         lostSum += 1

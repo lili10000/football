@@ -47,6 +47,85 @@ class parser:
                 return False
 
         type_game = ""
+
+        for tr  in self.soup.find_all('tr', class_='page-1'):
+            td = tr.find('td', class_="bg1")
+            if td == None:
+                continue
+            type_game = td.text
+            td = td.findNextSibling('td')
+            td = td.findNextSibling('td')
+            gameTime = td.text
+
+
+            main = ""
+            client = ""
+            for td in tr.find_all('td', class_="text-right BR0"):
+                for a in td.find_all('a', target="_blank"):
+                   main = clearStr(a.text)
+
+            for td in tr.find_all('td', class_="text-left"):
+                for a in td.find_all('a', target="_blank"):
+                   client = clearStr(a.text)
+
+
+
+
+            data = self.sql.queryTeamData(type_game, main, 'k_corner')
+
+            def checkBuy(teamName, data):
+                result = {}
+                for one in data:
+                    main = one[0]
+                    client = one[1]
+                    main_score = one[2]
+                    client_score = one[3]
+                    rate = float(one[4])
+                    gameTime = one[9]
+
+                    key = gameTime
+                    if main_score - client_score + rate> 0:
+                        if result.__contains__(key) == False:
+                            result[key] = {}
+                        if main == teamName:
+                            result[key] = 1
+                        elif client == teamName:
+                            result[key] = -1
+
+                    elif main_score - client_score + rate < 0:
+                        if result.__contains__(key) == False:
+                            result[key] = {}
+                        if main == teamName:
+                            result[key] = -1
+                        elif client == teamName:
+                            result[key] = 1
+                # keys = result.keys()
+                values = list(result.keys())
+                values.sort(reverse = True)
+
+
+                def chechResult(gameTmp):
+                    if gameTmp == -1 :
+                        return 1
+                    return 0
+
+                lostSum = 0
+                for index in range(4):
+                    key = values[index]
+                    if result[key] == -1:
+                        lostSum += 1
+                
+                if lostSum == 3:
+                    return True
+                return False
+
+            if checkBuy(main, data):
+                print("buy ",main, ' game info:   ', gameTime, main, client)
+            if checkBuy(client, data):
+                print("buy ",client, ' game info:   ', gameTime, main, client)
+
+
+
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
             if td == None:
@@ -117,20 +196,23 @@ class parser:
             client_corner = int(cornerTmp[1])
 
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
-            input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime)+"'" 
+            input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
+            input += ",'"+  main + "_" + str(gameTime) + "'" 
             self.sql.insert(input, key)
 
 
 
 index = 1
-end = 40
+end = 2
 key = "k_corner"
+gameCode = 35
+
 # key = "k_163_15_16"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "https://www.dszuqiu.com/league/39/p.1"
+    url = "https://www.dszuqiu.com/league/"+str(gameCode)+"/p.1"
     url = url.replace("p.1", "p."+ str(index) )
     time.sleep(3)
     # url = url.replace("indexType=0", "indexType=1")
