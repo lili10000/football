@@ -130,7 +130,7 @@ key = "k_corner"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "https://www.dszuqiu.com/league/37/p.1"
+    url = "https://www.dszuqiu.com/league/39/p.1"
     url = url.replace("p.1", "p."+ str(index) )
     time.sleep(3)
     # url = url.replace("indexType=0", "indexType=1")
