@@ -8,11 +8,14 @@ from html.parser import HTMLParser
 from db.mysql import sqlMgr
 
 
+def clearStr(str):
+    str = str.replace(" ", "")
+    str = str.replace("\n", "")
+    return str
 
 class parser:
     class gameData:
-        def __init__(self):
-            
+        def __init__(self):    
             self.main = ''     
             self.client = ''     
             self.main_score = 0  
@@ -23,6 +26,7 @@ class parser:
             self.rate = float(0)
             self.win_rate = float(0)
             self.lost_rate = float(0)
+            self.time = 0
 
 
 
@@ -49,6 +53,13 @@ class parser:
                 continue
             type_game = td.text
 
+            td = td.findNextSibling('td')
+            td = td.findNextSibling('td')
+            timeArray= time.strptime('20'+ td.text, "%Y/%m/%d %H:%M")
+            gameTime = int(time.mktime(timeArray))
+
+
+
             td = tr.find('td', class_="BR0 text-center red-color PL0 PR0")
             if td == None:
                 continue
@@ -70,13 +81,11 @@ class parser:
             client = ""
             for td in tr.find_all('td', class_="text-right BR0"):
                 for a in td.find_all('a', target="_blank"):
-                   main = a.text 
+                   main = clearStr(a.text)
 
             for td in tr.find_all('td', class_="text-left"):
                 for a in td.find_all('a', target="_blank"):
-                   client = a.text 
-
-
+                   client = clearStr(a.text)
 
 
             rate = 0
@@ -108,8 +117,7 @@ class parser:
             client_corner = int(cornerTmp[1])
 
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
-            input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+"'" 
-
+            input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime)+"'" 
             self.sql.insert(input, key)
 
 
@@ -122,8 +130,9 @@ key = "k_corner"
 # key = "k_163_16_17"
 while (index < end) :
     
-    url = "https://www.dszuqiu.com/league/649/p.1"
+    url = "https://www.dszuqiu.com/league/37/p.1"
     url = url.replace("p.1", "p."+ str(index) )
+    time.sleep(3)
     # url = url.replace("indexType=0", "indexType=1")
     print(url)
     
