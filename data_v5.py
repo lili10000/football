@@ -205,15 +205,20 @@ class parser:
 index = 1
 end = 2
 key = "k_corner"
-gameCode = 35
+gameCode = []
+gameCode.append(35) #英超
+gameCode.append(36) #西甲
+gameCode.append(38) #德甲
+gameCode.append(37) #意甲
+gameCode.append(39) #法甲
 
 # key = "k_163_15_16"
 # key = "k_163_14_15"
 # key = "k_163_16_17"
-while (index < end) :
+for code in gameCode :
     
-    url = "https://www.dszuqiu.com/league/"+str(gameCode)+"/p.1"
-    url = url.replace("p.1", "p."+ str(index) )
+    url = "https://www.dszuqiu.com/league/"+str(code)
+    # url = url.replace("p.1", "p."+ str(index) )
     time.sleep(3)
     # url = url.replace("indexType=0", "indexType=1")
     print(url)

@@ -33,6 +33,17 @@ class sqlMgr:
         data = cursor.fetchone()
         print("Database version : %s " % data)
 
+    def cleanAll(self, tableName):
+        inserSQL = "delete  from " + tableName
+
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :" + inserSQL )
+            self.db.rollback()
+
     def insert(self, data, tableName):
         inserSQL = "INSERT INTO "
         inserSQL += tableName
@@ -45,8 +56,9 @@ class sqlMgr:
             self.db.commit()
         except:
             # Rollback in case there is any error
-            print ("error :" + data )
+            # print ("error :" + data )
             self.db.rollback()
+
 
     def update(self, id, data, tableName):
         inserSQL = "UPDATE "
@@ -61,6 +73,21 @@ class sqlMgr:
         except:
             # Rollback in case there is any error
             print ("error :" + data )
+            self.db.rollback()
+
+    def updateId(self, main, time, tableName):
+        inserSQL = "UPDATE "
+        inserSQL += tableName
+        inserSQL += " SET "
+        inserSQL += "id = '" + str(main) + "_" + str(time) +"' "
+        inserSQL += " where ((main = '" + str(main) + "') and ( time = " + str(time) + "))"
+
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :"  )
             self.db.rollback()
 
     def queryByType(self, type, key):
@@ -136,6 +163,17 @@ class sqlMgr:
     
     def queryTeamDataClient(self, gameName, teamName, key):
         SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and (client like '%"+ teamName +"%')) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def queryTeamData(self, gameName, teamName, key):
+        SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and ((main like '%"+ teamName +"%')) or (client like '%"+ teamName +"%'))"
         SQL.encode('utf-8')
 
         try:  
