@@ -10,9 +10,10 @@ import random
 import ssl
 
 checkFlag = False
+
 whiteList = {}
 whiteList["中超"] = 3
-whiteList["中超"] = 3
+
 
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
@@ -259,10 +260,17 @@ class parser:
 
 index = 1
 end = 40
+if checkFlag:
+    end = 2
+
+
+
 key = "k_corner"
 gameCode = []
 # gameCode.append(2) #中超
-gameCode.append(187) #法乙
+# gameCode.append(187) #法乙
+# gameCode.append(40) #荷甲
+gameCode.append(1810) #荷乙
 # gameCode.append(35) #英超
 # gameCode.append(36) #西甲
 # gameCode.append(37) #意甲
@@ -277,8 +285,6 @@ gameIndex = 0
 while index < end:
     gameIndex = 0
     while gameIndex < len(gameCode) :
-        if end == 2:
-            checkFlag = True 
         url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex]) + "/p.1"
         url = url.replace("p.1", "p."+ str(index) )
         # time.sleep(5 + random.randint(0,5))

@@ -4,7 +4,7 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
 # name = "英超"
-name = '法乙'
+name = '荷乙'
 
 
 def getResult(name):
