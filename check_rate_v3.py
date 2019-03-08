@@ -79,7 +79,7 @@ class dataCheck():
         self.sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 
-        self.keyGame = self.sql.queryByTypeAll('k_namerate')
+        # self.keyGame = self.sql.queryByTypeAll('k_namerate')
 
 
         if self.weixin:
@@ -107,7 +107,7 @@ class dataCheck():
         now = int(time.time())
         if now >  self.timeSave + (15*60) :
             self.timeSave = now
-            self.keyGame = self.sql.queryByTypeAll('k_namerate')
+            # self.keyGame = self.sql.queryByTypeAll('k_namerate')
             print(datetime.now().strftime('%H:%M:%S'),"saveDataSize:",len(self.DBSave), "buyBigWin:",self.buyBigWin, "buyBigLost:",self.buyBigLost,"buySmallWin:",self.buySmallWin,"buySmallLost:",self.buySmallLost)
 
         self.index += 1
@@ -313,19 +313,19 @@ class dataCheck():
             # if newElement.time >= 35 and newElement.time < 45:
             newElement.notify = True
 
-            for dataTmp in self.keyGame:
-                dataName = dataTmp[0]
-                rate = float(dataTmp[1])
+            # for dataTmp in self.keyGame:
+            #     dataName = dataTmp[0]
+            #     rate = float(dataTmp[1])
 
-                if dataName in newElement.name:
-                    msg = nowTime + "【key】:  " + newElement.name
-                    if rate <= 2:
-                        msg += '    大'
-                        newElement.buyBig = True
-                    else:
-                        msg += '    小'
-                        newElement.buySmall = True
-                    print(msg)
+            #     if dataName in newElement.name:
+            #         msg = nowTime + "【key】:  " + newElement.name
+            #         if rate <= 2:
+            #             msg += '    大'
+            #             newElement.buyBig = True
+            #         else:
+            #             msg += '    小'
+            #             newElement.buySmall = True
+            #         print(msg)
 
 
             timeArray = time.localtime(int(time.time()))
@@ -386,7 +386,7 @@ class dataCheck():
                 input += "','"  + str(saveData.haveScore) +"','"  + str(saveData.mainRate) +"','"  + str(saveData.clientRate) +"','"  + str(saveData.scoreTime)
                 input += "','"  + str(saveData.timestamp) +"'"
                 #print(nowTime, "insert data:" + input)
-                self.sql.insert(input, "k_endScore")
+                # self.sql.insert(input, "k_endScore")
                 self.DBSave.pop(key)
 
                 

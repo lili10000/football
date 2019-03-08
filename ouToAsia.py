@@ -1,3 +1,12 @@
+import time
+import sys
+for index in range(5):
+    print('.', end=' ')
+    sys.stdout.flush()
+    time.sleep(1)
+
+str = input("请输入：");
+
 class ouToAsia:
     def __init__(self):
         self.map = {}

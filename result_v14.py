@@ -4,6 +4,7 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
 # name = "英超"
+name = '法乙'
 
 
 def getResult(name):
@@ -36,6 +37,7 @@ def getResult(name):
 
 
     result_slice = {}
+    result_slice_v2 = {}
     for one in data :
         main = one[0]
         client = one[1]
@@ -71,27 +73,55 @@ def getResult(name):
 
             key = main
             result_slice = addData(result_slice, key, gameTime, 0)
+
+
+        if main_score - client_score> 0:
+            key = main
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1)
+
+            key = client
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1)
+
+        elif main_score - client_score < 0:
+            key = client
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1)
+
+            key = main
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1)
+        else :
+            key = client
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0)
+
+            key = main
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0)
         
     rateMax = -1
     loopSize = 10
-    for gameTotal in range(loopSize + 1):
-        for chechSum in range(gameTotal):
+    # loopSize = 1
+    for gameTotalTmp in range(loopSize):
+        for chechSumTmp in range(1):
             # chechSum = gameTotal - 1
 
+            gameTotal = gameTotalTmp + 1
+            chechSum = gameTotalTmp + 1
 
             winSum = 0
             lostSum = 0
+
+
             for result in result_slice:
                 tmp = result_slice[result]
+                tmp_v2 = result_slice_v2[result]
                 sorted(tmp.keys(),reverse=True)
                 index = 0
                 keys = list(tmp.keys())
                 keys.sort()
                 # print(result)
-                gameTmp = []
+                
                 while index + gameTotal < len(keys):
+                    gameTmp = []
                     for add in range(gameTotal):
-                        gameTmp.append(tmp[keys[index + add]])
+                        gameTmp.append(tmp_v2[keys[index + add]])
                     game_check = tmp[keys[index + gameTotal]] 
 
                     lost = 0
@@ -108,6 +138,9 @@ def getResult(name):
                         winSum += 1
                     elif lost == chechSum and game_check == -1:
                         lostSum += 1
+                    else:
+                        # print(index)
+                        index = index
 
                     index += 1
                 # print(result, winSum, lostSum)
@@ -116,20 +149,7 @@ def getResult(name):
             rate  = winSum / lostSum
             if rateMax < rate:
                 rateMax = rate
-                print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum, "输",lostSum)
-
-
-
-                
-
-
-
-
-
-            
-
-
-
+                print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum)
 
 
 getResult(name)

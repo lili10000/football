@@ -57,10 +57,10 @@ class parser:
 
             if '胜' in forecast and float(rate) >= 0 and int(main_rank) > int(client_rank):
             # if '胜' in forecast and float(rate) >= 0 :
-                print(gameType)
+                print(gameType, "买主")
             elif '负' in forecast and float(rate) < 0 and int(main_rank) < int(client_rank):
             # elif '负' in forecast and float(rate) < 0 :
-                print(gameType)
+                print(gameType, "买客")
                
 
 
