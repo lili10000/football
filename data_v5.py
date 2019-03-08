@@ -257,7 +257,7 @@ class parser:
 
 
 
-index = 33
+index = 1
 end = 40
 key = "k_corner"
 gameCode = []
