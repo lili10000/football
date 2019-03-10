@@ -3,7 +3,7 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
-name = "日职联"
+name = "意甲"
 # name = '荷乙'
 
 ngeFlag =True
@@ -49,52 +49,52 @@ def getResult(name):
             continue
         
         rate = float(rate)
-        def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0):
+        def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0, score=0):
             if result_slice.__contains__(key) == False:
                 result_slice[key] = {}
-            result_slice[key][gameTime] = [value, mainFlag, rate]
+            result_slice[key][gameTime] = [value, mainFlag, rate, score]
             return result_slice
 
         if main_score - client_score + rate> 0:
             key = main
-            result_slice = addData(result_slice, key, gameTime, 1, True, rate)
+            result_slice = addData(result_slice, key, gameTime, 1, True, rate, score=(main_score+client_score))
 
             key = client
-            result_slice = addData(result_slice, key, gameTime, -1,rate=rate)
+            result_slice = addData(result_slice, key, gameTime, -1,rate=rate, score=(main_score+client_score))
 
         elif main_score - client_score + rate < 0:
             key = client
-            result_slice = addData(result_slice, key, gameTime, 1,rate=rate)
+            result_slice = addData(result_slice, key, gameTime, 1,rate=rate, score=(main_score+client_score))
 
             key = main
-            result_slice = addData(result_slice, key, gameTime, -1, True,rate=rate)
+            result_slice = addData(result_slice, key, gameTime, -1, True,rate=rate, score=(main_score+client_score))
         else :
             key = client
-            result_slice = addData(result_slice, key, gameTime, 0,rate=rate)
+            result_slice = addData(result_slice, key, gameTime, 0,rate=rate, score=(main_score+client_score))
 
             key = main
-            result_slice = addData(result_slice, key, gameTime, 0, True,rate=rate)
+            result_slice = addData(result_slice, key, gameTime, 0, True,rate=rate, score=(main_score+client_score))
 
 
         if main_score - client_score> 0:
             key = main
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, True)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, True, score=(main_score+client_score))
 
             key = client
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, score=(main_score+client_score))
 
         elif main_score - client_score < 0:
             key = client
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, score=(main_score+client_score))
 
             key = main
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, True)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, True, score=(main_score+client_score))
         else :
             key = client
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, score=(main_score+client_score))
 
             key = main
-            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True)
+            result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score))
         
     rateMax = -1
     loopSize = 10
@@ -111,6 +111,11 @@ def getResult(name):
 
             winSum = 0
             lostSum = 0
+
+            main_winScore = 0
+            main_lostScore = 0
+            client_winScore = 0
+            client_lostScore = 0
 
 
             main_win_size = 0
@@ -141,7 +146,11 @@ def getResult(name):
                     lost = 0
 
                     def chechResult( gameTmp, lost):
-                        if gameTmp == -1 :
+                        cond = (gameTmp == -1)
+                        # if ngeFlag:
+                        #     cond = (gameTmp == 1)
+
+                        if cond :
                             return 1
                         return 0
 
@@ -149,19 +158,26 @@ def getResult(name):
                     # for tmp_1 in gameTmp:
                         lost += chechResult(tmp_1[0], lost)
 
-                    cond_1 = (game_check[2] >= 0)
-                    cond_2 = (lost == 0) 
-                    if ngeFlag:
-                        cond_2 = (lost == chechSum)
+                    cond_1 = (game_check[2] >= 0) 
+                    cond_2 = (lost == chechSum) 
+                    # if ngeFlag :
+                    #     cond_2 = (lost == 0) 
 
                     # cond_2 = (lost == chechSum-1) and (gameTmp[0][0] != -1)
 
                     gameCheck = game_check
+                    # gameCheck = game_check_v2
                     if cond_2 and gameCheck[0] > 0 :
                         winSum += 1
 
-                        if cond_1:
-                            main_win_size += 1
+                        if gameCheck[3] > 2.5:
+                            main_winScore += 1
+                        else:
+                            main_lostScore += 1
+
+
+                        # if cond_1:
+                        #     main_win_size += 1
                         
                         # if game_check[1]:
                         #     main_win_size += 1
@@ -170,9 +186,19 @@ def getResult(name):
 
                     elif cond_2 and gameCheck[0] == -1:
                         lostSum += 1
+                        # lostScore += gameCheck[3]
 
-                        if cond_1:
-                            main_lost_size += 1
+
+                        if gameCheck[3] > 2:
+                            client_winScore += 1
+                        else:
+                            client_lostScore += 1
+
+                        # if cond_1:
+                        #     main_lost_size += 1
+
+
+                        
                         # if game_check[1]:
                         #     main_lost_size += 1
                         # else:
@@ -189,7 +215,8 @@ def getResult(name):
 
             if rateMax < rate:
                 rateMax = rate
-                print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum)
+            print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum)
+            print("赢",  round(main_winScore*100/(main_lostScore + main_winScore),2),"%",  round(client_winScore*100/(client_lostScore + client_winScore),2),"%")
                 # print("     主客场比    赢",main_win_size,client_win_size,   round(main_win_size*100/(main_win_size+client_win_size)),"%    输",main_lost_size, client_lost_size, round(main_lost_size*100/(main_lost_size+client_lost_size)),"%")
                 # print("     只买主  ", main_win_size, main_lost_size, round(main_win_size*100/(main_win_size+main_lost_size)),"%")
 

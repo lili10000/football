@@ -16,6 +16,7 @@ checkFlag = True
 
 whiteList = {}
 whiteList["巴甲"] = 2
+whiteList["意甲"] = 4
 
 
 
@@ -299,7 +300,7 @@ gameCode.append([2,"中超", False])
 
 # 黑
 
-gameCode.append([34,"日职联", True]) 
+# gameCode.append([34,"日职联", True]) 
 # gameCode.append([3,"澳超", True]) 
 # gameCode.append([649, "德乙", False])
 # gameCode.append([187, "法乙", False]) #
