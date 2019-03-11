@@ -3,7 +3,7 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
-name = "意甲"
+name = "法乙"
 # name = '荷乙'
 
 ngeFlag =True
@@ -23,6 +23,8 @@ def getResult(name):
     win_size = 0
     lost_size = 0
 
+    scoreSum = 0
+    gameSum = 0
 
 
 
@@ -45,9 +47,14 @@ def getResult(name):
         gameType = one[5]
         gameTime = one[9]
 
-        if rate == "-":
+        
+
+        if rate == "-" or rate == "-\n" :
             continue
         
+        scoreSum += main_score + client_score
+        gameSum += 1
+
         rate = float(rate)
         def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0, score=0):
             if result_slice.__contains__(key) == False:
@@ -112,10 +119,13 @@ def getResult(name):
             winSum = 0
             lostSum = 0
 
-            main_winScore = 0
-            main_lostScore = 0
-            client_winScore = 0
-            client_lostScore = 0
+            checkScoreSum = 0
+            checkGameSum = 0
+
+            win_winScore = 0
+            win_lostScore = 0
+            lost_winScore = 0
+            lost_lostScore = 0
 
 
             main_win_size = 0
@@ -123,9 +133,10 @@ def getResult(name):
             client_win_size = 0
             client_lost_size = 0
 
+            ping = 0
             for result in result_slice:
                 tmp = result_slice[result]  # 让球
-                tmp_v2 = result_slice_v2[result]
+                tmp_v2 = result_slice_v2[result] #不让球
                 sorted(tmp.keys(),reverse=True)
                 index = 0
                 keys = list(tmp.keys())
@@ -134,12 +145,12 @@ def getResult(name):
                 
                 while index + gameTotal < len(keys):
                     gameTmp = []
-                    gameTmp_v2 = []
+                    gameTmp_v2 = [] #不让球
                     for add in range(gameTotal):
                         gameTmp.append(tmp[keys[index + add]])
-                        gameTmp_v2.append(tmp_v2[keys[index + add]])
+                        gameTmp_v2.append(tmp_v2[keys[index + add]]) #不让球
                     game_check = tmp[keys[index + gameTotal]] 
-                    game_check_v2 = tmp_v2[keys[index + gameTotal]] 
+                    game_check_v2 = tmp_v2[keys[index + gameTotal]]  #不让球
 
                     game_check_pre = tmp[keys[index + gameTotal - 1]]
 
@@ -154,7 +165,7 @@ def getResult(name):
                             return 1
                         return 0
 
-                    for tmp_1 in gameTmp_v2:
+                    for tmp_1 in gameTmp_v2: #不让球
                     # for tmp_1 in gameTmp:
                         lost += chechResult(tmp_1[0], lost)
 
@@ -165,34 +176,32 @@ def getResult(name):
 
                     # cond_2 = (lost == chechSum-1) and (gameTmp[0][0] != -1)
 
-                    gameCheck = game_check
-                    # gameCheck = game_check_v2
+                    gameCheck = game_check #让球
+                    # gameCheck = game_check_v2  #不让球
+
+                    scorePerGame = scoreSum / gameSum
                     if cond_2 and gameCheck[0] > 0 :
                         winSum += 1
 
-                        if gameCheck[3] > 2.5:
-                            main_winScore += 1
+                        checkScoreSum += gameCheck[3]
+                        checkGameSum += 1
+                        if gameCheck[3] > scorePerGame:
+                            win_winScore += 1
                         else:
-                            main_lostScore += 1
+                            win_lostScore += 1
 
-
-                        # if cond_1:
-                        #     main_win_size += 1
-                        
-                        # if game_check[1]:
-                        #     main_win_size += 1
-                        # else:
-                        #     client_win_size += 1
 
                     elif cond_2 and gameCheck[0] == -1:
                         lostSum += 1
                         # lostScore += gameCheck[3]
 
+                        checkScoreSum += gameCheck[3]
+                        checkGameSum += 1
 
-                        if gameCheck[3] > 2:
-                            client_winScore += 1
+                        if gameCheck[3] > scorePerGame:
+                            lost_winScore += 1
                         else:
-                            client_lostScore += 1
+                            lost_lostScore += 1
 
                         # if cond_1:
                         #     main_lost_size += 1
@@ -203,9 +212,14 @@ def getResult(name):
                         #     main_lost_size += 1
                         # else:
                         #     client_lost_size += 1
-                    else:
+                    elif cond_2:
                         # print(index)
-                        index = index
+                        # index = index
+                        ping += 1
+                        if gameCheck[3] > scorePerGame:
+                            win_winScore += 1
+                        else:
+                            win_lostScore += 1
 
                     index += 1
                 # print(result, winSum, lostSum)
@@ -213,10 +227,17 @@ def getResult(name):
                 continue
             rate  = winSum / lostSum
 
-            if rateMax < rate:
-                rateMax = rate
-            print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum)
-            print("赢",  round(main_winScore*100/(main_lostScore + main_winScore),2),"%",  round(client_winScore*100/(client_lostScore + client_winScore),2),"%")
+            # rateMax = 100
+            # if rateMax > rate:
+            # if rateMax < rate:
+            #     rateMax = rate
+            print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum, ping)
+            checkScorePer = round(checkScoreSum / checkGameSum,2)
+            scorePerGame = round(scorePerGame,2)
+            rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
+            if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
+                continue  
+            print("     ",scorePerGame, round(scorePerGame - checkScorePer,2), "    比率：",round(rate,2),"%", "    赢大：",round(win_winScore*100/(win_lostScore + win_winScore),2),"%",  "    输大：",round(lost_winScore*100/(lost_lostScore + lost_winScore),2),"%")
                 # print("     主客场比    赢",main_win_size,client_win_size,   round(main_win_size*100/(main_win_size+client_win_size)),"%    输",main_lost_size, client_lost_size, round(main_lost_size*100/(main_lost_size+client_lost_size)),"%")
                 # print("     只买主  ", main_win_size, main_lost_size, round(main_win_size*100/(main_win_size+main_lost_size)),"%")
 

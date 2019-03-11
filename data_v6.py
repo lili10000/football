@@ -15,6 +15,9 @@ def clearStr(str):
     str = str.replace("\n", "")
     return str
 
+
+
+
 class parser:
     class gameData:
         def __init__(self):    

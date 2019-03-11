@@ -15,8 +15,24 @@ checkFlag = True
 
 
 whiteList = {}
+whiteList["意乙"] = 2
+# whiteList["法乙"] = 4
 whiteList["巴甲"] = 2
-whiteList["意甲"] = 4
+whiteList["法甲"] = 2
+whiteList["西甲"] = 2
+whiteList["苏超"] = 2
+whiteList["荷乙"] = 2
+whiteList["德甲"] = 4
+whiteList["韩k联"] = 2
+whiteList["波兰甲"] = 4
+whiteList["马来超"] = 4
+whiteList["泰超"] = 4
+whiteList["伊朗超"] = 2
+whiteList["俄超"] = 2
+whiteList["土超"] = 2
+whiteList["阿甲"] = 2
+
+
 
 
 
@@ -95,7 +111,7 @@ class parser:
             raise Exception()
         return s
 
-    def getData(self, key, neg=False):
+    def getData(self, key, cmd):
         for title in self.soup.find_all('title') :
             if title.string.find('404') != -1:
                 return False
@@ -126,7 +142,7 @@ class parser:
 
                 
 
-                def checkBuy(teamName, neg=False):
+                def checkBuy(teamName, cmd):
                     # if teamName == "":
                     #     teamName = teamName
                     # else:
@@ -185,16 +201,30 @@ class parser:
                         if result[key] == -1:
                             lostSum += 1
                     
-                    if lostSum == checkSum and neg == False:
-                        return True
-                    elif lostSum == 0 and neg == True:
+                    if lostSum == checkSum :
                         return True
                     return False
 
-                if main != "" and checkBuy(main, neg):
-                    print(" buy ",main, ' game info:   ', gameTime, main, client)
-                elif client != "" and checkBuy(client, neg):
-                    print(" buy ",client, ' game info:   ', gameTime, main, client)
+                addInfo = ""
+                if cmd == 1:
+                    addInfo = "让球胜 + 小"
+                elif cmd == 2:
+                    addInfo = "让球胜 + 大"
+                elif cmd == 0:
+                    addInfo = "让球胜"
+                elif cmd == 10:
+                    addInfo = "大"
+                elif cmd == 11:
+                    addInfo = "小"
+                elif cmd == 3:
+                    addInfo = "让球输"
+                elif cmd == 4:
+                    addInfo = "让球输 + 小"
+
+                if main != "" and checkBuy(main, cmd):
+                    print(addInfo, main, ' game info:   ', gameTime, main, client)
+                elif client != "" and checkBuy(client, cmd):
+                    print(addInfo, client, ' game info:   ', gameTime, main, client)
 
 
 
@@ -284,56 +314,57 @@ if checkFlag:
 key = "k_corner"
 gameCode = []
 
-gameCode.append([251, "巴甲", False]) #
-gameCode.append([35,"英超", False]) 
-gameCode.append([36,"西甲", False])
-gameCode.append([37,"意甲", False])
-gameCode.append([39,"法甲", False]) 
-gameCode.append([42,"英冠", False]) 
-gameCode.append([157,"意乙", False]) 
-gameCode.append([2,"中超", False]) 
+# 买小
 
+gameCode.append([251, "巴甲", 1]) 
+gameCode.append([39,"法甲", 1]) 
+gameCode.append([157,"意乙", 1]) 
+gameCode.append([40, "荷甲", 1]) 
+gameCode.append([38, "德甲", 1]) #
+gameCode.append([654, "阿甲", 1]) #
+# # 买大
+gameCode.append([251, "中超", 2]) 
+gameCode.append([42,"英冠", 2]) 
+gameCode.append([36,"西甲", 2])
 
-# neg
+# # 买
+gameCode.append([35,"英超", 0]) 
+gameCode.append([649, "德乙", 0])
 
+# 买输
+gameCode.append([182, "苏超", 3]) # 输
 
+# # 买输小
+gameCode.append([252, "美职联", 4]) #输小
 
-# 黑
+# 纯大
+gameCode.append([85, "韩k联", 10]) #纯大
+gameCode.append([37,"意甲", 10])
+gameCode.append([158, "土超", 10]) #
+# 纯小
+gameCode.append([151, "以超", 11]) #纯小
+gameCode.append([226, "马来超", 11]) #
+gameCode.append([1810, "荷乙", 11]) # 纯小
+gameCode.append([653, "伊朗超", 11]) #
+gameCode.append([8, "俄超", 11]) #
+gameCode.append([187, "法乙", 11]) 
+gameCode.append([3,"澳超", 11]) 
+# 买预备=========================
+# 纯大
 
+# 纯小
+
+# 黑预备
+
+# 黑==========
+# gameCode.append([244, "波兰甲", 0]) #
+# gameCode.append([402, "泰超", 4]) #输小
 # gameCode.append([34,"日职联", True]) 
-# gameCode.append([3,"澳超", True]) 
-# gameCode.append([649, "德乙", False])
-# gameCode.append([187, "法乙", False]) #
-
-
-# gameCode.append(252) #美职联
-
-# gameCode.append(40) #荷甲
-# gameCode.append(1810) #荷乙
-# gameCode.append(182) #苏超
-# gameCode.append(38) #德甲
-# gameCode.append(8) #俄超
-# gameCode.append(34) #日职联
-# gameCode.append(85) #韩k联
-# gameCode.append(134) #捷克甲
-# gameCode.append(151) #以超
-# gameCode.append(158) #土超
-# gameCode.append(244) #波兰甲
-# gameCode.append(226) #马来超
-# gameCode.append(402) #泰超
-# gameCode.append(653) #伊朗超
-# gameCode.append(654) #阿根廷甲级
-# gameCode.append(1275) #日职乙
-
+# gameCode.append([134, "捷甲", 0]) #
+# gameCode.append([1275, "日职乙", 0]) #
 # check
 
-
-# key = "k_163_15_16"
-# key = "k_163_14_15"
-# key = "k_163_16_17"
-
 gameIndex = 0
-
 
 
 while index < end:
@@ -341,9 +372,6 @@ while index < end:
     while gameIndex < len(gameCode) :
         url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
         url = url.replace("p.1", "p."+ str(index) )
-        # time.sleep(5 + random.randint(0,5))
-        # url = url.replace("indexType=0", "indexType=1")
-        # print(url)
         
         try:
             html =  parser(url)
@@ -356,7 +384,7 @@ while index < end:
             # print ("connect err")
             continue
 
-        print(gameCode[gameIndex][1], gameCode[gameIndex][2])
+        print("\n", index, gameCode[gameIndex], "\n")
         try:   
             if html.getData(key, gameCode[gameIndex][2]) == False :
                 break
