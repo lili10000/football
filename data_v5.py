@@ -205,26 +205,14 @@ class parser:
                         return True
                     return False
 
-                addInfo = ""
-                if cmd == 1:
-                    addInfo = "让球胜 + 小"
-                elif cmd == 2:
-                    addInfo = "让球胜 + 大"
-                elif cmd == 0:
-                    addInfo = "让球胜"
-                elif cmd == 10:
-                    addInfo = "大"
-                elif cmd == 11:
-                    addInfo = "小"
-                elif cmd == 3:
-                    addInfo = "让球输"
-                elif cmd == 4:
-                    addInfo = "让球输 + 小"
+                addInfo = "【" + cmd + "】"
+
+
 
                 if main != "" and checkBuy(main, cmd):
-                    print(addInfo, main, ' game info:   ', gameTime, main, client)
+                    print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
                 elif client != "" and checkBuy(client, cmd):
-                    print(addInfo, client, ' game info:   ', gameTime, main, client)
+                    print(addInfo,  "<",client, '> game info:   ', gameTime, main, client)
 
 
 
@@ -315,40 +303,46 @@ key = "k_corner"
 gameCode = []
 
 # 买小
-
-gameCode.append([251, "巴甲", 1]) 
-gameCode.append([39,"法甲", 1]) 
-gameCode.append([157,"意乙", 1]) 
-gameCode.append([40, "荷甲", 1]) 
-gameCode.append([38, "德甲", 1]) #
-gameCode.append([654, "阿甲", 1]) #
+info = "让球胜 + 小球"
+gameCode.append([251, "巴甲", info]) 
+gameCode.append([39,"法甲", info]) 
+gameCode.append([157,"意乙", info]) 
+gameCode.append([40, "荷甲", info]) 
+gameCode.append([38, "德甲", info + " + 大角"]) #
+gameCode.append([654, "阿甲", info]) #
 # # 买大
-gameCode.append([251, "中超", 2]) 
-gameCode.append([42,"英冠", 2]) 
-gameCode.append([36,"西甲", 2])
+info = "让球胜 + 大球"
+gameCode.append([251, "中超", info + " + 大角"]) 
+gameCode.append([42,"英冠", info + " + 小角"]) 
+gameCode.append([36,"西甲", info])
 
 # # 买
-gameCode.append([35,"英超", 0]) 
-gameCode.append([649, "德乙", 0])
+info = "让球胜"
+gameCode.append([35,"英超", info + " + 小角"]) 
+gameCode.append([649, "德乙", info])
 
 # 买输
-gameCode.append([182, "苏超", 3]) # 输
+info = "让球输"
+gameCode.append([182, "苏超", info + " + 小角"]) # 输
 
 # # 买输小
-gameCode.append([252, "美职联", 4]) #输小
+info = "让球输 + 小球"
+gameCode.append([252, "美职联", info + " + 小角"]) #输小
 
 # 纯大
-gameCode.append([85, "韩k联", 10]) #纯大
-gameCode.append([37,"意甲", 10])
-gameCode.append([158, "土超", 10]) #
+info = "大球"
+gameCode.append([85, "韩k联", info]) #纯大
+gameCode.append([37,"意甲", info + " + 小角"])
+gameCode.append([158, "土超", info]) #
 # 纯小
-gameCode.append([151, "以超", 11]) #纯小
-gameCode.append([226, "马来超", 11]) #
-gameCode.append([1810, "荷乙", 11]) # 纯小
-gameCode.append([653, "伊朗超", 11]) #
-gameCode.append([8, "俄超", 11]) #
-gameCode.append([187, "法乙", 11]) 
-gameCode.append([3,"澳超", 11]) 
+info = "小球"
+gameCode.append([151, "以超", info + " + 小角"]) #纯小
+gameCode.append([226, "马来超", info]) #
+gameCode.append([1810, "荷乙", info + " + 小角"]) # 纯小
+gameCode.append([653, "伊朗超", info + " + 小角"]) #
+gameCode.append([8, "俄超", info + " + 小角"]) #
+gameCode.append([187, "法乙", info + " + 小角"]) 
+gameCode.append([3,"澳超", info + " + 大角"]) 
 # 买预备=========================
 # 纯大
 
@@ -363,6 +357,7 @@ gameCode.append([3,"澳超", 11])
 # gameCode.append([134, "捷甲", 0]) #
 # gameCode.append([1275, "日职乙", 0]) #
 # check
+
 
 gameIndex = 0
 
