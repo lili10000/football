@@ -4,30 +4,39 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
 # name = "英超"
+loopSize = 10
+loopSize = 1
 params = [
-    ["英超", 3],
-    ["巴甲", 2],
-    ["意乙", 2],
-    ["法甲", 2],
-    ["荷甲", 3],
-    ["德甲", 4],
-    ["阿甲", 2],
-    ["中超", 3],
-    ["英冠", 3],
-    ["西甲", 2],
-    ["德乙", 3],
-    ["苏超", 2],
-    ["美职联", 3],
-    ["韩k联", 2],
-    ["意甲", 3],
-    ["土超", 2],
-    ["以超", 3],
-    ["马来超", 4],
-    ["荷乙", 2],
-    ["伊朗超", 2],
-    ["俄超", 2],
-    ["法乙", 3],
-    ["澳超", 3]
+    ["葡超", 3],
+    ["英甲", 3],
+    ["英乙", 3],
+    ["墨秋联", 3],
+    ["墨春联", 3],
+    ["巴西乙", 3]
+
+    # ["英超", 3],
+    # ["巴甲", 2],
+    # ["意乙", 2],
+    # ["法甲", 2],
+    # ["荷甲", 3],
+    # ["德甲", 4],
+    # ["阿甲", 2],
+    # ["中超", 3],
+    # ["英冠", 3],
+    # ["西甲", 2],
+    # ["德乙", 3],
+    # ["苏超", 2],
+    # ["美职联", 3],
+    # ["韩k联", 2],
+    # ["意甲", 3],
+    # ["土超", 2],
+    # ["以超", 3],
+    # ["马来超", 4],
+    # ["荷乙", 2],
+    # ["伊朗超", 2],
+    # ["俄超", 2],
+    # ["法乙", 3],
+    # ["澳超", 3]
 ]
 
 
@@ -141,8 +150,7 @@ def getResult(param):
             result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum)
         
     rateMax = -1
-    loopSize = 10
-    loopSize = 1
+
     for gameTotalTmp in range(loopSize):
         for chechSumTmp in range(1):
             # chechSum = gameTotal - 1
@@ -307,7 +315,7 @@ def getResult(param):
             rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
             if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
                 continue  
-            # print("     ",scorePerGame, round(scorePerGame - checkScorePer,2), "    比率：",round(rate,2),"%", "    赢大：",round(win_winScore*100/(win_lostScore + win_winScore),2),"%",  "    输大：",round(lost_winScore*100/(lost_lostScore + lost_winScore),2),"%")
+            # print(name, gameTotal,scorePerGame, round(scorePerGame - checkScorePer,2), "    比率：",round(rate,2),"%", "    赢大：",round(win_winScore*100/(win_lostScore + win_winScore),2),"%",  "    输大：",round(lost_winScore*100/(lost_lostScore + lost_winScore),2),"%")
                 # print("     主客场比    赢",main_win_size,client_win_size,   round(main_win_size*100/(main_win_size+client_win_size)),"%    输",main_lost_size, client_lost_size, round(main_lost_size*100/(main_lost_size+client_lost_size)),"%")
                 # print("     只买主  ", main_win_size, main_lost_size, round(main_win_size*100/(main_win_size+main_lost_size)),"%")
 

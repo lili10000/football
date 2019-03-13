@@ -324,16 +324,20 @@ gameCode.append([649, "德乙", info])
 # 买输
 info = "让球输"
 gameCode.append([182, "苏超", info + " + 小角"]) # 输
+gameCode.append([1000, "墨春联", info + " + 小角"])
+gameCode.append([430, "英甲", info])
 
 # # 买输小
 info = "让球输 + 小球"
 gameCode.append([252, "美职联", info + " + 小角"]) #输小
+gameCode.append([214, "巴西乙", info + " + 小角"])
 
 # 纯大
 info = "大球"
 gameCode.append([85, "韩k联", info]) #纯大
 gameCode.append([37,"意甲", info + " + 小角"])
 gameCode.append([158, "土超", info]) #
+gameCode.append([607, "墨秋联", info + " + 小角"] )
 # 纯小
 info = "小球"
 gameCode.append([151, "以超", info + " + 小角"]) #纯小
@@ -343,12 +347,19 @@ gameCode.append([653, "伊朗超", info + " + 小角"]) #
 gameCode.append([8, "俄超", info + " + 小角"]) #
 gameCode.append([187, "法乙", info + " + 小角"]) 
 gameCode.append([3,"澳超", info + " + 大角"]) 
+gameCode.append([108, "葡超", info])
+gameCode.append([460, "英乙", info])
 # 买预备=========================
 # 纯大
 
 # 纯小
 
 # 黑预备
+
+
+
+
+
 
 # 黑==========
 # gameCode.append([244, "波兰甲", 0]) #
