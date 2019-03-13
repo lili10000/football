@@ -9,6 +9,7 @@ from db.mysql import sqlMgr
 import random
 import ssl
 
+outputInfo = {}
 
 checkFlag = True
 # checkFlag = False
@@ -39,6 +40,12 @@ whiteList["阿甲"] = 2
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 
+def addOutputInfo(key, info):
+    timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
+    key = int(time.mktime(timeArray))
+    if outputInfo.__contains__(key) == False:
+        outputInfo[key] = []
+    outputInfo[key].append(info)
 
 def getIpList():
     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
@@ -98,7 +105,7 @@ class parser:
         ipChoice = random.choice(ipList)
 
         try:
-            req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=5)
+            req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=3)
         except:
             ipList.remove(ipChoice)
             # print("remove ip, restSize:", len(ipList))
@@ -191,7 +198,6 @@ class parser:
                         return 0
 
                     lostSum = 0
-
                     checkSum = 3
                     if whiteList.__contains__(teamName):
                         checkSum = whiteList[teamName]
@@ -210,10 +216,13 @@ class parser:
 
 
                 if main != "" and checkBuy(main, cmd):
-                    print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
+                    infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    addOutputInfo(gameTime, infoTmp)
+                    # print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
                 elif client != "" and checkBuy(client, cmd):
-                    print(addInfo,  "<",client, '> game info:   ', gameTime, main, client)
-
+                    infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    addOutputInfo(gameTime, infoTmp)
+                    
 
 
         for tr in self.soup.find_all('tr') :
@@ -404,4 +413,8 @@ while index < end:
     index += 1
     
             
-
+values = list(outputInfo.keys())
+values.sort(reverse = True)
+for value in values:
+    for tmp in outputInfo[value]:
+        print(tmp)
