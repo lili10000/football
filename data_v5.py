@@ -317,7 +317,7 @@ gameCode.append([251, "巴甲", info])
 gameCode.append([39,"法甲", info]) 
 gameCode.append([157,"意乙", info]) 
 gameCode.append([40, "荷甲", info]) 
-gameCode.append([38, "德甲", info + " + 大角"]) #
+# gameCode.append([38, "德甲", info + " + 大角"]) #
 gameCode.append([654, "阿甲", info]) #
 # # 买大
 info = "让球胜 + 大球"
@@ -328,7 +328,7 @@ gameCode.append([36,"西甲", info])
 # # 买
 info = "让球胜"
 gameCode.append([35,"英超", info + " + 小角"]) 
-gameCode.append([649, "德乙", info])
+# gameCode.append([649, "德乙", info])
 
 # 买输
 info = "让球输"
@@ -343,21 +343,21 @@ gameCode.append([214, "巴西乙", info + " + 小角"])
 
 # 纯大
 info = "大球"
-gameCode.append([85, "韩k联", info]) #纯大
-gameCode.append([37,"意甲", info + " + 小角"])
-gameCode.append([158, "土超", info]) #
-gameCode.append([607, "墨秋联", info + " + 小角"] )
+# gameCode.append([85, "韩k联", info]) #纯大
+# gameCode.append([37,"意甲", info + " + 小角"])
+# gameCode.append([158, "土超", info]) #
+# gameCode.append([607, "墨秋联", info + " + 小角"] )
 # 纯小
 info = "小球"
-gameCode.append([151, "以超", info + " + 小角"]) #纯小
-gameCode.append([226, "马来超", info]) #
-gameCode.append([1810, "荷乙", info + " + 小角"]) # 纯小
-gameCode.append([653, "伊朗超", info + " + 小角"]) #
-gameCode.append([8, "俄超", info + " + 小角"]) #
-gameCode.append([187, "法乙", info + " + 小角"]) 
-gameCode.append([3,"澳超", info + " + 大角"]) 
-gameCode.append([108, "葡超", info])
-gameCode.append([460, "英乙", info])
+# gameCode.append([151, "以超", info + " + 小角"]) #纯小
+# gameCode.append([226, "马来超", info]) #
+# gameCode.append([1810, "荷乙", info + " + 小角"]) # 纯小
+# gameCode.append([653, "伊朗超", info + " + 小角"]) #
+# gameCode.append([8, "俄超", info + " + 小角"]) #
+# gameCode.append([187, "法乙", info + " + 小角"]) 
+# gameCode.append([3,"澳超", info + " + 大角"]) 
+# gameCode.append([108, "葡超", info])
+# gameCode.append([460, "英乙", info])
 # 买预备=========================
 # 纯大
 
@@ -399,7 +399,7 @@ while index < end:
             # print ("connect err")
             continue
 
-        print("\n", index, gameCode[gameIndex], "\n")
+        print( index, gameCode[gameIndex][1])
         try:   
             if html.getData(key, gameCode[gameIndex][2]) == False :
                 break
@@ -414,7 +414,7 @@ while index < end:
     
             
 values = list(outputInfo.keys())
-values.sort(reverse = True)
+values.sort()
 for value in values:
     for tmp in outputInfo[value]:
         print(tmp)
