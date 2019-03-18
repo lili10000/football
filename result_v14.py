@@ -4,41 +4,40 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
 # name = "英超"
-loopSize = 10
-loopSize = 1
+loopSize = 3
+# loopSize = 1
 params = [
+    ["马来超", 4],
+    ["伊朗超", 2],
+    ["墨秋联", 3],
+    ["墨春联", 3],
+    ["巴西乙", 3],
+    ["美职联", 3],
+    ["韩k联", 2],
+    ["英超", 3],
+    ["巴甲", 2],
+    ["意乙", 2],
+    ["法甲", 2],
+    ["荷甲", 3],
+    ["德甲", 4],
+    ["阿甲", 2],
+    ["中超", 3],
+    ["英冠", 3],
+    ["西甲", 2],
+    ["德乙", 3],
+    ["苏超", 2],   
+    ["意甲", 3],
+    ["土超", 2],
+    ["以超", 3],
+    ["荷乙", 2],
     ["葡超", 3],
     ["英甲", 3],
     ["英乙", 3],
-    ["墨秋联", 3],
-    ["墨春联", 3],
-    ["巴西乙", 3]
-
-    # ["英超", 3],
-    # ["巴甲", 2],
-    # ["意乙", 2],
-    # ["法甲", 2],
-    # ["荷甲", 3],
-    # ["德甲", 4],
-    # ["阿甲", 2],
-    # ["中超", 3],
-    # ["英冠", 3],
-    # ["西甲", 2],
-    # ["德乙", 3],
-    # ["苏超", 2],
-    # ["美职联", 3],
-    # ["韩k联", 2],
-    # ["意甲", 3],
-    # ["土超", 2],
-    # ["以超", 3],
-    # ["马来超", 4],
-    # ["荷乙", 2],
-    # ["伊朗超", 2],
-    # ["俄超", 2],
-    # ["法乙", 3],
-    # ["澳超", 3]
+    ["俄超", 2],
+    ["法乙", 3],
+    ["澳超", 3]
 ]
-
+infoList = {}
 
 # name = '荷乙'
 
@@ -149,6 +148,7 @@ def getResult(param):
             key = main
             result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum)
         
+    # rateMax = 100
     rateMax = -1
 
     for gameTotalTmp in range(loopSize):
@@ -158,8 +158,8 @@ def getResult(param):
             if loopSize == 1:
                 gameTotalTmp = gameParam - 1
 
-            gameTotal = gameTotalTmp + 1
-            chechSum = gameTotalTmp + 1
+            gameTotal = gameTotalTmp + 2
+            chechSum = gameTotalTmp + 2
 
             # gameTotal = 3
             # chechSum = 3
@@ -305,31 +305,49 @@ def getResult(param):
             rate  = winSum / lostSum
 
                 # rateMax = 100
-                # if rateMax > rate:
-                # if rateMax < rate:
-                #     rateMax = rate
-
+            # if rateMax > rate and len(data)/(winSum+lostSum) < 20:
+            # if rateMax < rate and len(data)/(winSum+lostSum) < 20:
+                # rateMax = rate
+                # winRate = round(winSum*100/(winSum+lostSum))
+                # info = "{}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(name,len(data),gameTotal,winRate,winSum,lostSum)
+                # infoList[name]=info
             # print(name, gameTotal,"场输",chechSum,"场, 后一场,赢",winSum,"  ", round(winSum*100/(winSum+lostSum)),"%", "输",lostSum, ping)
-            checkScorePer = round(checkScoreSum / checkGameSum,2)
-            scorePerGame = round(scorePerGame,2)
-            rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
-            if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
-                continue  
-            # print(name, gameTotal,scorePerGame, round(scorePerGame - checkScorePer,2), "    比率：",round(rate,2),"%", "    赢大：",round(win_winScore*100/(win_lostScore + win_winScore),2),"%",  "    输大：",round(lost_winScore*100/(lost_lostScore + lost_winScore),2),"%")
-                # print("     主客场比    赢",main_win_size,client_win_size,   round(main_win_size*100/(main_win_size+client_win_size)),"%    输",main_lost_size, client_lost_size, round(main_lost_size*100/(main_lost_size+client_lost_size)),"%")
-                # print("     只买主  ", main_win_size, main_lost_size, round(main_win_size*100/(main_win_size+main_lost_size)),"%")
 
+
+            # 大小球
+            # checkScorePer = round(checkScoreSum / checkGameSum,2)
+            # scorePerGame = round(scorePerGame,2)
+            # rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
+            # if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
+            #     continue  
+            # if rateMax < rate and len(data)/(winSum+lostSum) < 20:
+            # # if rateMax > rate and len(data)/(winSum+lostSum) < 20:
+            #     rateMax = rate
+            #     winBig = win_winScore*100/(win_lostScore + win_winScore)
+            #     lostBig = lost_winScore*100/(lost_lostScore + lost_winScore)
+            #     # if abs(rate - 50) < 5 and abs(winBig - 50) < 5 and abs(lostBig - 50) < 5:
+            #     #     continue
+            #     info = "{}  连输数：{}   大球比率：{}%    赢球大球：{}    输球大球：{}".format(name,gameTotal,round(rate,2),round(winBig,2),round(lostBig,2))
+            #     infoList[name]=info
+
+
+            # 角球
             checkCornerPer = round(checkCorner / checkGameSum,2)
             cornerPerGame = round(cornerPerGame,2)
             rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
 
             winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
             lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
-
-            if abs(rate - 50) < 5 and abs(winBig - 50) and abs(lostBig - 50):
-                continue
-            print(name, gameTotal,cornerPerGame, round(cornerPerGame - checkCornerPer,2), "    比率：",round(rate,2),"%", "    角球赢大：",round(winBig,2),"%",  "    角球输大：",round(lostBig,2),"%")
-
+            checkWeig = rate * 0.01 * checkGameSum
+            # if rateMax > rate and (checkGameSum > 40):
+            if rateMax < rate and (checkGameSum > 40):
+                rateMax = rate
+                info = "{}  连输数：{}   大角比率：{}%    赢球大角：{}    输球大角：{}    权重：{}".format(name,gameTotal,round(rate,2),round(winBig,2),round(lostBig,2), round(checkWeig,2))
+                infoList[name]=info
+            
 
 for param in params:
     getResult(param)
+
+for info in infoList:
+    print(infoList[info])

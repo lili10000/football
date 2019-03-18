@@ -15,27 +15,6 @@ checkFlag = True
 # checkFlag = False
 
 
-whiteList = {}
-whiteList["意乙"] = 2
-# whiteList["法乙"] = 4
-whiteList["巴甲"] = 2
-whiteList["法甲"] = 2
-whiteList["西甲"] = 2
-whiteList["苏超"] = 2
-whiteList["荷乙"] = 2
-whiteList["德甲"] = 4
-whiteList["韩k联"] = 2
-whiteList["波兰甲"] = 4
-whiteList["马来超"] = 4
-whiteList["泰超"] = 4
-whiteList["伊朗超"] = 2
-whiteList["俄超"] = 2
-whiteList["土超"] = 2
-whiteList["阿甲"] = 2
-
-
-
-
 
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
@@ -198,9 +177,7 @@ class parser:
                         return 0
 
                     lostSum = 0
-                    checkSum = 3
-                    if whiteList.__contains__(teamName):
-                        checkSum = whiteList[teamName]
+                    checkSum = cmd[1]
 
                     for index in range(checkSum):
                         key = values[index]
@@ -211,10 +188,7 @@ class parser:
                         return True
                     return False
 
-                addInfo = "【" + cmd + "】"
-
-
-
+                addInfo = "【" + cmd[3] + "】"
                 if main != "" and checkBuy(main, cmd):
                     infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
                     addOutputInfo(gameTime, infoTmp)
@@ -223,8 +197,6 @@ class parser:
                     infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
                     addOutputInfo(gameTime, infoTmp)
                     
-
-
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
             if td == None:
@@ -299,8 +271,6 @@ class parser:
             input += ",'"+  main + "_" + str(gameTime) + "'" 
             self.sql.insert(input, key)
 
-
-
 index = 1
 end = 80
 if checkFlag:
@@ -311,40 +281,32 @@ if checkFlag:
 key = "k_corner"
 gameCode = []
 
-# 买小
-info = "让球胜 "
-gameCode.append([251, "巴甲", info]) 
-gameCode.append([39,"法甲", info]) 
-gameCode.append([157,"意乙", info]) 
-gameCode.append([40, "荷甲", info]) 
-gameCode.append([654, "阿甲", info]) #
-gameCode.append([251, "中超", info ]) 
-gameCode.append([42,"英冠", info ]) 
-gameCode.append([36,"西甲", info])
-gameCode.append([35,"英超", info ]) 
 
-# 买输
-info = "让球输"
-gameCode.append([182, "苏超", info ]) # 输
-gameCode.append([1000, "墨春联", info ])
-gameCode.append([430, "英甲", info])
-gameCode.append([252, "美职联", info ]) #输小
-gameCode.append([214, "巴西乙", info ])
-
-
-
-# 黑预备
+# 小
+info = "小角"
+gameCode.append([35, 4, "英超", info]) #
+gameCode.append([182, 4, "苏超", info]) #
+gameCode.append([151, 3, "以超", info]) #
+gameCode.append([252, 2, "美职联", info]) #
+gameCode.append([653, 3, "伊朗超", info]) #
+gameCode.append([157, 3, "意乙", info]) #
+gameCode.append([42, 2, "英冠", info]) #
+gameCode.append([8, 3, "俄超", info]) #
+gameCode.append([460, 3, "英乙", info]) #
+gameCode.append([158, 4, "土超", info]) #
+gameCode.append([607, 3, "墨秋联", info]) #
+gameCode.append([37, 3, "意甲", info]) #
+gameCode.append([1000, 3, "墨春联", info]) #
+gameCode.append([108, 4, "葡超", info]) #
+gameCode.append([187, 2, "法乙", info]) #
+gameCode.append([1810, 2, "荷乙", info]) #
 
 
-# 黑==========
-# gameCode.append([244, "波兰甲", 0]) #
-# gameCode.append([402, "泰超", 4]) #输小
-# gameCode.append([34,"日职联", True]) 
-# gameCode.append([134, "捷甲", 0]) #
-# gameCode.append([1275, "日职乙", 0]) #
-# gameCode.append([38, "德甲", info ]) #
-# gameCode.append([649, "德乙", info])
-# check
+
+
+
+# 买预备=========================
+
 
 
 gameIndex = 0
@@ -367,9 +329,9 @@ while index < end:
             # print ("connect err")
             continue
 
-        print( index, gameCode[gameIndex][1])
+        print( index, gameCode[gameIndex][2])
         try:   
-            if html.getData(key, gameCode[gameIndex][2]) == False :
+            if html.getData(key, gameCode[gameIndex]) == False :
                 break
         except:
             if len(ipList) < 2:
