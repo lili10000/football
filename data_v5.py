@@ -198,9 +198,8 @@ class parser:
                         return 0
 
                     lostSum = 0
-                    checkSum = 3
-                    if whiteList.__contains__(teamName):
-                        checkSum = whiteList[teamName]
+                    checkSum = cmd[1]
+                   
 
                     for index in range(checkSum):
                         key = values[index]
@@ -211,7 +210,7 @@ class parser:
                         return True
                     return False
 
-                addInfo = "【" + cmd + "】"
+                addInfo = "【" + cmd[3] + "】"
 
 
 
@@ -313,23 +312,30 @@ gameCode = []
 
 # 买小
 info = "让球胜 "
-gameCode.append([251, "巴甲", info]) 
-gameCode.append([39,"法甲", info]) 
-gameCode.append([157,"意乙", info]) 
-gameCode.append([40, "荷甲", info]) 
-gameCode.append([654, "阿甲", info]) #
-gameCode.append([251, "中超", info ]) 
-gameCode.append([42,"英冠", info ]) 
-gameCode.append([36,"西甲", info])
-gameCode.append([35,"英超", info ]) 
+gameCode.append([251,3, "中超", info ]) 
+gameCode.append([39,3,"法甲", info]) 
+gameCode.append([35,4,"英超", info ]) 
+gameCode.append([251,3, "巴甲", info]) 
+gameCode.append([157,3,"意乙", info]) 
+gameCode.append([8,4,"俄超", info]) 
+gameCode.append([42,3,"英冠", info ]) 
+gameCode.append([649,3,"德乙", info ]) 
+gameCode.append([654,2, "阿甲", info]) #
+
+
+
 
 # 买输
 info = "让球输"
-gameCode.append([182, "苏超", info ]) # 输
-gameCode.append([1000, "墨春联", info ])
-gameCode.append([430, "英甲", info])
-gameCode.append([252, "美职联", info ]) #输小
-gameCode.append([214, "巴西乙", info ])
+gameCode.append([214,3, "巴西乙", info ])
+gameCode.append([108,4, "葡超", info ])
+gameCode.append([3,4, "澳超", info ]) # 输
+gameCode.append([252,3, "美职联", info ]) #输小
+gameCode.append([430,3, "英甲", info])
+gameCode.append([1000,3, "墨春联", info ])
+gameCode.append([182,3, "苏超", info ])
+
+
 
 
 
@@ -367,9 +373,9 @@ while index < end:
             # print ("connect err")
             continue
 
-        print( index, gameCode[gameIndex][1])
+        print( index, gameCode[gameIndex][2])
         try:   
-            if html.getData(key, gameCode[gameIndex][2]) == False :
+            if html.getData(key, gameCode[gameIndex]) == False :
                 break
         except:
             if len(ipList) < 2:

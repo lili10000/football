@@ -288,21 +288,34 @@ gameCode = []
 
 # 纯小
 info = "小球"
-gameCode.append([40, 3, "荷甲", info]) #
+gameCode.append([151, 4, "以超", info]) #
+gameCode.append([251, 3, "巴甲", info]) #
+gameCode.append([40, 4, "荷甲", info]) #
 gameCode.append([653, 2, "伊朗超", info]) #
-gameCode.append([251, 2, "巴甲", info]) #
-gameCode.append([151, 3, "以超", info]) #
 gameCode.append([226,2, "马来超", info]) #
 gameCode.append([3,3, "澳超", info]) #
 gameCode.append([1810, 3, "荷乙", info]) #
-gameCode.append([8,2, "俄超", info ]) #
-gameCode.append([252,2, "美职联", info ]) #
+gameCode.append([8,4, "俄超", info ]) #
 gameCode.append([654,2, "阿甲", info ]) #
+gameCode.append([252,2, "美职联", info ]) #
 gameCode.append([214,3, "巴西乙", info ]) #
 gameCode.append([460,3, "英乙", info ]) #
 gameCode.append([108,4, "葡超", info])
 gameCode.append([187,3, "法乙", info] )
 gameCode.append([39,2, "法甲", info]) #
+
+
+
+# 纯小
+info = "大球"
+gameCode.append([37, 4, "意甲", info]) #
+gameCode.append([85, 3, "韩k联", info]) #
+gameCode.append([35, 4, "英超", info]) #
+gameCode.append([158, 4, "土超", info]) #
+gameCode.append([36, 4, "西甲", info]) #
+
+
+
 
 
 # 买预备=========================

@@ -287,7 +287,7 @@ info = "小角"
 gameCode.append([35, 4, "英超", info]) #
 gameCode.append([182, 4, "苏超", info]) #
 gameCode.append([151, 3, "以超", info]) #
-gameCode.append([252, 2, "美职联", info]) #
+gameCode.append([252, 4, "美职联", info]) #
 gameCode.append([653, 3, "伊朗超", info]) #
 gameCode.append([157, 3, "意乙", info]) #
 gameCode.append([42, 2, "英冠", info]) #
@@ -300,8 +300,6 @@ gameCode.append([1000, 3, "墨春联", info]) #
 gameCode.append([108, 4, "葡超", info]) #
 gameCode.append([187, 2, "法乙", info]) #
 gameCode.append([1810, 2, "荷乙", info]) #
-
-
 
 
 
