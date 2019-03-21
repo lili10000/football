@@ -15,28 +15,6 @@ checkFlag = True
 # checkFlag = False
 
 
-whiteList = {}
-whiteList["意乙"] = 2
-# whiteList["法乙"] = 4
-whiteList["巴甲"] = 2
-whiteList["法甲"] = 2
-whiteList["西甲"] = 2
-whiteList["苏超"] = 2
-whiteList["荷乙"] = 2
-whiteList["德甲"] = 4
-whiteList["韩k联"] = 2
-whiteList["波兰甲"] = 4
-whiteList["马来超"] = 4
-whiteList["泰超"] = 4
-whiteList["伊朗超"] = 2
-whiteList["俄超"] = 2
-whiteList["土超"] = 2
-whiteList["阿甲"] = 2
-
-
-
-
-
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 
@@ -300,10 +278,7 @@ class parser:
 
 
 
-index = 1
-end = 80
-if checkFlag:
-    end = 2
+
 
 
 
@@ -321,11 +296,12 @@ gameCode.append([8,4,"俄超", info])
 gameCode.append([42,3,"英冠", info ]) 
 gameCode.append([649,3,"德乙", info ]) 
 gameCode.append([654,2, "阿甲", info]) #
+gameCode.append([354,3, "法N", info ])
+gameCode.append([739,3, "英北超", info ])
+gameCode.append([191,3, "俄甲", info ])
+gameCode.append([332,3, "爱甲", info ])
 
-
-
-
-# 买输
+# # 买输
 info = "让球输"
 gameCode.append([214,3, "巴西乙", info ])
 gameCode.append([108,4, "葡超", info ])
@@ -334,10 +310,13 @@ gameCode.append([252,3, "美职联", info ]) #输小
 gameCode.append([430,3, "英甲", info])
 gameCode.append([1000,3, "墨春联", info ])
 gameCode.append([182,3, "苏超", info ])
-
-
-
-
+gameCode.append([839,2, "以乙北", info ])
+gameCode.append([1294,3,"英联北", info ])
+gameCode.append([1295,2, "英联南", info ])
+gameCode.append([247,3, "丹甲", info ])
+gameCode.append([1046,3,"墨乙", info ])
+gameCode.append([189,2, "苏冠", info ])
+gameCode.append([553,3, "埃及超", info ])
 
 # 黑预备
 
@@ -352,6 +331,10 @@ gameCode.append([182,3, "苏超", info ])
 # gameCode.append([649, "德乙", info])
 # check
 
+index = 1
+end = 50
+if checkFlag:
+    end = 2
 
 gameIndex = 0
 

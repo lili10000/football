@@ -7,35 +7,58 @@ name = None
 loopSize = 3
 # loopSize = 1
 params = [
-    ["马来超", 4],
-    ["伊朗超", 2],
-    ["墨秋联", 3],
-    ["墨春联", 3],
-    ["巴西乙", 3],
-    ["美职联", 3],
-    ["韩k联", 2],
-    ["英超", 3],
-    ["巴甲", 2],
-    ["意乙", 2],
-    ["法甲", 2],
-    ["荷甲", 3],
-    ["德甲", 4],
-    ["阿甲", 2],
-    ["中超", 3],
-    ["英冠", 3],
-    ["西甲", 2],
-    ["德乙", 3],
-    ["苏超", 2],   
-    ["意甲", 3],
-    ["土超", 2],
-    ["以超", 3],
-    ["荷乙", 2],
-    ["葡超", 3],
-    ["英甲", 3],
-    ["英乙", 3],
-    ["俄超", 2],
-    ["法乙", 3],
-    ["澳超", 3]
+    ["阿尔甲"  , 4],
+    ["阿尔乙"  , 4],
+    ["埃及超"  , 4],
+    ["埃及乙"  , 4],
+    ["澳维超"  , 4],
+    ["爱超"  , 4],
+    ["爱甲"  , 4]
+
+    # ["法N"  , 4],
+    # ["以乙南"  , 4],
+    # ["以乙北"  , 4],
+    # ["哥伦甲"  , 4],
+    # ["瑞典甲"  , 4],
+    # ["英北超"  , 4],
+    # ["英全联"  , 4],
+    # ["英联北"  , 4],
+    # ["英联南"  , 4],
+    # ["丹甲"   , 4],
+    # ["墨乙"   , 4],
+    # ["俄甲"   , 4],
+    # ["德丙"   , 4],
+    # ["苏冠"   , 4],
+    # ["捷甲"   , 4]
+    # ["马来超", 4],
+    # ["伊朗超", 2],
+    # ["墨秋联", 3],
+    # ["墨春联", 3],
+    # ["巴西乙", 3],
+    # ["美职联", 3],
+    # ["韩k联", 2],
+    # ["英超", 3],
+    # ["巴甲", 2],
+    # ["意乙", 2],
+    # ["法甲", 2],
+    # ["荷甲", 3],
+    # ["德甲", 4],
+    # ["阿甲", 2],
+    # ["中超", 3],
+    # ["英冠", 3],
+    # ["西甲", 2],
+    # ["德乙", 3],
+    # ["苏超", 2],   
+    # ["意甲", 3],
+    # ["土超", 2],
+    # ["以超", 3],
+    # ["荷乙", 2],
+    # ["葡超", 3],
+    # ["英甲", 3],
+    # ["英乙", 3],
+    # ["俄超", 2],
+    # ["法乙", 3],
+    # ["澳超", 3]
 ]
 infoList = {}
 
@@ -44,7 +67,7 @@ infoList = {}
 ngeFlag =True
 ngeFlag =False
 
-def getResult(param):
+def getResult(param, rateParam):
     data = []
     name = param[0]
     gameParam = param[1]
@@ -148,9 +171,8 @@ def getResult(param):
             key = main
             result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum)
         
-    # rateMax = 100
-    rateMax = -1
 
+    rateMax = rateParam
     for gameTotalTmp in range(loopSize):
         for chechSumTmp in range(1):
             # chechSum = gameTotal - 1
@@ -190,6 +212,7 @@ def getResult(param):
             lost_winCorner = 0
             lost_lostCorner = 0
             # checkWinCorner = 0
+            checkParam = 30
 
             ping = 0
             for result in result_slice:
@@ -304,49 +327,68 @@ def getResult(param):
                 continue
             rate  = winSum / lostSum
 
-                # rateMax = 100
-            # if rateMax > rate and len(data)/(winSum+lostSum) < 20:
-            # # if rateMax < rate and len(data)/(winSum+lostSum) < 20:
-            #     rateMax = rate
-            #     winRate = round(winSum*100/(winSum+lostSum))
-            #     info = "{}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(name,len(data),gameTotal,winRate,winSum,lostSum)
-            #     infoList[name]=info
+            
+            cond = (rateMax > rate and (checkGameSum > checkParam))
+            infoType = "比小"
+            if rateParam < 0:
+                cond = (rateMax < rate  and (checkGameSum > checkParam))
+                infoType = "比大"
+
+
+            # # 让球
+            if cond:
+                rateMax = rate
+                winRate = round(winSum*100/(winSum+lostSum))
+                info = "{} {}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(infoType, name,len(data),gameTotal,winRate,winSum,lostSum)
+                infoList[infoType + " " +name]=info
             
 
-            # # 大小球
+
+            # 大小球
             # checkScorePer = round(checkScoreSum / checkGameSum,2)
             # scorePerGame = round(scorePerGame,2)
             # rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
             # if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
             #     continue  
-            # # if rateMax < rate and len(data)/(winSum+lostSum) < 20:
-            # if rateMax > rate and len(data)/(winSum+lostSum) < 20:
+
+            # cond = (rateMax > rate and (checkGameSum > checkParam))
+            # if rateParam < 0:
+            #     cond = (rateMax < rate and (checkGameSum > checkParam))
+            # if cond:
             #     rateMax = rate
             #     winBig = win_winScore*100/(win_lostScore + win_winScore)
             #     lostBig = lost_winScore*100/(lost_lostScore + lost_winScore)
             #     # if abs(rate - 50) < 5 and abs(winBig - 50) < 5 and abs(lostBig - 50) < 5:
             #     #     continue
-            #     info = "{}  连输数：{}   大球比率：{}%    平均进球：{}".format(name,gameTotal,round(rate,1),scorePerGame)
-            #     infoList[name]=info
+            #     info = "{} {}  连输数：{}   大球比率：{}%    平均进球：{}".format(infoType, name,gameTotal,round(rate,1),scorePerGame)
+            #     infoList[infoType + " " +name]=info
 
 
             # 角球
-            checkCornerPer = round(checkCorner / checkGameSum,2)
-            cornerPerGame = round(cornerPerGame,2)
-            rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
+            # checkCornerPer = round(checkCorner / checkGameSum,2)
+            # cornerPerGame = round(cornerPerGame,2)
+            # rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
 
-            winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
-            lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
-            checkWeig = rate * 0.01 * checkGameSum
-            # if rateMax > rate and (checkGameSum > 40):
-            if rateMax < rate and (checkGameSum > 40):
-                rateMax = rate
-                info = "{}  连输数：{}   大角比率：{}%    场均角球：{}".format(name,gameTotal,round(rate,1),cornerPerGame)
-                infoList[name]=info
+            # winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
+            # lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
+            # checkWeig = rate * 0.01 * checkGameSum
+
+            # cond = (rateMax > rate and (checkGameSum > checkParam))
+            # if rateParam < 0:
+            #     cond = (rateMax < rate and len(data)/(winSum+lostSum) < checkParam)
+            # if cond:
+            #     rateMax = rate
+            #     info = "{} {}  连输数：{}   大角比率：{}%    场均角球：{}".format(infoType, name,gameTotal,round(rate,1),cornerPerGame)
+            #     infoList[infoType + " " +name]=info
+
             
 
 for param in params:
-    getResult(param)
+    getResult(param, -1)
+
+for param in params:
+    getResult(param, 100)
+
 
 for info in infoList:
     print(infoList[info])

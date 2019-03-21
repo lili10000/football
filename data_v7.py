@@ -281,6 +281,17 @@ if checkFlag:
 key = "k_corner"
 gameCode = []
 
+# 大
+info = "大角"
+gameCode.append([124,3, "哥伦甲", info ])
+gameCode.append([331,3, "瑞典甲", info ])
+gameCode.append([1294,2,"英联北", info ])
+gameCode.append([632,3, "德丙", info ])
+gameCode.append([633,3, "捷甲", info ])
+gameCode.append([729,2, "阿尔乙", info ])
+gameCode.append([201,4, "爱超", info ])
+gameCode.append([332,3, "爱甲", info ])
+
 
 # 小
 info = "小角"
@@ -300,8 +311,16 @@ gameCode.append([1000, 3, "墨春联", info]) #
 gameCode.append([108, 4, "葡超", info]) #
 gameCode.append([187, 2, "法乙", info]) #
 gameCode.append([1810, 2, "荷乙", info]) #
-
-
+gameCode.append([839,4, "以乙北", info ])
+gameCode.append([124,2, "哥伦甲", info ])
+gameCode.append([739,3, "英北超", info ])
+gameCode.append([1293,3, "英全联", info ])
+gameCode.append([1295,3, "英联南", info ])
+gameCode.append([247,3, "丹甲", info ])
+gameCode.append([1046,2,"墨乙", info ])
+gameCode.append([189,2, "苏冠", info ])
+gameCode.append([553,2, "埃及超", info ])
+gameCode.append([726,2, "澳维超", info ])
 
 # 买预备=========================
 
