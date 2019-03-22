@@ -300,6 +300,8 @@ gameCode.append([354,3, "法N", info ])
 gameCode.append([739,3, "英北超", info ])
 gameCode.append([191,3, "俄甲", info ])
 gameCode.append([332,3, "爱甲", info ])
+gameCode.append([1614,4, "澳维超2", info])
+gameCode.append([688,4, "苏乙", info])
 
 # # 买输
 info = "让球输"
