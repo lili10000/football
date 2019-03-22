@@ -282,50 +282,48 @@ key = "k_corner"
 gameCode = []
 
 # 大
-info = "大角"
-gameCode.append([124,3, "哥伦甲", info ])
-gameCode.append([331,3, "瑞典甲", info ])
-gameCode.append([1294,2,"英联北", info ])
-gameCode.append([632,3, "德丙", info ])
-gameCode.append([633,3, "捷甲", info ])
-gameCode.append([729,2, "阿尔乙", info ])
-gameCode.append([201,4, "爱超", info ])
-gameCode.append([332,3, "爱甲", info ])
-gameCode.append([632,3, "德丙", info])
-
-# 小
-info = "小角"
-gameCode.append([35, 4, "英超", info]) #
-gameCode.append([182, 4, "苏超", info]) #
+info = "小球 小角"
+gameCode.append([2315,3, "意大利丙A", info])
+gameCode.append([553,2, "埃及超", info ])
+gameCode.append([653, 3, "伊朗超", info]) #
 gameCode.append([151, 3, "以超", info]) #
 gameCode.append([252, 4, "美职联", info]) #
-gameCode.append([653, 3, "伊朗超", info]) #
-gameCode.append([157, 3, "意乙", info]) #
-gameCode.append([42, 2, "英冠", info]) #
-gameCode.append([8, 3, "俄超", info]) #
-gameCode.append([460, 3, "英乙", info]) #
-gameCode.append([158, 4, "土超", info]) #
-gameCode.append([607, 3, "墨秋联", info]) #
-gameCode.append([37, 3, "意甲", info]) #
-gameCode.append([1000, 3, "墨春联", info]) #
-gameCode.append([108, 4, "葡超", info]) #
-gameCode.append([187, 2, "法乙", info]) #
-gameCode.append([1810, 2, "荷乙", info]) #
-gameCode.append([839,4, "以乙北", info ])
-gameCode.append([124,2, "哥伦甲", info ])
-gameCode.append([739,3, "英北超", info ])
-gameCode.append([1293,3, "英全联", info ])
-gameCode.append([1295,3, "英联南", info ])
-gameCode.append([247,3, "丹甲", info ])
-gameCode.append([1046,2,"墨乙", info ])
-gameCode.append([189,2, "苏冠", info ])
-gameCode.append([553,2, "埃及超", info ])
 gameCode.append([726,2, "澳维超", info ])
-gameCode.append([1830,4, "罗马LIII", info])
+gameCode.append([40,2, "荷甲", info ])
+gameCode.append([729,2, "阿尔乙", info ])
+gameCode.append([251,3, "巴甲", info]) 
+gameCode.append([187, 2, "法乙", info]) #
 gameCode.append([1614,2, "澳维超2", info])
-gameCode.append([731,3, "西澳超", info])
-gameCode.append([2315,3, "意大利丙A", info])
-gameCode.append([688,2, "苏乙", info])
+gameCode.append([226,2, "马来超", info])
+gameCode.append([204,3, "罗甲", info ])
+gameCode.append([1810, 2, "荷乙", info]) #
+gameCode.append([8, 3, "俄超", info]) #
+
+info = "大球 小角"
+gameCode.append([568,3, "埃及乙", info])
+gameCode.append([124,3, "哥伦甲", info ])
+gameCode.append([607, 3, "墨秋联", info]) #
+gameCode.append([247,3, "丹甲", info ])
+gameCode.append([37, 3, "意甲", info]) #
+gameCode.append([182, 4, "苏超", info]) #
+gameCode.append([1294,2,"英联北", info ])
+gameCode.append([1000, 3, "墨春联", info]) #
+gameCode.append([158, 4, "土超", info]) #
+
+info = "小球 大角"
+gameCode.append([238,3, "阿尔甲", info])
+gameCode.append([632,3, "德丙", info ])
+gameCode.append([354,3, "法N", info ])
+
+info = "大球 大角"
+gameCode.append([332,3, "爱甲", info ])
+gameCode.append([85,3, "韩K联", info ])
+gameCode.append([331,3, "瑞典甲", info ])
+gameCode.append([201,4, "爱超", info ])
+
+# =================
+
+
 
 # 买预备=========================
 

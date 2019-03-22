@@ -302,9 +302,10 @@ gameCode.append([191,3, "俄甲", info ])
 gameCode.append([332,3, "爱甲", info ])
 gameCode.append([1614,4, "澳维超2", info])
 gameCode.append([688,4, "苏乙", info])
+gameCode.append([204,3, "罗甲", info ])
 
-# # 买输
-info = "让球输"
+# # # 买输
+# info = "让球输"
 gameCode.append([214,3, "巴西乙", info ])
 gameCode.append([108,4, "葡超", info ])
 gameCode.append([3,4, "澳超", info ]) # 输
@@ -319,8 +320,11 @@ gameCode.append([247,3, "丹甲", info ])
 gameCode.append([1046,3,"墨乙", info ])
 gameCode.append([189,2, "苏冠", info ])
 gameCode.append([553,3, "埃及超", info ])
+gameCode.append([2181,3, "罗乙", info ])
 
 # 黑预备
+
+
 
 
 # 黑==========
