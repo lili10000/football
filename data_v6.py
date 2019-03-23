@@ -285,58 +285,8 @@ if checkFlag:
 
 key = "k_corner"
 gameCode = []
-
-# 纯小
-info = "小球"
-gameCode.append([151, 4, "以超", info]) #
-gameCode.append([251, 3, "巴甲", info]) #
-gameCode.append([40, 4, "荷甲", info]) #
-gameCode.append([653, 2, "伊朗超", info]) #
-gameCode.append([226,2, "马来超", info]) #
-gameCode.append([3,3, "澳超", info]) #
-gameCode.append([1810, 3, "荷乙", info]) #
-gameCode.append([8,4, "俄超", info ]) #
-gameCode.append([654,2, "阿甲", info ]) #
-gameCode.append([252,2, "美职联", info ]) #
-gameCode.append([214,3, "巴西乙", info ]) #
-gameCode.append([460,3, "英乙", info ]) #
-gameCode.append([108,4, "葡超", info])
-gameCode.append([187,3, "法乙", info] )
-gameCode.append([39,2, "法甲", info]) #
-gameCode.append([354,3, "法N", info ])
-gameCode.append([839,2, "以乙北", info ])
-gameCode.append([124,2, "哥伦甲", info ])
-gameCode.append([238,2, "阿尔甲", info ])
-gameCode.append([553,2, "埃及超", info ])
-gameCode.append([726,2, "澳维超", info ])
-gameCode.append([1830,2, "罗马LIII", info])
-gameCode.append([731,4, "西澳超", info])
-gameCode.append([2315,2, "意大利丙A", info])
-gameCode.append([688,4, "苏乙", info])
-gameCode.append([204,2, "罗甲", info ])
-info = "大球"
-gameCode.append([37, 4, "意甲", info]) #
-gameCode.append([85, 3, "韩k联", info]) #
-gameCode.append([35, 4, "英超", info]) #
-gameCode.append([158, 4, "土超", info]) #
-gameCode.append([36, 4, "西甲", info]) #
-gameCode.append([331,3, "瑞典甲", info ])
-gameCode.append([739,2, "英北超", info ])
-gameCode.append([1294,3,"英联北", info ])
-gameCode.append([247,3, "丹甲", info ])
-gameCode.append([729,2, "阿尔乙", info ])
-gameCode.append([201,3, "爱超", info ])
-gameCode.append([332,3, "爱甲", info ])
-gameCode.append([1830,4, "罗马LIII", info])
-gameCode.append([2181,2, "罗乙", info ])
-# 买预备=========================
-
-
-
-
+gameCode = sql.queryByTypeAll("k_scoreBuy")
 gameIndex = 0
-
-
 while index < end:
     gameIndex = 0
     while gameIndex < len(gameCode) :

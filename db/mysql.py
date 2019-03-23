@@ -92,7 +92,7 @@ class sqlMgr:
 
     def queryByType(self, type, key):
 
-        SQL = u"select * from "+ key +" where ( type like '%" + type + "%' ) "
+        SQL = u"select * from {} where ( type = '{}' ) ".format(key, type)
         SQL.encode('utf-8')
 
         try:  

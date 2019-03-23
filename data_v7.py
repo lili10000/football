@@ -65,16 +65,14 @@ class parser:
     def __init__(self, url):
 
         self.sql = sql
-        self.soup = BeautifulSoup(self.getHtmlText())
+        self.soup = BeautifulSoup(self.getHtmlText(url))
         self.url = url
         self.main = []
         self.client = []
         self.score = []
         self.param = []
 
-
-
-    def getHtmlText(self):
+    def getHtmlText(self, url):
 
         def addIp(ipStr):
             proxies =[]
@@ -271,100 +269,62 @@ class parser:
             input += ",'"+  main + "_" + str(gameTime) + "'" 
             self.sql.insert(input, key)
 
-index = 1
-end = 80
-if checkFlag:
-    end = 2
-
-
 
 key = "k_corner"
-gameCode = []
 
-# 大
-info = "大角"
-gameCode.append([124,3, "哥伦甲", info ])
-gameCode.append([331,3, "瑞典甲", info ])
-gameCode.append([1294,2,"英联北", info ])
-gameCode.append([632,3, "德丙", info ])
-gameCode.append([633,3, "捷甲", info ])
-gameCode.append([729,2, "阿尔乙", info ])
-gameCode.append([201,4, "爱超", info ])
-gameCode.append([332,3, "爱甲", info ])
-gameCode.append([632,3, "德丙", info])
-
-# 小
-info = "小角"
-gameCode.append([35, 4, "英超", info]) #
-gameCode.append([182, 4, "苏超", info]) #
-gameCode.append([151, 3, "以超", info]) #
-gameCode.append([252, 4, "美职联", info]) #
-gameCode.append([653, 3, "伊朗超", info]) #
-gameCode.append([157, 3, "意乙", info]) #
-gameCode.append([42, 2, "英冠", info]) #
-gameCode.append([8, 3, "俄超", info]) #
-gameCode.append([460, 3, "英乙", info]) #
-gameCode.append([158, 4, "土超", info]) #
-gameCode.append([607, 3, "墨秋联", info]) #
-gameCode.append([37, 3, "意甲", info]) #
-gameCode.append([1000, 3, "墨春联", info]) #
-gameCode.append([108, 4, "葡超", info]) #
-gameCode.append([187, 2, "法乙", info]) #
-gameCode.append([1810, 2, "荷乙", info]) #
-gameCode.append([839,4, "以乙北", info ])
-gameCode.append([124,2, "哥伦甲", info ])
-gameCode.append([739,3, "英北超", info ])
-gameCode.append([1293,3, "英全联", info ])
-gameCode.append([1295,3, "英联南", info ])
-gameCode.append([247,3, "丹甲", info ])
-gameCode.append([1046,2,"墨乙", info ])
-gameCode.append([189,2, "苏冠", info ])
-gameCode.append([553,2, "埃及超", info ])
-gameCode.append([726,2, "澳维超", info ])
-gameCode.append([1830,4, "罗马LIII", info])
-gameCode.append([1614,2, "澳维超2", info])
-gameCode.append([731,3, "西澳超", info])
-gameCode.append([2315,3, "意大利丙A", info])
-gameCode.append([688,2, "苏乙", info])
-
-# 买预备=========================
-
-gameIndex = 0
-
-
-while index < end:
-    gameIndex = 0
-    while gameIndex < len(gameCode) :
-        url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
-        url = url.replace("p.1", "p."+ str(index) )
-        
-        try:
-            html =  parser(url)
-            if len(ipList) < 2:
-                ipList = getIpList()
-        except:
-            # time.sleep(10)
-            if len(ipList) < 2:
-                ipList = getIpList()
-            # print ("connect err")
-            continue
-
-        print( index, gameCode[gameIndex][2])
-        try:   
-            if html.getData(key, gameCode[gameIndex]) == False :
-                break
-        except:
-            if len(ipList) < 2:
-                ipList = getIpList()
-            # print ("error :")
-        # time.sleep(1)
-        
-        gameIndex += 1
-    index += 1
+def working(tableName):
+    index = 1
+    end = 50
+    if checkFlag:
+        end = 2
     
+    gameCode = []
+    gameCode = sql.queryByTypeAll(tableName)
+    # 买预备=========================
+    gameIndex = 0
+    global ipList
+    while index < end:
+        gameIndex = 0
+        while gameIndex < len(gameCode) :
+            url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
+            url = url.replace("p.1", "p."+ str(index) )
             
-values = list(outputInfo.keys())
-values.sort()
-for value in values:
-    for tmp in outputInfo[value]:
-        print(tmp)
+            try:
+                html =  parser(url)
+                if len(ipList) < 2:
+                    ipList = getIpList()
+            except:
+                # time.sleep(10)
+                if len(ipList) < 2:
+                    ipList = getIpList()
+                # print ("connect err")
+                continue
+
+            print( index, gameCode[gameIndex][2])
+            try:   
+                if html.getData(key, gameCode[gameIndex]) == False :
+                    break
+            except:
+                if len(ipList) < 2:
+                    ipList = getIpList()
+                # print ("error :")
+            # time.sleep(1)
+            
+            gameIndex += 1
+        index += 1
+
+        values = list(outputInfo.keys())
+        values.sort()
+        for value in values:
+            for tmp in outputInfo[value]:
+                print(tmp)
+        
+        outputInfo.clear()
+        print("================================")
+
+working("k_rateBuy")
+working("k_compBuy")
+# working("k_scoreBuy")
+# working("k_cornerBuy")
+
+            

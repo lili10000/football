@@ -284,58 +284,9 @@ class parser:
 
 key = "k_corner"
 gameCode = []
-
+gameCode = sql.queryByTypeAll("k_rateBuy")
 # 买小
-info = "让球胜 "
-gameCode.append([251,3, "中超", info ]) 
-gameCode.append([39,3,"法甲", info]) 
-gameCode.append([35,4,"英超", info ]) 
-gameCode.append([251,3, "巴甲", info]) 
-gameCode.append([157,3,"意乙", info]) 
-gameCode.append([8,4,"俄超", info]) 
-gameCode.append([42,3,"英冠", info ]) 
-gameCode.append([649,3,"德乙", info ]) 
-gameCode.append([654,2, "阿甲", info]) #
-gameCode.append([354,3, "法N", info ])
-gameCode.append([739,3, "英北超", info ])
-gameCode.append([191,3, "俄甲", info ])
-gameCode.append([332,3, "爱甲", info ])
-gameCode.append([1614,4, "澳维超2", info])
-gameCode.append([688,4, "苏乙", info])
-gameCode.append([204,3, "罗甲", info ])
 
-# # # 买输
-# info = "让球输"
-gameCode.append([214,3, "巴西乙", info ])
-gameCode.append([108,4, "葡超", info ])
-gameCode.append([3,4, "澳超", info ]) # 输
-gameCode.append([252,3, "美职联", info ]) #输小
-gameCode.append([430,3, "英甲", info])
-gameCode.append([1000,3, "墨春联", info ])
-gameCode.append([182,3, "苏超", info ])
-gameCode.append([839,2, "以乙北", info ])
-gameCode.append([1294,3,"英联北", info ])
-gameCode.append([1295,2, "英联南", info ])
-gameCode.append([247,3, "丹甲", info ])
-gameCode.append([1046,3,"墨乙", info ])
-gameCode.append([189,2, "苏冠", info ])
-gameCode.append([553,3, "埃及超", info ])
-gameCode.append([2181,3, "罗乙", info ])
-
-# 黑预备
-
-
-
-
-# 黑==========
-# gameCode.append([244, "波兰甲", 0]) #
-# gameCode.append([402, "泰超", 4]) #输小
-# gameCode.append([34,"日职联", True]) 
-# gameCode.append([134, "捷甲", 0]) #
-# gameCode.append([1275, "日职乙", 0]) #
-# gameCode.append([38, "德甲", info ]) #
-# gameCode.append([649, "德乙", info])
-# check
 
 index = 1
 end = 50

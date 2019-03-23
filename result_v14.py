@@ -4,7 +4,7 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 name = None
 # name = "英超"
-loopSize = 3
+loopSize = 2
 # loopSize = 1
 
 params = [
@@ -72,6 +72,8 @@ params = [
     # ["法乙", 3],
     # ["澳超", 3]
 ]
+
+params = sql.queryByTypeAll("k_gameDic")
 infoList = {}
 
 # name = '荷乙'
@@ -79,10 +81,10 @@ infoList = {}
 ngeFlag =True
 ngeFlag =False
 
-def getResult(param, rateParam):
+def getResult(param, rateParam, checkType):
     data = []
-    name = param[0]
-    gameParam = param[1]
+    name = param[1]
+    # gameParam = param[1]
 
     if name == None:
         data = sql.queryByTypeAll("k_corner")
@@ -189,8 +191,8 @@ def getResult(param, rateParam):
         for chechSumTmp in range(1):
             # chechSum = gameTotal - 1
 
-            if loopSize == 1:
-                gameTotalTmp = gameParam - 1
+            # if loopSize == 1:
+            #     gameTotalTmp = gameParam - 1
 
             gameTotal = gameTotalTmp + 2
             chechSum = gameTotalTmp + 2
@@ -225,6 +227,8 @@ def getResult(param, rateParam):
             lost_lostCorner = 0
             # checkWinCorner = 0
             checkParam = 30
+
+            comCheck = {}
 
             ping = 0
             for result in result_slice:
@@ -280,18 +284,27 @@ def getResult(param, rateParam):
 
                         checkScoreSum += gameCheck[3]
                         checkGameSum += 1
+                        key = ""
                         if gameCheck[3] > scorePerGame:
                             win_winScore += 1
+                            key +="大球 "
                         else:
                             win_lostScore += 1
+                            key +="小球 "
 
                         winCorner += gameCheck[4]
                         checkCorner += gameCheck[4]
 
                         if gameCheck[4] > cornerPerGame:
                             win_winCorner += 1
+                            key += "大角"
                         else:
                             win_lostCorner += 1
+                            key += "小角"
+
+                        if comCheck.__contains__(key) == False:
+                            comCheck[key] = 0
+                        comCheck[key] += 1
 
                     elif cond_2 and gameCheck[0] == -1:
                         lostSum += 1
@@ -300,10 +313,13 @@ def getResult(param, rateParam):
                         checkScoreSum += gameCheck[3]
                         checkGameSum += 1
 
+                        key = ""
                         if gameCheck[3] > scorePerGame:
                             lost_winScore += 1
+                            key +="大球 "
                         else:
                             lost_lostScore += 1
+                            key +="小球 "
 
                         lostCorner += gameCheck[4]
                         checkCorner += gameCheck[4]
@@ -311,33 +327,29 @@ def getResult(param, rateParam):
 
                         if gameCheck[4] > cornerPerGame:
                             lost_winCorner += 1
+                            key += "大角"
                         else:
                             lost_lostCorner += 1
+                            key += "小角"
 
+                        if comCheck.__contains__(key) == False:
+                            comCheck[key] = 0
+                        comCheck[key] += 1
 
-                        # if cond_1:
-                        #     main_lost_size += 1
-
-
-                        
-                        # if game_check[1]:
-                        #     main_lost_size += 1
-                        # else:
-                        #     client_lost_size += 1
-                    elif cond_2:
-                        # print(index)
-                        # index = index
-                        ping += 1
-                        if gameCheck[3] > scorePerGame:
-                            win_winScore += 1
-                        else:
-                            win_lostScore += 1
+                    # elif cond_2:
+                    #     # print(index)
+                    #     # index = index
+                    #     ping += 1
+                    #     if gameCheck[3] > scorePerGame:
+                    #         win_winScore += 1
+                    #     else:
+                    #         win_lostScore += 1
 
                     index += 1
                 # print(result, winSum, lostSum)
             if lostSum == 0:
                 continue
-            rate  = winSum / lostSum
+            rate  = winSum * 100 /(winSum+ lostSum)
 
             
             cond = (rateMax > rate and (checkGameSum > checkParam))
@@ -348,59 +360,132 @@ def getResult(param, rateParam):
 
 
             # # 让球
-            if cond:
+            if cond and checkType == 1:
                 rateMax = rate
-                winRate = round(winSum*100/(winSum+lostSum))
-                info = "{} {}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(infoType, name,len(data),gameTotal,winRate,winSum,lostSum)
-                infoList[infoType + " " +name]=info
+                winRate = round(winSum*100/(winSum+lostSum), 2)
+                # info = "{} {}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(infoType, name,len(data),gameTotal,winRate,winSum,lostSum)
+                
+                info = "让胜"
+                if rate < 1:
+                    info = "让输"
+
+                rateDivNew = abs(winRate - 50)
+                rateDivOld = 0
+                if infoList.__contains__(name):
+                    rateDivOld = abs(infoList[name][4] - 50)
+
+                if rateDivNew > rateDivOld and rateDivNew > 5:
+                    infoList[name]=[param[0], gameTotal, param[1], info, winRate]
+                
             
 
 
             # 大小球
-            # checkScorePer = round(checkScoreSum / checkGameSum,2)
-            # scorePerGame = round(scorePerGame,2)
-            # rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
-            # if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
-            #     continue  
+            checkScorePer = round(checkScoreSum / checkGameSum,2)
+            scorePerGame = round(scorePerGame,2)
+            rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
+            if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
+                continue  
 
-            # cond = (rateMax > rate and (checkGameSum > checkParam))
-            # if rateParam < 0:
-            #     cond = (rateMax < rate and (checkGameSum > checkParam))
-            # if cond:
-            #     rateMax = rate
-            #     winBig = win_winScore*100/(win_lostScore + win_winScore)
-            #     lostBig = lost_winScore*100/(lost_lostScore + lost_winScore)
-            #     # if abs(rate - 50) < 5 and abs(winBig - 50) < 5 and abs(lostBig - 50) < 5:
-            #     #     continue
-            #     info = "{} {}  连输数：{}   大球比率：{}%    平均进球：{}".format(infoType, name,gameTotal,round(rate,1),scorePerGame)
-            #     infoList[infoType + " " +name]=info
+            cond = (rateMax > rate and (checkGameSum > checkParam))
+            if rateParam < 0:
+                cond = (rateMax < rate and (checkGameSum > checkParam))
+            if cond and checkType == 2:
+                rateMax = rate
+                winBig = win_winScore*100/(win_lostScore + win_winScore)
+                lostBig = lost_winScore*100/(lost_lostScore + lost_winScore)
+                # if abs(rate - 50) < 5 and abs(winBig - 50) < 5 and abs(lostBig - 50) < 5:
+                #     continue
+                # info = "{} {}  连输数：{}   大球比率：{}%    平均进球：{}".format(infoType, name,gameTotal,round(rate,1),scorePerGame)
+                
+                info = "大球"
+                if rate < 50:
+                    info = "小球"
 
+                rateDivNew = abs(rate - 50)
+                rateDivOld = 0
+                if infoList.__contains__(name):
+                    rateDivOld = abs(infoList[name][4] - 50)
+
+                if rateDivNew > rateDivOld and rateDivNew > 5:
+                    infoList[name]=[param[0], gameTotal, param[1], info, rate]
 
             # 角球
-            # checkCornerPer = round(checkCorner / checkGameSum,2)
-            # cornerPerGame = round(cornerPerGame,2)
-            # rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
+            checkCornerPer = round(checkCorner / checkGameSum,2)
+            cornerPerGame = round(cornerPerGame,2)
+            rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
 
-            # winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
-            # lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
-            # checkWeig = rate * 0.01 * checkGameSum
+            winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
+            lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
+            checkWeig = rate * 0.01 * checkGameSum
 
-            # cond = (rateMax > rate and (checkGameSum > checkParam))
-            # if rateParam < 0:
-            #     cond = (rateMax < rate and len(data)/(winSum+lostSum) < checkParam)
-            # if cond:
-            #     rateMax = rate
-            #     info = "{} {}  连输数：{}   大角比率：{}%    场均角球：{}".format(infoType, name,gameTotal,round(rate,1),cornerPerGame)
-            #     infoList[infoType + " " +name]=info
+            cond = (rateMax > rate and (checkGameSum > checkParam))
+            if rateParam < 0:
+                cond = (rateMax < rate and len(data)/(winSum+lostSum) < checkParam)
+            if cond and checkType == 3:
+                rateMax = rate
+                # info = "{} {}  连输数：{}   大角比率：{}%    场均角球：{}".format(infoType, name,gameTotal,round(rate,1),cornerPerGame)
 
-            
+                info = "大角"
+                if rate < 50:
+                    info = "小角"
 
-for param in params:
-    getResult(param, -1)
+                rateDivNew = abs(rate - 50)
+                rateDivOld = 0
+                if infoList.__contains__(name):
+                    rateDivOld = abs(infoList[name][4] - 50)
 
-for param in params:
-    getResult(param, 100)
+                if rateDivNew > rateDivOld and rateDivNew > 5:
+                    infoList[name]=[param[0], gameTotal, param[1], info, rate]
+
+            if checkType == 4:
+                for key in  comCheck:
+                    dataTmp =  comCheck[key]
+                    rate = round(dataTmp*100 / checkGameSum,2)
+
+                    rateDivNew = rate 
+                    rateDivOld = 0
+                    if infoList.__contains__(name):
+                        rateDivOld = abs(infoList[name][4])
+
+                    if rateDivNew > rateDivOld and rateDivNew > 33:
+                        infoList[name]=[param[0], gameTotal, param[1], key, rate]
+
+checkType = 3
 
 
-for info in infoList:
-    print(infoList[info])
+
+def working(type):
+    for param in params:
+        getResult(param, -1, type)
+
+    for param in params:
+        getResult(param, 100, type)
+
+
+    tableName = ""
+    if type == 1:
+        tableName = "k_rateBuy"
+    elif type == 2: 
+        tableName = "k_scoreBuy"
+    elif type == 3: 
+        tableName = "k_cornerBuy"
+    elif type == 4: 
+        tableName = "k_compBuy"
+
+    sql.cleanAll(tableName)
+
+
+    for index in infoList:
+        tmp = infoList[index]
+        info = "'{}','{}','{}','{}'".format(tmp[0],tmp[1],tmp[2],tmp[3])
+        sql.insert(info, tableName)
+        print(tmp)
+
+    infoList.clear()
+
+# for i in range(checkType):
+working(1)
+# working(2)
+# working(3)
+working(4)
