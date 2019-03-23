@@ -323,8 +323,8 @@ def working(tableName):
         print("================================")
 
 # working("k_rateBuy")
-# working("k_compBuy")
-working("k_scoreBuy")
-working("k_cornerBuy")
+working("k_compBuy")
+# working("k_scoreBuy")
+# working("k_cornerBuy")
 
             

@@ -126,9 +126,9 @@ class sqlMgr:
         except:
             print ("query error ")
     
-    def queryCount(self, type, key, result):
+    def queryCount(self, key, name):
 
-        SQL = u"select count(*) from "+ key +" where (( type = '" + type + "' ) and (result = "+ result +")) "
+        SQL = u"select count(*) from "+ key + " where (type = '" + name + "' ) "
         SQL.encode('utf-8')
 
         try:  

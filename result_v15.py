@@ -65,10 +65,19 @@ params = [
     [460, "英乙", 3],
     [8,"俄超", 2],
     [187, "法乙", 3],
-    [3,"澳超", 3]
+    [3,"澳超", 3],
+    [379,"捷3L", 3],
+    [134,"捷甲", 3],
+    [660,"捷2L", 3],
+    [244,"波兰甲", 3],
+    [267,"波兰乙", 3], 
+    [237,"波兰丙", 3], 
+    [859,"塞尔乙", 3]
 ]
 
+key = "k_gameDic"
+sql.cleanAll(key)
 for param in params:
     # input = "'"+ str(param[0]) + "','" + param[1] + "'" 
     input = "'{}','{}'".format(param[0], param[1])
-    sql.insert(input,"k_gameDic")
+    sql.insert(input,key)

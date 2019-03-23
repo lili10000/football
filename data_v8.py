@@ -11,9 +11,6 @@ import ssl
 
 outputInfo = {}
 
-checkFlag = True
-# checkFlag = False
-
 
 
 sql = sqlMgr('localhost', 'root', '861217', 'football')
@@ -65,16 +62,14 @@ class parser:
     def __init__(self, url):
 
         self.sql = sql
-        self.soup = BeautifulSoup(self.getHtmlText())
+        self.soup = BeautifulSoup(self.getHtmlText(url))
         self.url = url
         self.main = []
         self.client = []
         self.score = []
         self.param = []
 
-
-
-    def getHtmlText(self):
+    def getHtmlText(self, url):
 
         def addIp(ipStr):
             proxies =[]
@@ -104,99 +99,7 @@ class parser:
 
         type_game = ""
 
-        if checkFlag:
-            for tr  in self.soup.find_all('tr', class_='page-1'):
-                td = tr.find('td', class_="bg1")
-                if td == None:
-                    continue
-                type_game = td.text
-                td = td.findNextSibling('td')
-                td = td.findNextSibling('td')
-                gameTime = td.text
-
-
-                main = ""
-                client = ""
-                for td in tr.find_all('td', class_="text-right BR0"):
-                    for a in td.find_all('a', target="_blank"):
-                        main = clearStr(a.text)
-
-                for td in tr.find_all('td', class_="text-left"):
-                    a = td.find('a', target="_blank")
-                    client = clearStr(a.text)
-                    break
-
-                
-
-                def checkBuy(teamName, cmd):
-                    # if teamName == "":
-                    #     teamName = teamName
-                    # else:
-                    #     # print(teamName)
-                    data = self.sql.queryTeamData(type_game, teamName, 'k_corner')
-                    result = {}
-                    for one in data:
-                        main = one[0]
-                        client = one[1]
-                        main_score = one[2]
-                        client_score = one[3]
-                        rate = float(one[4])
-                        gameTime = one[9]
-
-                        key = gameTime
-                        if main_score - client_score > 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = 1
-                            elif client == teamName:
-                                result[key] = -1
-
-                        elif main_score - client_score < 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = -1
-                            elif client == teamName:
-                                result[key] = 1
-                        else:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = 0
-                            elif client == teamName:
-                                result[key] = 0
-                    # keys = result.keys()
-                    values = list(result.keys())
-                    values.sort(reverse = True)
-
-
-                    def chechResult(gameTmp):
-                        if gameTmp == -1 :
-                            return 1
-                        return 0
-
-                    lostSum = 0
-                    checkSum = cmd[1]
-
-                    for index in range(checkSum):
-                        key = values[index]
-                        if result[key] == -1:
-                            lostSum += 1
-                    
-                    if lostSum == checkSum :
-                        return True
-                    return False
-
-                addInfo = "【" + cmd[3] + "】"
-                if main != "" and checkBuy(main, cmd):
-                    infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
-                    addOutputInfo(gameTime, infoTmp)
-                    # print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
-                elif client != "" and checkBuy(client, cmd):
-                    infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
-                    addOutputInfo(gameTime, infoTmp)
-                    
+                 
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
             if td == None:
@@ -207,8 +110,6 @@ class parser:
             td = td.findNextSibling('td')
             timeArray= time.strptime('20'+ td.text, "%Y/%m/%d %H:%M")
             gameTime = int(time.mktime(timeArray))
-
-
 
             td = tr.find('td', class_="BR0 text-center red-color PL0 PR0")
             if td == None:
@@ -269,100 +170,76 @@ class parser:
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
             input += ",'"+  main + "_" + str(gameTime) + "'" 
-            self.sql.insert(input, key)
-
-index = 1
-end = 80
-if checkFlag:
-    end = 2
+            self.sql.insert(input, "k_corner")
 
 
+key = "k_gameDic"
 
-key = "k_corner"
-gameCode = []
-
-# 大
-info = "小球 小角"
-gameCode.append([2315,3, "意大利丙A", info])
-gameCode.append([553,2, "埃及超", info ])
-gameCode.append([653, 3, "伊朗超", info]) #
-gameCode.append([151, 3, "以超", info]) #
-gameCode.append([252, 4, "美职联", info]) #
-gameCode.append([726,2, "澳维超", info ])
-gameCode.append([40,2, "荷甲", info ])
-gameCode.append([729,2, "阿尔乙", info ])
-gameCode.append([251,3, "巴甲", info]) 
-gameCode.append([187, 2, "法乙", info]) #
-gameCode.append([1614,2, "澳维超2", info])
-gameCode.append([226,2, "马来超", info])
-gameCode.append([204,3, "罗甲", info ])
-gameCode.append([1810, 2, "荷乙", info]) #
-gameCode.append([8, 3, "俄超", info]) #
-
-info = "大球 小角"
-gameCode.append([568,3, "埃及乙", info])
-gameCode.append([124,3, "哥伦甲", info ])
-gameCode.append([607, 3, "墨秋联", info]) #
-gameCode.append([247,3, "丹甲", info ])
-gameCode.append([37, 3, "意甲", info]) #
-gameCode.append([182, 4, "苏超", info]) #
-gameCode.append([1294,2,"英联北", info ])
-gameCode.append([1000, 3, "墨春联", info]) #
-gameCode.append([158, 4, "土超", info]) #
-
-info = "小球 大角"
-gameCode.append([238,3, "阿尔甲", info])
-gameCode.append([632,3, "德丙", info ])
-gameCode.append([354,3, "法N", info ])
-
-info = "大球 大角"
-gameCode.append([332,3, "爱甲", info ])
-gameCode.append([85,3, "韩K联", info ])
-gameCode.append([331,3, "瑞典甲", info ])
-gameCode.append([201,4, "爱超", info ])
-
-# =================
-
-
-
-# 买预备=========================
-
-gameIndex = 0
-
-
-while index < end:
-    gameIndex = 0
-    while gameIndex < len(gameCode) :
-        url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
-        url = url.replace("p.1", "p."+ str(index) )
-        
-        try:
-            html =  parser(url)
-            if len(ipList) < 2:
-                ipList = getIpList()
-        except:
-            # time.sleep(10)
-            if len(ipList) < 2:
-                ipList = getIpList()
-            # print ("connect err")
-            continue
-
-        print( index, gameCode[gameIndex][2])
-        try:   
-            if html.getData(key, gameCode[gameIndex]) == False :
-                break
-        except:
-            if len(ipList) < 2:
-                ipList = getIpList()
-            # print ("error :")
-        # time.sleep(1)
-        
-        gameIndex += 1
-    index += 1
+def working(tableName, type = 0):
+    index = 1
+    end = 40
     
+    gameCode = []
+    gameCodeAll = sql.queryByTypeAll(key)
+
+    for code in  gameCodeAll:
+        dataRecv = sql.queryCount(tableName, code[1])
+        gameCount = dataRecv[0][0]
+        if  gameCount == 0:
+            gameCode.append(code)
+
+    if type == 1:
+       gameCode = gameCodeAll  
+       end = 2 
+
+    if len(gameCode) == 0 :
+        return
+
+    # 买预备=========================
+    gameIndex = 0
+    global ipList
+    while index < end:
+        gameIndex = 0
+        while gameIndex < len(gameCode) :
+            url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
+            url = url.replace("p.1", "p."+ str(index) )
             
-values = list(outputInfo.keys())
-values.sort()
-for value in values:
-    for tmp in outputInfo[value]:
-        print(tmp)
+            try:
+                html =  parser(url)
+                if len(ipList) < 2:
+                    ipList = getIpList()
+            except:
+                # time.sleep(10)
+                if len(ipList) < 2:
+                    ipList = getIpList()
+                # print ("connect err")
+                continue
+
+            print( index, gameCode[gameIndex][1])
+            try:   
+                if html.getData(key, gameCode[gameIndex]) == False :
+                    break
+            except:
+                if len(ipList) < 2:
+                    ipList = getIpList()
+                # print ("error :")
+            # time.sleep(1)
+            
+            gameIndex += 1
+        index += 1
+
+        values = list(outputInfo.keys())
+        values.sort()
+        for value in values:
+            for tmp in outputInfo[value]:
+                print(tmp)
+        
+        outputInfo.clear()
+        # print("================================")
+
+
+
+# working("k_corner", 1)
+working("k_corner")
+
+            
