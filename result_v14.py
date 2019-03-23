@@ -407,8 +407,8 @@ def getResult(param, rateParam, checkType):
                 if infoList.__contains__(name):
                     rateDivOld = abs(infoList[name][4] - 50)
 
-                if rateDivNew > rateDivOld and rateDivNew > 5:
-                    infoList[name]=[param[0], gameTotal, param[1], info, rate]
+                if rateDivNew > rateDivOld and rateDivNew > 6:
+                    infoList[name]=[param[0], gameTotal, param[1], info, rate, checkScorePer]
 
             # 角球
             checkCornerPer = round(checkCorner / checkGameSum,2)
@@ -435,8 +435,8 @@ def getResult(param, rateParam, checkType):
                 if infoList.__contains__(name):
                     rateDivOld = abs(infoList[name][4] - 50)
 
-                if rateDivNew > rateDivOld and rateDivNew > 5:
-                    infoList[name]=[param[0], gameTotal, param[1], info, rate]
+                if rateDivNew > rateDivOld and rateDivNew > 9:
+                    infoList[name]=[param[0], gameTotal, param[1], info, rate, checkCornerPer]
 
             if checkType == 4:
                 for key in  comCheck:
@@ -448,7 +448,7 @@ def getResult(param, rateParam, checkType):
                     if infoList.__contains__(name):
                         rateDivOld = abs(infoList[name][4])
 
-                    if rateDivNew > rateDivOld and rateDivNew > 33:
+                    if rateDivNew > rateDivOld and rateDivNew >= 35:
                         infoList[name]=[param[0], gameTotal, param[1], key, rate]
 
 checkType = 3
@@ -486,6 +486,6 @@ def working(type):
 
 # for i in range(checkType):
 working(1)
-# working(2)
-# working(3)
+working(2)
+working(3)
 working(4)
