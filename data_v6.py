@@ -16,11 +16,6 @@ checkFlag = True
 
 
 
-
-
-
-
-
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 

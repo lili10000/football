@@ -45,6 +45,14 @@ def clearStr(str):
     str = str.replace("\n", "")
     return str
 
+def longTime(timeStr):
+    timeArray= time.strptime('20'+ timeStr, "%Y/%m/%d %H:%M")
+    gameTime = int(time.mktime(timeArray))
+    now = int(time.time()) 
+    if gameTime - now > 60*60*24:
+        return True
+    return False
+
 class parser:
     class gameData:
         def __init__(self):    
@@ -112,6 +120,8 @@ class parser:
                 td = td.findNextSibling('td')
                 gameTime = td.text
 
+                if longTime(gameTime):
+                    continue
 
                 main = ""
                 client = ""
@@ -322,9 +332,9 @@ def working(tableName):
         outputInfo.clear()
         print("================================")
 
-# working("k_rateBuy")
+working("k_rateBuy")
 working("k_compBuy")
-# working("k_scoreBuy")
-# working("k_cornerBuy")
+working("k_scoreBuy")
+working("k_cornerBuy")
 
             
