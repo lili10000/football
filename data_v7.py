@@ -335,7 +335,7 @@ def working(tableName):
 
 try:
     os.remove(fileName)
-except expression as identifier:
+except :
     pass
 
 working("k_rateBuy")
