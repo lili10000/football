@@ -8,13 +8,13 @@ from html.parser import HTMLParser
 from db.mysql import sqlMgr
 import random
 import ssl
-
+import result_v15 as GameType
+import result_v14 as cal
 outputInfo = {}
 
 
 
 sql = sqlMgr('localhost', 'root', '861217', 'football')
-
 
 def addOutputInfo(key, info):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
@@ -56,8 +56,6 @@ class parser:
             self.win_rate = float(0)
             self.lost_rate = float(0)
             self.time = 0
-
-
 
     def __init__(self, url):
 
@@ -185,7 +183,7 @@ def working(tableName, type = 0):
     for code in  gameCodeAll:
         dataRecv = sql.queryCount(tableName, code[1])
         gameCount = dataRecv[0][0]
-        if  gameCount == 0:
+        if  gameCount < end*9:
             gameCode.append(code)
 
     if type == 1:
@@ -237,9 +235,9 @@ def working(tableName, type = 0):
         outputInfo.clear()
         # print("================================")
 
-
-
+GameType.updata()
 # working("k_corner", 1)
 working("k_corner")
+cal.docal()
 
             

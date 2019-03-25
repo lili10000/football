@@ -8,17 +8,12 @@ from html.parser import HTMLParser
 from db.mysql import sqlMgr
 import random
 import ssl
+import os
 
+fileName=r"result.text"
 outputInfo = {}
-
 checkFlag = True
-# checkFlag = False
-
-
-
 sql = sqlMgr('localhost', 'root', '861217', 'football')
-
-
 def addOutputInfo(key, info):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
     key = int(time.mktime(timeArray))
@@ -239,11 +234,11 @@ class parser:
             client = ""
             for td in tr.find_all('td', class_="text-right BR0"):
                 for a in td.find_all('a', target="_blank"):
-                   main = clearStr(a.text)
+                    main = clearStr(a.text)
 
             for td in tr.find_all('td', class_="text-left"):
                 for a in td.find_all('a', target="_blank"):
-                   client = clearStr(a.text)
+                    client = clearStr(a.text)
 
 
             rate = 0
@@ -325,16 +320,22 @@ def working(tableName):
 
         values = list(outputInfo.keys())
         values.sort()
+
         for value in values:
             for tmp in outputInfo[value]:
-                print(tmp)
+                with open(fileName, 'w+') as f:
+                    f.write(tmp)
+                    print(tmp)
         
         outputInfo.clear()
-        print("================================")
-
+        info = "================================"
+        with open(fileName, 'w+') as f:
+            f.write(info)
+            print(info)
+os.remove(fileName)
 working("k_rateBuy")
 working("k_compBuy")
-working("k_scoreBuy")
-working("k_cornerBuy")
+# working("k_scoreBuy")
+# working("k_cornerBuy")
 
-            
+        
