@@ -32,6 +32,11 @@ def getIpList():
     print("get ips size:", len(ips))
     return ips
 
+def writeFile(info):
+    with open(fileName, 'a') as f:
+        f.write(info + "\n")
+        print(info)
+
 ipList = []
 ipList = getIpList()
 
@@ -323,20 +328,18 @@ def working(tableName):
 
         for value in values:
             for tmp in outputInfo[value]:
-                with open(fileName, 'w+') as f:
-                    f.write(tmp)
-                    print(tmp)
+                writeFile(tmp)
         
         outputInfo.clear()
         info = "================================"
-        with open(fileName, 'w+') as f:
-            f.write(info)
-            print(info)
+        writeFile(info)
 
 try:
     os.remove(fileName)
 except :
     pass
+
+
 
 working("k_rateBuy")
 working("k_compBuy")
