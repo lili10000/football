@@ -10,7 +10,7 @@ import random
 import ssl
 import os
 
-fileName=r"result.text"
+fileName=r"result.txt"
 outputInfo = {}
 checkFlag = True
 sql = sqlMgr('localhost', 'root', '861217', 'football')
@@ -332,7 +332,12 @@ def working(tableName):
         with open(fileName, 'w+') as f:
             f.write(info)
             print(info)
-os.remove(fileName)
+
+try:
+    os.remove(fileName)
+except expression as identifier:
+    pass
+
 working("k_rateBuy")
 working("k_compBuy")
 # working("k_scoreBuy")
