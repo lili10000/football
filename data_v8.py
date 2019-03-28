@@ -9,12 +9,11 @@ from db.mysql import sqlMgr
 import random
 import ssl
 import result_v15 as GameType
-import result_v14 as cal
-outputInfo = {}
+import result_v14 as lostCal
+import result_v17 as winCal
+import _thread
 
 
-
-sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 def addOutputInfo(key, info):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
@@ -34,8 +33,8 @@ def getIpList():
     print("get ips size:", len(ips))
     return ips
 
-ipList = []
-ipList = getIpList()
+# ipList = []
+
 
 def clearStr(str):
     str = str.replace(" ", "")
@@ -57,17 +56,17 @@ class parser:
             self.lost_rate = float(0)
             self.time = 0
 
-    def __init__(self, url):
+    def __init__(self, url, ipList,sql):
 
         self.sql = sql
-        self.soup = BeautifulSoup(self.getHtmlText(url))
+        self.soup = BeautifulSoup(self.getHtmlText(url, ipList))
         self.url = url
         self.main = []
         self.client = []
         self.score = []
         self.param = []
 
-    def getHtmlText(self, url):
+    def getHtmlText(self, url, ipList):
 
         def addIp(ipStr):
             proxies =[]
@@ -171,14 +170,19 @@ class parser:
             self.sql.insert(input, "k_corner")
 
 
-key = "k_gameDic"
+# key = "k_gameDic"
 
 def working(tableName, type = 0):
+    print("start do working")
+    global outputInfo
+    ipList = getIpList()
+
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
     index = 1
     end = 40
     
     gameCode = []
-    gameCodeAll = sql.queryByTypeAll(key)
+    gameCodeAll = sql.queryByTypeAll("k_gameDic")
 
     for code in  gameCodeAll:
         dataRecv = sql.queryCount(tableName, code[1])
@@ -195,7 +199,8 @@ def working(tableName, type = 0):
 
     # 买预备=========================
     gameIndex = 0
-    global ipList
+    
+    
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
@@ -203,7 +208,7 @@ def working(tableName, type = 0):
             url = url.replace("p.1", "p."+ str(index) )
             
             try:
-                html =  parser(url)
+                html =  parser(url, ipList, sql)
                 if len(ipList) < 2:
                     ipList = getIpList()
             except:
@@ -226,18 +231,23 @@ def working(tableName, type = 0):
             gameIndex += 1
         index += 1
 
-        values = list(outputInfo.keys())
-        values.sort()
-        for value in values:
-            for tmp in outputInfo[value]:
-                print(tmp)
+        # values = list(outputInfo.keys())
+        # values.sort()
+        # for value in values:
+        #     for tmp in outputInfo[value]:
+        #         print(tmp)
         
-        outputInfo.clear()
-        # print("================================")
+        # outputInfo.clear()
+        print("end do working")
 
-GameType.updata()
-# working("k_corner", 1)
-working("k_corner")
-cal.docal()
+def doUpdata():
+    print("start doUpdata")
+    # ipList = getIpList()
+    GameType.updata()
+    _thread.start_new_thread(working,("k_corner", 1))
+    working("k_corner")
+    lostCal.docal()
+    winCal.docal()
+    print("end doUpdata")
 
-            
+working("k_corner")     

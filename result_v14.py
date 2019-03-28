@@ -12,6 +12,25 @@ def docal():
     ngeFlag =True
     ngeFlag =False
 
+    class getMinValue:
+        def __init__(self):
+            self.data = {}
+            self.sum = 0
+
+        def add(self, value):
+            if self.data.__contains__(value) == False:
+                self.data[value] = 0
+            self.data[value] += 1
+            self.sum += 1
+
+        def getResult(self):
+            sumTmp = 0
+            for key in self.data:
+                sumTmp += self.data[key]
+                if sumTmp > (self.sum /2):
+                    return key - 0.5
+
+
     def getResult(param, rateParam, checkType):
         data = []
         name = param[1]
@@ -27,10 +46,10 @@ def docal():
         # print("sum = ", len(data))
         win_size = 0
         lost_size = 0
-        scoreSum = 0
+        scoreMin = getMinValue()
         gameSum = 0
 
-        cornerTotal = 0
+        cornerMin = getMinValue()
 
         class DataSize:
             def __init__(self):  
@@ -62,8 +81,10 @@ def docal():
                 continue
 
             
-            scoreSum += main_score + client_score
-            cornerTotal += cornerSum
+            # scoreSum += main_score + client_score
+            scoreMin.add(main_score + client_score)
+            # cornerTotal += cornerSum
+            cornerMin.add(cornerSum)
             gameSum += 1
 
             rate = float(rate)
@@ -132,7 +153,7 @@ def docal():
                 winSum = 0
                 lostSum = 0
 
-                checkScoreSum = 0
+                checkScoreMin = getMinValue()
                 checkGameSum = 0
 
                 win_winScore = 0
@@ -148,7 +169,7 @@ def docal():
 
                 winCorner = 0
                 lostCorner = 0
-                checkCorner = 0
+                checkCorner = getMinValue()
 
                 win_winCorner = 0
                 win_lostCorner = 0
@@ -196,7 +217,7 @@ def docal():
                             lost += chechResult(tmp_1[0], lost)
 
                         cond_1 = (game_check[2] >= 0) 
-                        cond_2 = (lost == chechSum) 
+                        cond_2 = (lost == chechSum)
                         # if ngeFlag :
                         #     cond_2 = (lost == 0) 
 
@@ -206,12 +227,14 @@ def docal():
 
                         # gameCheck = game_check_v2  #不让球
 
-                        scorePerGame = scoreSum / gameSum
-                        cornerPerGame = cornerTotal / gameSum
+                        scorePerGame = scoreMin.getResult()
+                        # cornerPerGame = cornerTotal / gameSum
+                        cornerPerGame = cornerMin.getResult()
                         if cond_2 and gameCheck[0] > 0 :
                             winSum += 1
 
-                            checkScoreSum += gameCheck[3]
+                            # checkScoreSum += gameCheck[3]
+                            checkScoreMin.add(gameCheck[3])
                             checkGameSum += 1
                             key = ""
                             if gameCheck[3] > scorePerGame:
@@ -222,7 +245,7 @@ def docal():
                                 key +="小球 "
 
                             winCorner += gameCheck[4]
-                            checkCorner += gameCheck[4]
+                            checkCorner.add(gameCheck[4]) 
 
                             if gameCheck[4] > cornerPerGame:
                                 win_winCorner += 1
@@ -239,7 +262,8 @@ def docal():
                             lostSum += 1
                             # lostScore += gameCheck[3]
 
-                            checkScoreSum += gameCheck[3]
+                            # checkScoreSum += gameCheck[3]
+                            checkScoreMin.add(gameCheck[3])
                             checkGameSum += 1
 
                             key = ""
@@ -251,7 +275,7 @@ def docal():
                                 key +="小球 "
 
                             lostCorner += gameCheck[4]
-                            checkCorner += gameCheck[4]
+                            checkCorner.add(gameCheck[4]) 
 
 
                             if gameCheck[4] > cornerPerGame:
@@ -304,13 +328,13 @@ def docal():
                         rateDivOld = abs(infoList[name][4] - 50)
 
                     if rateDivNew > rateDivOld and rateDivNew > 5:
-                        infoList[name]=[param[0], gameTotal, param[1], info, winRate]
+                        infoList[name]=[param[0], gameTotal, param[1], info, winRate, winRate]
                     
                 
 
 
                 # 大小球
-                checkScorePer = round(checkScoreSum / checkGameSum,2)
+                checkScorePer = round(checkScoreMin.getResult(),2)
                 scorePerGame = round(scorePerGame,2)
                 rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
                 if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
@@ -340,7 +364,7 @@ def docal():
                         infoList[name]=[param[0], gameTotal, param[1], info, rate, checkScorePer]
 
                 # 角球
-                checkCornerPer = round(checkCorner / checkGameSum,2)
+                checkCornerPer = round(checkCorner.getResult(), 2)
                 cornerPerGame = round(cornerPerGame,2)
                 rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
 
@@ -378,7 +402,7 @@ def docal():
                             rateDivOld = abs(infoList[name][4])
 
                         if rateDivNew > rateDivOld and rateDivNew >= 35:
-                            infoList[name]=[param[0], gameTotal, param[1], key, rate]
+                            infoList[name]=[param[0], gameTotal, param[1], key, rate,rate]
 
     checkType = 3
 
@@ -388,12 +412,9 @@ def docal():
         for param in params:
             getResult(param, -1, type)
 
-        if type == 4:
-            return
-
-        for param in params:
-            getResult(param, 100, type)
-
+        if type != 4:
+            for param in params:
+                getResult(param, 100, type)
 
         tableName = ""
         if type == 1:
@@ -407,12 +428,22 @@ def docal():
 
         sql.cleanAll(tableName)
 
-
+        big = [0,0]
+        small = [0,0]
         for index in infoList:
             tmp = infoList[index]
-            info = "'{}','{}','{}','{}'".format(tmp[0],tmp[1],tmp[2],tmp[3])
+            info = "'{}','{}','{}','{}','{}'".format(tmp[0],tmp[1],tmp[2],tmp[3],tmp[5])
             sql.insert(info, tableName)
-            print(tmp)
+            # print(tmp)
+            if tmp[4] > 50:
+                big[0] += tmp[4]
+                big[1] += 1
+            else :
+                small[0] += tmp[4]
+                small[1] += 1
+        print(tableName, "small",small[0]/small[1])
+        if type != 4:
+            print(tableName, "big",big[0]/big[1])
 
         infoList.clear()
 
@@ -420,3 +451,5 @@ def docal():
     working(2)
     working(3)
     working(4)
+
+# docal()

@@ -4,17 +4,17 @@ import re
 import time
 from datetime import datetime
 from bs4 import BeautifulSoup
-from html.parser import HTMLParser
 from db.mysql import sqlMgr
 import random
 import ssl
 import os
+import _thread
 
-fileName=r"result.txt"
-outputInfo = {}
-checkFlag = True
-sql = sqlMgr('localhost', 'root', '861217', 'football')
-def addOutputInfo(key, info):
+
+
+
+
+def addOutputInfo(key, info, outputInfo):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
     key = int(time.mktime(timeArray))
     if outputInfo.__contains__(key) == False:
@@ -33,12 +33,12 @@ def getIpList():
     return ips
 
 def writeFile(info):
-    with open(fileName, 'a') as f:
+    with open(r"result.txt", 'a') as f:
         f.write(info + "\n")
-        print(info)
+        # print(info)
 
-ipList = []
-ipList = getIpList()
+
+
 
 def clearStr(str):
     str = str.replace(" ", "")
@@ -70,22 +70,23 @@ class parser:
 
 
 
-    def __init__(self, url):
+    def __init__(self, url, ipList, sql):
 
         self.sql = sql
-        self.soup = BeautifulSoup(self.getHtmlText(url))
+        self.soup = BeautifulSoup(self.getHtmlText(url, ipList))
         self.url = url
         self.main = []
         self.client = []
         self.score = []
         self.param = []
 
-    def getHtmlText(self, url):
+    def getHtmlText(self, url, ipList):
 
         def addIp(ipStr):
             proxies =[]
             proxies.append({'http': ipStr,'https': ipStr})
             return proxies
+
 
         ipChoice = random.choice(ipList)
 
@@ -103,13 +104,13 @@ class parser:
             raise Exception()
         return s
 
-    def getData(self, key, cmd):
+    def getData(self, key, cmd, outputInfo):
         for title in self.soup.find_all('title') :
             if title.string.find('404') != -1:
                 return False
 
         type_game = ""
-
+        checkFlag = True
         if checkFlag:
             for tr  in self.soup.find_all('tr', class_='page-1'):
                 td = tr.find('td', class_="bg1")
@@ -199,11 +200,11 @@ class parser:
                 addInfo = "【" + cmd[3] + "】"
                 if main != "" and checkBuy(main, cmd):
                     infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
-                    addOutputInfo(gameTime, infoTmp)
+                    addOutputInfo(gameTime, infoTmp,outputInfo)
                     # print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
                 elif client != "" and checkBuy(client, cmd):
                     infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
-                    addOutputInfo(gameTime, infoTmp)
+                    addOutputInfo(gameTime, infoTmp, outputInfo)
                     
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
@@ -283,16 +284,18 @@ class parser:
 key = "k_corner"
 
 def working(tableName):
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    ipList = getIpList()
     index = 1
-    end = 50
-    if checkFlag:
-        end = 2
-    
+    end = 2
+    # if checkFlag:
+    #     end = 2
+    outputInfo = {}
     gameCode = []
     gameCode = sql.queryByTypeAll(tableName)
     # 买预备=========================
     gameIndex = 0
-    global ipList
+
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
@@ -300,7 +303,7 @@ def working(tableName):
             url = url.replace("p.1", "p."+ str(index) )
             
             try:
-                html =  parser(url)
+                html =  parser(url, ipList, sql)
                 if len(ipList) < 2:
                     ipList = getIpList()
             except:
@@ -312,7 +315,7 @@ def working(tableName):
 
             print( index, gameCode[gameIndex][2])
             try:   
-                if html.getData(key, gameCode[gameIndex]) == False :
+                if html.getData(key, gameCode[gameIndex], outputInfo) == False :
                     break
             except:
                 if len(ipList) < 2:
@@ -335,15 +338,21 @@ def working(tableName):
         writeFile(info)
 
 try:
-    os.remove(fileName)
+    os.remove(r"result.txt")
 except :
     pass
 
 
+def doDayWork():
+    print("start do doDayWork")
+    
+    _thread.start_new_thread(working,("k_rateBuy"))
+    _thread.start_new_thread(working,("k_compBuy"))
+    _thread.start_new_thread(working,("k_scoreBuy"))
 
-working("k_rateBuy")
-working("k_compBuy")
-# working("k_scoreBuy")
-# working("k_cornerBuy")
+    # working("k_compBuy")
+    # working("k_scoreBuy")
+    working("k_cornerBuy")
+    print("end do doDayWork")
 
-        
+  
