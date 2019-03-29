@@ -404,10 +404,6 @@ def docal():
                         if rateDivNew > rateDivOld and rateDivNew >= 35:
                             infoList[name]=[param[0], gameTotal, param[1], key, rate,rate]
 
-    checkType = 3
-
-
-
     def working(type):
         for param in params:
             getResult(param, -1, type)
@@ -435,7 +431,7 @@ def docal():
             tmp = infoList[index]
             info = "'{}','{}','{}','{}','{}'".format(tmp[0],tmp[1],tmp[2],tmp[3],tmp[5])
             sql.insert(info, tableName)
-            # print(tmp)
+            print(tmp)
             if tmp[4] > 50:
                 big[0] += tmp[4]
                 big[1] += 1
@@ -453,4 +449,3 @@ def docal():
     working(3)
     working(4)
 
-# docal()

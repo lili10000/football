@@ -194,11 +194,13 @@ class parser:
 
                 addInfo = "【" + cmd[3] + "】"
                 if main != "" and checkBuy(main, cmd):
-                    infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
-                    addOutputInfo(gameTime, infoTmp, outputInfo)
+                    infoTmp = "{} {} <{}> game info: {} {} {} {}".format(type_game,addInfo,main,gameTime, main, client, cmd[4])
+                    # infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    addOutputInfo(gameTime, infoTmp,outputInfo)
                     # print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
                 elif client != "" and checkBuy(client, cmd):
-                    infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    infoTmp = "{} {} <{}> game info: {} {} {} {}".format(type_game,addInfo,client,gameTime, main, client, cmd[4])
+                    # infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
                     addOutputInfo(gameTime, infoTmp, outputInfo)
                     
         for tr in self.soup.find_all('tr') :
@@ -273,10 +275,8 @@ class parser:
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
             input += ",'"+  main + "_" + str(gameTime) + "'" 
-            self.sql.insert(input, key)
+            self.sql.insert(input, "k_corner")
 
-
-key = "k_corner"
 
 def working(tableName):
     index = 1
@@ -307,7 +307,7 @@ def working(tableName):
 
             print( index, gameCode[gameIndex][2])
             try:   
-                if html.getData(key, gameCode[gameIndex], outputInfo) == False :
+                if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
                     break
             except:
                 if len(ipList) < 2:
@@ -337,10 +337,10 @@ except :
 
 def doDayWork():
     print("start do doDayWork")
-    _thread.start_new_thread(working,("k_rateBuy_v2"))
-    _thread.start_new_thread(working,("k_compBuy_v2"))
-    _thread.start_new_thread(working,("k_scoreBuy_v2"))
+    _thread.start_new_thread(working,("k_rateBuy_v2",))
+    _thread.start_new_thread(working,("k_compBuy_v2",))
+    _thread.start_new_thread(working,("k_scoreBuy_v2",))
     working("k_cornerBuy_v2")
     print("end do doDayWork")
 
-working("k_scoreBuy_v2")   
+

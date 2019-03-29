@@ -220,7 +220,7 @@ def working(tableName, type = 0):
 
             print( index, gameCode[gameIndex][1])
             try:   
-                if html.getData(key, gameCode[gameIndex]) == False :
+                if html.getData("k_gameDic", gameCode[gameIndex]) == False :
                     break
             except:
                 if len(ipList) < 2:
@@ -238,7 +238,7 @@ def working(tableName, type = 0):
         #         print(tmp)
         
         # outputInfo.clear()
-        print("end do working")
+    print("end do working")
 
 def doUpdata():
     print("start doUpdata")
@@ -250,4 +250,4 @@ def doUpdata():
     winCal.docal()
     print("end doUpdata")
 
-working("k_corner")     
+ 

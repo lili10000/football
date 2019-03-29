@@ -23,7 +23,7 @@ while 1:
     start = int(time.time()) 
     print ("start work", datetime.now())
     updata.doUpdata()
-    _thread.start_new_thread(lostCheck.doDayWork)
+    _thread.start_new_thread(lostCheck.doDayWork, ())
     winCheck.doDayWork()
 
     end = int(time.time()) 
