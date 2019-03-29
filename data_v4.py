@@ -9,12 +9,9 @@ import random
 import ssl
 import os
 import _thread
+from commend import commend
 
 
-
-# outputInfo = {}
-# checkFlag = True
-# sql = sqlMgr('localhost', 'root', '861217', 'football')
 def addOutputInfo(key, info, outputInfo):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
     key = int(time.mktime(timeArray))
@@ -38,7 +35,7 @@ def writeFile(info):
         f.write(info + "\n")
         # print(info)
 
-ipList = []
+
 
 
 def clearStr(str):
@@ -53,6 +50,9 @@ def longTime(timeStr):
     if gameTime - now > 60*60*24:
         return True
     return False
+def getTime(timeStr):
+    timeArray= time.strptime('20'+ timeStr, "%Y/%m/%d %H:%M")
+    return int(time.mktime(timeArray))
 
 class parser:
     class gameData:
@@ -81,12 +81,15 @@ class parser:
         self.score = []
         self.param = []
 
+        self.commend = commend()
+
     def getHtmlText(self, url, ipList):
 
         def addIp(ipStr):
             proxies =[]
             proxies.append({'http': ipStr,'https': ipStr})
             return proxies
+
 
         ipChoice = random.choice(ipList)
 
@@ -126,6 +129,7 @@ class parser:
 
                 main = ""
                 client = ""
+
                 for td in tr.find_all('td', class_="text-right BR0"):
                     for a in td.find_all('a', target="_blank"):
                         main = clearStr(a.text)
@@ -135,7 +139,6 @@ class parser:
                     client = clearStr(a.text)
                     break
 
-                
 
                 def checkBuy(teamName, cmd):
                     # if teamName == "":
@@ -180,28 +183,40 @@ class parser:
                     values.sort(reverse = True)
 
 
+                    def chechResult(gameTmp):
+                        if gameTmp == -1 :
+                            return 1
+                        return 0
+
                     lostSum = 0
                     checkSum = cmd[1]
 
                     for index in range(checkSum):
                         key = values[index]
-                        if result[key] == 1:
+                        if result[key] == -1:
                             lostSum += 1
                     
                     if lostSum == checkSum :
                         return True
                     return False
 
-                addInfo = "【" + cmd[3] + "】"
+                buyInfo = cmd[3]
                 if main != "" and checkBuy(main, cmd):
-                    infoTmp = "{} {} <{}> game info: {} {} {} {}".format(type_game,addInfo,main,gameTime, main, client, cmd[4])
-                    # infoTmp = type_game + " " + addInfo + "   <" + main + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    addInfo = "【" + buyInfo + "】"
+                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
-                    # print(addInfo, "<",main, '> game info:   ', gameTime, main, client)
+                    self.commend.add(main, getTime(gameTime), buyInfo)
+
                 elif client != "" and checkBuy(client, cmd):
-                    infoTmp = "{} {} <{}> game info: {} {} {} {}".format(type_game,addInfo,client,gameTime, main, client, cmd[4])
-                    # infoTmp = type_game + " " + addInfo + "   <" + client + "> game info:   " + str(gameTime) + " " + main + " " + client
+                    if "胜" in buyInfo:
+                        buyInfo = buyInfo.replace("胜", "输")
+                    elif "输" in buyInfo:
+                        buyInfo = buyInfo.replace("输", "胜")
+
+                    addInfo = "【" + buyInfo + "】"
+                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo)
                     
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
@@ -254,7 +269,9 @@ class parser:
                 tmp = tmp.replace(" ", "")
                 tmp = tmp.replace("+", "")
                 sliceTmp = tmp.split('/')
-                rate = sliceTmp[0]
+                rate = clearStr(sliceTmp[0])
+                scoreRate = clearStr(sliceTmp[1])
+                cornerRate = clearStr(sliceTmp[2])
                 break
 
 
@@ -275,7 +292,9 @@ class parser:
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
             input += ",'"+  main + "_" + str(gameTime) + "'" 
+            input += ",'{}','{}'".format(scoreRate, cornerRate)
             self.sql.insert(input, "k_corner")
+            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate)
 
 
 def working(tableName):
@@ -305,7 +324,7 @@ def working(tableName):
                 # print ("connect err")
                 continue
 
-            print( index, gameCode[gameIndex][2])
+            # print( index, gameCode[gameIndex][2])
             try:   
                 if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
                     break
@@ -328,6 +347,7 @@ def working(tableName):
         outputInfo.clear()
         info = "================================"
         writeFile(info)
+        # print(tableName, " size:", len(outputInfo))
 
 try:
     os.remove(r"result_v2.txt")
@@ -338,9 +358,10 @@ except :
 def doDayWork():
     print("start do doDayWork")
     _thread.start_new_thread(working,("k_rateBuy_v2",))
-    _thread.start_new_thread(working,("k_compBuy_v2",))
+    # _thread.start_new_thread(working,("k_compBuy_v2",))
     _thread.start_new_thread(working,("k_scoreBuy_v2",))
     working("k_cornerBuy_v2")
     print("end do doDayWork")
 
 
+# doDayWork()

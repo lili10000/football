@@ -25,7 +25,8 @@ def docal():
 
         def getResult(self):
             sumTmp = 0
-            for key in self.data:
+            keys = sorted(self.data.keys())
+            for key in keys:
                 sumTmp += self.data[key]
                 if sumTmp > (self.sum /2):
                     return key - 0.5
@@ -35,6 +36,7 @@ def docal():
         data = []
         name = param[1]
         # gameParam = param[1]
+
 
         if name == None:
             data = sql.queryByTypeAll("k_corner")
@@ -74,10 +76,16 @@ def docal():
             cornerSum = int(mainCorner) + int(clientCorner)
 
             gameTime = one[9]
+            score_rate = one[11]
+            corner_rate = one[12]
 
             
 
             if rate == "-" or rate == "-\n" :
+                continue
+            if score_rate == "-" or score_rate == "-\n" :
+                continue
+            if corner_rate == "-" or corner_rate == "-\n" :
                 continue
 
             
@@ -88,53 +96,69 @@ def docal():
             gameSum += 1
 
             rate = float(rate)
-            def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0, score=0, corner=0):
+            def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0, score=0, corner=0, score_rate=0, corner_rate=0):
                 if result_slice.__contains__(key) == False:
                     result_slice[key] = {}
-                result_slice[key][gameTime] = [value, mainFlag, rate, score, corner]
-                return result_slice
 
+                if score_rate == "-" or corner_rate == "-":
+                    return result_slice
+                
+                score_rate = float(score_rate)
+                corner_rate = float(corner_rate)
+                result_slice[key][gameTime] = [value, mainFlag, rate, score, corner, score_rate, corner_rate]
+                return result_slice
             if main_score - client_score + rate> 0:
                 key = main
-                result_slice = addData(result_slice, key, gameTime, 1, True, rate, score=(main_score+client_score), corner=cornerSum)
+                result_slice = addData(result_slice, key, gameTime, 1, True, rate, score=(main_score+client_score), corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = client
-                result_slice = addData(result_slice, key, gameTime, -1,rate=rate, score=(main_score+client_score),corner=cornerSum)
-
+                result_slice = addData(result_slice, key, gameTime, -1,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             elif main_score - client_score + rate < 0:
                 key = client
-                result_slice = addData(result_slice, key, gameTime, 1,rate=rate, score=(main_score+client_score),corner=cornerSum)
+                result_slice = addData(result_slice, key, gameTime, 1,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = main
-                result_slice = addData(result_slice, key, gameTime, -1, True,rate=rate, score=(main_score+client_score),corner=cornerSum)
+                result_slice = addData(result_slice, key, gameTime, -1, True,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             else :
                 key = client
-                result_slice = addData(result_slice, key, gameTime, 0,rate=rate, score=(main_score+client_score),corner=cornerSum)
+                result_slice = addData(result_slice, key, gameTime, 0,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = main
-                result_slice = addData(result_slice, key, gameTime, 0, True,rate=rate, score=(main_score+client_score),corner=cornerSum)
+                result_slice = addData(result_slice, key, gameTime, 0, True,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
 
             if main_score - client_score> 0:
                 key = main
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, True, score=(main_score+client_score),corner=cornerSum)
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = client
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, score=(main_score+client_score),corner=cornerSum)
-
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             elif main_score - client_score < 0:
                 key = client
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, score=(main_score+client_score),corner=cornerSum)
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = main
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, True, score=(main_score+client_score),corner=cornerSum)
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             else :
                 key = client
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, score=(main_score+client_score),corner=cornerSum)
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
                 key = main
-                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum)
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             
+
 
         rateMax = rateParam
         for gameTotalTmp in range(loopSize):
@@ -237,7 +261,7 @@ def docal():
                             checkScoreMin.add(gameCheck[3])
                             checkGameSum += 1
                             key = ""
-                            if gameCheck[3] > scorePerGame:
+                            if gameCheck[3] > gameCheck[5]:
                                 win_winScore += 1
                                 key +="大球 "
                             else:
@@ -247,7 +271,7 @@ def docal():
                             winCorner += gameCheck[4]
                             checkCorner.add(gameCheck[4]) 
 
-                            if gameCheck[4] > cornerPerGame:
+                            if gameCheck[4] > gameCheck[6]:
                                 win_winCorner += 1
                                 key += "大角"
                             else:
@@ -267,7 +291,7 @@ def docal():
                             checkGameSum += 1
 
                             key = ""
-                            if gameCheck[3] > scorePerGame:
+                            if gameCheck[3] > gameCheck[5]:
                                 lost_winScore += 1
                                 key +="大球 "
                             else:
@@ -278,7 +302,7 @@ def docal():
                             checkCorner.add(gameCheck[4]) 
 
 
-                            if gameCheck[4] > cornerPerGame:
+                            if gameCheck[4] > gameCheck[6]:
                                 lost_winCorner += 1
                                 key += "大角"
                             else:
@@ -289,14 +313,6 @@ def docal():
                                 comCheck[key] = 0
                             comCheck[key] += 1
 
-                        # elif cond_2:
-                        #     # print(index)
-                        #     # index = index
-                        #     ping += 1
-                        #     if gameCheck[3] > scorePerGame:
-                        #         win_winScore += 1
-                        #     else:
-                        #         win_lostScore += 1
 
                         index += 1
                     # print(result, winSum, lostSum)
@@ -404,10 +420,6 @@ def docal():
                         if rateDivNew > rateDivOld and rateDivNew >= 35:
                             infoList[name]=[param[0], gameTotal, param[1], key, rate,rate]
 
-    checkType = 3
-
-
-
     def working(type):
         for param in params:
             getResult(param, -1, type)
@@ -426,6 +438,7 @@ def docal():
         elif type == 4: 
             tableName = "k_compBuy"
 
+
         sql.cleanAll(tableName)
 
         big = [0,0]
@@ -441,8 +454,10 @@ def docal():
             else :
                 small[0] += tmp[4]
                 small[1] += 1
-        print(tableName, "small",small[0]/small[1])
-        if type != 4:
+
+        if small[1] != 0:
+            print(tableName, "small",small[0]/small[1])
+        if type != 4 and big[1] != 0:
             print(tableName, "big",big[0]/big[1])
 
         infoList.clear()

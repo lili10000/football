@@ -90,6 +90,16 @@ class sqlMgr:
             print ("error :"  )
             self.db.rollback()
 
+    def updateCommend(self, id, type,value, tableName):
+        inserSQL = "UPDATE {} SET result = {} where ((id = '{}' )and(type = '{}'))".format(tableName, value, id, type)
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :"  )
+            self.db.rollback()
+
     def queryByType(self, type, key):
 
         SQL = u"select * from {} where ( type = '{}' ) ".format(key, type)
@@ -125,6 +135,17 @@ class sqlMgr:
             return results 
         except:
             print ("query error ")
+
+    def queryById(self, key, id):
+        SQL = u"select * from {} where (id = {})".format(key, id)  
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
     
     def queryCount(self, key, name):
 
@@ -141,6 +162,17 @@ class sqlMgr:
     def queryCountRate(self, type, key, result):
 
         SQL = u"select count(*) from "+ key +" where (( type = '" + type + "' ) and (rate_result = "+ result +")) "
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def queryCountByID(self, key, id, type):
+        SQL = u"select count(*) from {} where (id = '{}' and type = '{}') ".format(key, id, type)
         SQL.encode('utf-8')
 
         try:  

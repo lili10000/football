@@ -12,15 +12,15 @@ import result_v15 as GameType
 import result_v14 as lostCal
 import result_v17 as winCal
 import _thread
+from commend import commend
 
 
-
-def addOutputInfo(key, info):
-    timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
-    key = int(time.mktime(timeArray))
-    if outputInfo.__contains__(key) == False:
-        outputInfo[key] = []
-    outputInfo[key].append(info)
+# def addOutputInfo(key, info, outputInfo):
+#     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
+#     key = int(time.mktime(timeArray))
+#     if outputInfo.__contains__(key) == False:
+#         outputInfo[key] = []
+    # outputInfo[key].append(info)
 
 def getIpList():
     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
@@ -65,6 +65,7 @@ class parser:
         self.client = []
         self.score = []
         self.param = []
+        self.commend = commend()
 
     def getHtmlText(self, url, ipList):
 
@@ -146,7 +147,9 @@ class parser:
                 tmp = tmp.replace(" ", "")
                 tmp = tmp.replace("+", "")
                 sliceTmp = tmp.split('/')
-                rate = sliceTmp[0]
+                rate = clearStr(sliceTmp[0])
+                scoreRate = clearStr(sliceTmp[1])
+                cornerRate = clearStr(sliceTmp[2])
                 break
 
 
@@ -167,7 +170,10 @@ class parser:
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
             input += ",'"+  main + "_" + str(gameTime) + "'" 
+            input += ",'{}','{}'".format(scoreRate, cornerRate)
             self.sql.insert(input, "k_corner")
+            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate)
+
 
 
 # key = "k_gameDic"
@@ -218,7 +224,7 @@ def working(tableName, type = 0):
                 # print ("connect err")
                 continue
 
-            print( index, gameCode[gameIndex][1])
+            # print( index, gameCode[gameIndex][1])
             try:   
                 if html.getData("k_gameDic", gameCode[gameIndex]) == False :
                     break
@@ -250,4 +256,4 @@ def doUpdata():
     winCal.docal()
     print("end doUpdata")
 
- 
+
