@@ -13,6 +13,7 @@ import result_v14 as lostCal
 import result_v17 as winCal
 import _thread
 from commend import commend
+from tool import ipTool
 
 
 # def addOutputInfo(key, info, outputInfo):
@@ -22,16 +23,35 @@ from commend import commend
 #         outputInfo[key] = []
     # outputInfo[key].append(info)
 
-def getIpList():
-    urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-    req = requests.get(urlTmp)
-    s = req.text
-    ips = s.split('<br>')
-    ips.pop(0)
-    ips.pop(0)
-    ips.pop(len(ips)-1)
-    print("get ips size:", len(ips))
-    return ips
+
+
+
+
+# def getIpList():
+#     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
+#     sleepTime = 5
+#     req = requests.get(urlTmp)
+#     s = req.text
+
+#     ips = s.split('<br>')
+#     if len(ips) == 0:
+#         time.sleep(sleepTime)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(sleepTime)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(sleepTime)
+#         return ips
+#     ips.pop(len(ips)-1)
+#     print("get ips size:", len(ips))
+#     if len(ips) == 0:
+#         time.sleep(sleepTime)
+#         return ips
+#     return ips
+
 
 # ipList = []
 
@@ -68,6 +88,9 @@ class parser:
         self.commend = commend()
 
     def getHtmlText(self, url, ipList):
+        if len(ipList) == 0 :
+            raise Exception()
+
 
         def addIp(ipStr):
             proxies =[]
@@ -181,7 +204,8 @@ class parser:
 def working(tableName, type = 0):
     print("start do working")
     global outputInfo
-    ipList = getIpList()
+    ipObj = ipTool()
+    ipList = ipObj.getIpList()
 
     sql = sqlMgr('localhost', 'root', '861217', 'football')
     index = 1
@@ -216,21 +240,21 @@ def working(tableName, type = 0):
             try:
                 html =  parser(url, ipList, sql)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
             except:
                 # time.sleep(10)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("connect err")
                 continue
 
-            # print( index, gameCode[gameIndex][1])
+            print( index, gameCode[gameIndex][1])
             try:   
                 if html.getData("k_gameDic", gameCode[gameIndex]) == False :
                     break
             except:
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("error :")
             # time.sleep(1)
             
@@ -250,10 +274,12 @@ def doUpdata():
     print("start doUpdata")
     # ipList = getIpList()
     GameType.updata()
-    _thread.start_new_thread(working,("k_corner", 1))
-    working("k_corner")
+    _thread.start_new_thread(working,("k_corner",))
+    working("k_corner", 1)
     lostCal.docal()
     winCal.docal()
     print("end doUpdata")
+
+# working("k_corner", 1)
 
 

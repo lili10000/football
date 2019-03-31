@@ -10,7 +10,7 @@ import ssl
 import os
 import _thread
 from commend import commend
-
+from tool import ipTool
 
 
 
@@ -22,16 +22,29 @@ def addOutputInfo(key, info, outputInfo):
         outputInfo[key] = []
     outputInfo[key].append(info)
 
-def getIpList():
-    urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-    req = requests.get(urlTmp)
-    s = req.text
-    ips = s.split('<br>')
-    ips.pop(0)
-    ips.pop(0)
-    ips.pop(len(ips)-1)
-    print("get ips size:", len(ips))
-    return ips
+# def getIpList():
+#     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
+#     req = requests.get(urlTmp)
+#     s = req.text
+#     ips = s.split('<br>')
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(len(ips)-1)
+#     print("get ips size:", len(ips))
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+    
+#     return ips
 
 def writeFile(info):
     with open(r"result.txt", 'a') as f:
@@ -305,7 +318,8 @@ class parser:
 
 def working(tableName):
     sql = sqlMgr('localhost', 'root', '861217', 'football')
-    ipList = getIpList()
+    ipObj = ipTool()
+    ipList = ipObj.getIpList()
     index = 1
     end = 2
     # if checkFlag:
@@ -325,11 +339,11 @@ def working(tableName):
             try:
                 html =  parser(url, ipList, sql)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
             except:
                 # time.sleep(10)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("connect err")
                 continue
 
@@ -339,7 +353,7 @@ def working(tableName):
                     break
             except:
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("error :")
             # time.sleep(1)
             
@@ -374,4 +388,5 @@ def doDayWork():
     print("end do doDayWork")
 
 
-doDayWork()
+# doDayWork()
+# working("k_cornerBuy")

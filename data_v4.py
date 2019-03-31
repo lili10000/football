@@ -10,6 +10,9 @@ import ssl
 import os
 import _thread
 from commend import commend
+from tool import ipTool
+
+
 
 
 def addOutputInfo(key, info, outputInfo):
@@ -19,19 +22,32 @@ def addOutputInfo(key, info, outputInfo):
         outputInfo[key] = []
     outputInfo[key].append(info)
 
-def getIpList():
-    urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-    req = requests.get(urlTmp)
-    s = req.text
-    ips = s.split('<br>')
-    ips.pop(0)
-    ips.pop(0)
-    ips.pop(len(ips)-1)
-    print("get ips size:", len(ips))
-    return ips
+# def getIpList():
+#     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
+#     req = requests.get(urlTmp)
+#     s = req.text
+#     ips = s.split('<br>')
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(0)
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+#     ips.pop(len(ips)-1)
+#     print("get ips size:", len(ips))
+#     if len(ips) == 0:
+#         time.sleep(3)
+#         return ips
+    
+#     return ips
 
 def writeFile(info):
-    with open(r"result_v2.txt", 'a') as f:
+    with open(r"result.txt", 'a') as f:
         f.write(info + "\n")
         # print(info)
 
@@ -184,7 +200,7 @@ class parser:
 
 
                     def chechResult(gameTmp):
-                        if gameTmp == -1 :
+                        if gameTmp == 1 :
                             return 1
                         return 0
 
@@ -260,6 +276,8 @@ class parser:
 
 
             rate = 0
+            scoreRate = 0
+            cornerRate = 0
             tds = tr.find_all('td', class_="text-center")
             for tdTmp in tds :
                 a = tdTmp.find('a', target="_blank")
@@ -297,16 +315,21 @@ class parser:
             self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate)
 
 
+
 def working(tableName):
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    ipObj = ipTool()
+    ipList = ipObj.getIpList()
     index = 1
     end = 2
-    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    # if checkFlag:
+    #     end = 2
     outputInfo = {}
     gameCode = []
     gameCode = sql.queryByTypeAll(tableName)
     # 买预备=========================
     gameIndex = 0
-    ipList = getIpList()
+
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
@@ -316,11 +339,11 @@ def working(tableName):
             try:
                 html =  parser(url, ipList, sql)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
             except:
                 # time.sleep(10)
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("connect err")
                 continue
 
@@ -330,7 +353,7 @@ def working(tableName):
                     break
             except:
                 if len(ipList) < 2:
-                    ipList = getIpList()
+                    ipList = ipObj.getIpList()
                 # print ("error :")
             # time.sleep(1)
             
@@ -357,11 +380,13 @@ except :
 
 def doDayWork():
     print("start do doDayWork")
+    
     _thread.start_new_thread(working,("k_rateBuy_v2",))
-    # _thread.start_new_thread(working,("k_compBuy_v2",))
+    # _thread.start_new_thread(working,("k_compBuy",))
     _thread.start_new_thread(working,("k_scoreBuy_v2",))
     working("k_cornerBuy_v2")
     print("end do doDayWork")
 
 
 # doDayWork()
+# working("k_cornerBuy")

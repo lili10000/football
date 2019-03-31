@@ -343,7 +343,7 @@ def docal():
                     if infoList.__contains__(name):
                         rateDivOld = abs(infoList[name][4] - 50)
 
-                    if rateDivNew > rateDivOld and rateDivNew > 5:
+                    if rateDivNew > rateDivOld and rateDivNew > 9:
                         infoList[name]=[param[0], gameTotal, param[1], info, winRate, winRate]
                     
                 
@@ -376,7 +376,7 @@ def docal():
                     if infoList.__contains__(name):
                         rateDivOld = abs(infoList[name][4] - 50)
 
-                    if rateDivNew > rateDivOld and rateDivNew > 6:
+                    if rateDivNew > rateDivOld and rateDivNew > 9:
                         infoList[name]=[param[0], gameTotal, param[1], info, rate, checkScorePer]
 
                 # 角球
