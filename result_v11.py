@@ -4,16 +4,29 @@ from db.mysql import sqlMgr
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 data = sql.queryByTypeAll("k_commend")
 
-sum = {}
-for one in data :
-    type = one[2]
-    result = int(one[4])
-    if result == 0 :
-        continue
-    if sum.__contains__(type) == False:
-        sum[type] = 0
-    sum[type] += result
 
-for index in sum:
-    print(index, sum[index])
+
+def cal(ver):
+    sum = {}
+    for one in data :
+        type = one[2]
+        result = int(one[4])
+        buyBig = int(one[3])
+        version = int(one[5])
+        if version != ver:
+            continue
+
+        if result == 0 :
+            continue
+        if sum.__contains__(type) == False:
+            sum[type] = {-1:0, 1:0, "sum":0}
+        sum[type][buyBig] += result
+        sum[type]["sum"] += 1
+
+    for index in sum:
+        # print(ver, index, sum[index], round(index/sum[index], 2))
+        print(ver, index, sum[index])
+
+cal(0)
+cal(1)
     

@@ -47,9 +47,10 @@ def addOutputInfo(key, info, outputInfo):
 #     return ips
 
 def writeFile(info):
-    with open(r"result.txt", 'a') as f:
-        f.write(info + "\n")
+    # with open(r"result_v2.txt", 'a') as f:
+    #     f.write(info + "\n")
         # print(info)
+    return
 
 
 

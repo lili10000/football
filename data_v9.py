@@ -22,38 +22,12 @@ def addOutputInfo(key, info, outputInfo):
         outputInfo[key] = []
     outputInfo[key].append(info)
 
-# def getIpList():
-#     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-#     req = requests.get(urlTmp)
-#     s = req.text
-#     ips = s.split('<br>')
-#     if len(ips) == 0:
-#         time.sleep(3)
-#         return ips
-#     ips.pop(0)
-#     if len(ips) == 0:
-#         time.sleep(3)
-#         return ips
-#     ips.pop(0)
-#     if len(ips) == 0:
-#         time.sleep(3)
-#         return ips
-#     ips.pop(len(ips)-1)
-#     print("get ips size:", len(ips))
-#     if len(ips) == 0:
-#         time.sleep(3)
-#         return ips
-    
-#     return ips
 
 def writeFile(info):
-    # with open(r"result.txt", 'a') as f:
+    # with open(r"result_v3.txt", 'a') as f:
     #     f.write(info + "\n")
         # print(info)
-    return
-
-
-
+    return 
 
 def clearStr(str):
     str = str.replace(" ", "")
@@ -99,6 +73,7 @@ class parser:
         self.param = []
 
         self.commend = commend()
+        self.version = 1
 
     def getHtmlText(self, url, ipList):
 
@@ -124,7 +99,7 @@ class parser:
             raise Exception()
         return s
 
-    def getData(self, key, cmd, outputInfo, mainFlag):
+    def getData(self, key, cmd, outputInfo):
         for title in self.soup.find_all('title') :
             if title.string.find('404') != -1:
                 return False
@@ -156,7 +131,14 @@ class parser:
                     client = clearStr(a.text)
                     break
 
-
+                rateNow = ""
+                for td in tr.find_all('td', class_="text-center yellowTd BR0"):
+                    for a in td.find_all('a', target="_blank"):
+                        rateNow = clearStr(a.text)
+                        break
+                    if rateNow != "":
+                        break
+                
                 def checkBuy(teamName, cmd):
                     # if teamName == "":
                     #     teamName = teamName
@@ -173,7 +155,7 @@ class parser:
                         gameTime = one[9]
 
                         key = gameTime
-                        if main_score - client_score > 0:
+                        if main_score - client_score + rate > 0:
                             if result.__contains__(key) == False:
                                 result[key] = {}
                             if main == teamName:
@@ -181,7 +163,7 @@ class parser:
                             elif client == teamName:
                                 result[key] = -1
 
-                        elif main_score - client_score < 0:
+                        elif main_score - client_score + rate < 0:
                             if result.__contains__(key) == False:
                                 result[key] = {}
                             if main == teamName:
@@ -201,30 +183,35 @@ class parser:
 
 
                     def chechResult(gameTmp):
-                        if gameTmp == -1 :
+                        if gameTmp == 1 :
                             return 1
                         return 0
 
                     lostSum = 0
+                    winSum = 0
                     checkSum = cmd[1]
 
                     for index in range(checkSum):
                         key = values[index]
                         if result[key] == -1:
                             lostSum += 1
+                        if result[key] == 1:
+                            winSum += 1
                     
-                    if lostSum == checkSum :
+                    if lostSum == checkSum and cmd[5] == 1 :                    
+                        return True
+                    elif winSum == checkSum and cmd[5] == -1 : 
                         return True
                     return False
 
                 buyInfo = cmd[3]
-                if main != "" and mainFlag == 1 and checkBuy(main, cmd):
+                if main != "" and checkBuy(main, cmd) and cmd[5] == 1:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow)
 
-                elif client != "" and mainFlag == -1 and checkBuy(client, cmd):
+                elif client != "" and checkBuy(client, cmd) and cmd[5] == -1:
                     if "胜" in buyInfo:
                         buyInfo = buyInfo.replace("胜", "输")
                     elif "输" in buyInfo:
@@ -233,7 +220,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow)
                     
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
@@ -350,7 +337,7 @@ def working(tableName):
 
             # print( index, gameCode[gameIndex][2])
             try:   
-                if html.getData("k_corner", gameCode[gameIndex], outputInfo, gameCode[gameIndex][5]) == False :
+                if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
                     break
             except:
                 if len(ipList) < 2:
@@ -374,7 +361,7 @@ def working(tableName):
         # print(tableName, " size:", len(outputInfo))
 
 try:
-    os.remove(r"result.txt")
+    os.remove(r"result_v3.txt")
 except :
     pass
 
@@ -382,11 +369,10 @@ except :
 def doDayWork():
     print("start do doDayWork")
     
-    _thread.start_new_thread(working,("k_rateBuy",))
+    # _thread.start_new_thread(working,("k_rateBuy_v3",))
     # _thread.start_new_thread(working,("k_compBuy",))
-    _thread.start_new_thread(working,("k_scoreBuy",))
-    working("k_cornerBuy")
-    # working("k_rateBuy")
+    # _thread.start_new_thread(working,("k_scoreBuy_v2",))
+    working("k_rateBuy_v3")
     print("end do doDayWork")
 
 

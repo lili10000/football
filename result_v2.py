@@ -1,233 +1,191 @@
 from db.mysql import sqlMgr
 
-sql = sqlMgr('localhost', 'root', '861217', 'football')
 
-sizeMin = 20
-
-def getResultAll():
-    data = sql.queryByTypeAll("k_rate_euro")
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    if len(data) == 0 :
-        return
-    
-    rate = 0
-    rate = 3
-
-    for one in data :
-        if one[4] == 1 :
-            main_win += one[6+rate] - 1
-            client_win += -1
-            tie_win += -1
-        elif one[4] == -1 :
-            main_win += - 1
-            client_win += one[7+rate] -1
-            tie_win += -1
-        else :
-            main_win += - 1
-            client_win += -1
-            tie_win += one[8+rate] -1
-
-    mainResult = main_win/len(data)
-    clientResult = client_win/len(data)
-    tieResult = tie_win/len(data)
-    gameSize = len(data)
-    print(str(main_win/len(data)), "    ",str(client_win/len(data)),"    ",str(tie_win/len(data)),"    ",str(len(data)))
-
-# getResultAll()
-
-def getResult(name):
-    main_win_count = sql.queryCount(name, "k_all", "1")
-    tie_count = sql.queryCount(name, "k_all", "0")
-    client_win_count = sql.queryCount(name, "k_all", "-1")
-    
-    total = main_win_count[0][0] + tie_count[0][0] + client_win_count[0][0]
-    print(round(total / main_win_count[0][0],2), "    ",round(total / tie_count[0][0],2),"    ",round(total / client_win_count[0][0],2),"    ",name)
-
-    main_win_rate_count = sql.queryCountRate(name, "k_all", "1")
-    tie_rate_count = sql.queryCountRate(name, "k_all", "0")
-    client_win_rate_count = sql.queryCountRate(name, "k_all", "-1")
-
-    # print(round(total / main_win_rate_count[0][0],2), "    ",round(total / tie_rate_count[0][0],2),"    ",round(total / client_win_rate_count[0][0],2),"    ","让球",name)
-
-
-def getResult_v2(name, value_max, value_min):
-    data = sql.queryByType(name, "k_rate_euro")
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_lost = one[7]
-        rate_tie = one[8]
-
-        if (rate_win > value_min and  rate_win < value_max):
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7] -1
-                tie_win += -1
-            elif one[4] == 0 :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8] -1
-
-    if size < sizeMin :
-        return
-    if main_win/size < 0.1 and client_win/size < 0.1 and tie_win/size < 0.1:
-        return
-    if main_win >0 or client_win >0 or tie_win >0 :
-        print("[主",value_min,value_max , "]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name)
+def cal(mainParam, clientParam):
    
+    # if mainParam[3] == mainParam[4] and mainParam[5] > 0: # 连续让输，主场让赢
+    #     return 1
+    # elif clientParam[2] == mainParam[4] and mainParam[5] > 0: # 连续让赢，客场让输
+    #     return -1
+    # return 0
 
-def getResult_v3(name, value_max, value_min):
-    data = sql.queryByType(name, "k_rate_euro")
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_lost = one[7]
-        rate_tie = one[8]
-
-        if (rate_lost > value_min and  rate_lost < value_max):
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7] -1
-                tie_win += -1
-            elif one[4] == 0 :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8] -1
-
-    if size < sizeMin :
-        return
-    if main_win/size < 0.1 and client_win/size < 0.1 and tie_win/size < 0.1:
-        return
-    if main_win >0 or client_win >0 or tie_win >0 :
-        print("[客",value_min,value_max , "]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name)
-    # print(str(round(main_win/size, 2)), "   ",str(round(client_win/size, 2)),"    ",str(round(tie_win/size, 2)),"    ",str(size),"    ",name)
+    if mainParam[3] == mainParam[4]: # 连续让输，主场让赢
+        return 1
+    elif clientParam[2] == mainParam[4]: # 连续让赢，客场让输
+        return -1
+    return 0
 
 
-def getResult_v4(name, value_max, value_min):
-    data = sql.queryByType(name, "k_rate_euro")
+def checkMain():
+# key = 'k_rateBuy'
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    gameCode = sql.queryByTypeAll("k_gamedic")
 
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
+    outputInfo={}
+    tableName = "k_rateBuy_v3"
+    sql.cleanAll(tableName)
+    for code in gameCode:
+        id = code[0]
+        gameName = code[1]
+        data = sql.queryByTypeTime(gameName, 'k_corner')
 
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_lost = one[7]
-        rate_tie = one[8]
+        
+        outputInfo = {}
+        rateMax = -1
+        for i in range(2):
+            # rateMax = -1
+            lostCount = i + 2
+            # lostCount = 3
+            # gameName = "英超"
+            # index = lostCount
 
-        if (tie_win > value_min and  tie_win < value_max):
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7] -1
-                tie_win += -1
-            elif one[4] == 0 :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8] -1
+            info = {}
+            winSum = 0
+            lostSum = 0
+            clientWinSum = 0
+            clientlostSum = 0
+            for one in data:
+                main = one[0]
+                client = one[1]
+                main_score = int(one[2])
+                client_score = int(one[3])
+                rate = one[4]
+                gameType = one[5]
+                mainCorner = one[6]
+                clientCorner = one[7]
+                time = one[9]
+                if rate == "-" or rate == "-\n" :
+                    continue
+                rate = float(rate)
 
-    if size < sizeMin :
-        return
-    if main_win/size < 0.1 and client_win/size < 0.1 and tie_win/size < 0.1:
-        return
-    if main_win >0 or client_win >0 or tie_win >0 :
-        print("[平",value_min,value_max , "]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name)
-    # print(str(round(main_win/size, 2)), "   ",str(round(client_win/size, 2)),"    ",str(round(tie_win/size, 2)),"    ",str(size),"    ",name)
+                if info.__contains__(main) == False:
+                    info[main] = []
+                if info.__contains__(client) == False:
+                    info[client] = []
 
-
-
-def compare(name): 
-    # getResult_v2(name,1.6, 1.3) 
-    # return
-
-    weight = 0.2
-    rangeMax = 12
-
-    for i in range(0, rangeMax) :
-        max = 1 + weight*(i+1) 
-        min =  1 + weight*i
-        min = round(min,2)
-        max = round(max,2)
-        getResult_v2(name,max, min) 
-    getResult_v2(name,10, 3.5)
-
-    for i in range(0, rangeMax) :
-        max = 1 + weight*(i+1) 
-        min =  1 + weight*i
-        min = round(min,2)
-        max = round(max,2)
-        getResult_v3(name,max, min) 
-    getResult_v3(name,10, 3.5)
-
-    weight = 0.3
-    for i in range(0, rangeMax) :
-        max = 1 + weight*(i+1) 
-        min =  1 + weight*i
-        min = round(min,2)
-        max = round(max,2)
-        getResult_v4(name,max, min) 
-    getResult_v4(name,10, 3.5)
+                rateKey = "rateResult"
+                normalKey = "normal"
+                scoreKey = "score"
+                lostKey = "lost"
+                timeKey = "time"
+                goodKey = "rate"
+                mainInput = {rateKey:0, normalKey:0, scoreKey:0, lostKey:0, timeKey:0, goodKey:0}
+                clientInput = {rateKey:0, normalKey:0}
+                if main_score - client_score + rate> 0:
+                    mainInput[rateKey] = 1
+                    clientInput[rateKey] = -1
+                elif main_score - client_score + rate < 0:
+                    mainInput[rateKey] = -1
+                    clientInput[rateKey] = 1
 
 
-# compare("美职业")
-# compare("阿甲")
-# compare("英超")
-# compare("英甲")
-# compare("英冠")
-# compare("英乙")
-# compare("意甲")
-# compare("德甲")
-# compare("德乙")
-# compare("西甲")
-# compare("葡超")
-# compare("法甲")
-# compare("法乙")
-# compare("荷甲")
-# compare("荷乙")
-# compare("日职联")
-# compare("日职乙")
-# compare("苏超")
-# compare("比甲")
-# compare("俄超")
-compare("挪超")
-# compare("瑞典超")
-# compare("巴西甲")
-# compare("澳洲甲")
-# compare("韩联")
+                if main_score - client_score> 0:
+                    mainInput[normalKey] = 1
+                    clientInput[normalKey] = -1
+                elif main_score - client_score < 0:
+                    mainInput[normalKey] = -1
+                    clientInput[normalKey] = 1
+
+                mainInput[scoreKey] = main_score
+                mainInput[lostKey] = client_score
+                mainInput[goodKey] = rate
+
+                clientInput[scoreKey] = client_score
+                clientInput[lostKey] = main_score
+                clientInput[goodKey] = rate * -1
+
+                info[main].append(mainInput)
+                info[client].append(clientInput)
+
+                        
+                mainSize = len(info[main])
+                clientSize = len(info[client])
+
+                # lostCount = 5
+                if mainSize < lostCount + 1:
+                    continue
+                if clientSize < lostCount + 1:
+                    continue
+
+
+                tmpName = main
+                tmpSize = mainSize
+                checkFlag = False
+
+                scoreSum = 0
+                lostScoreSum = 0
+                GoodSum = 0
+                badSum = 0
+                for i in range(lostCount):
+                    if info[tmpName][tmpSize-i-2][rateKey] == 1:
+                        GoodSum += 1
+                    if info[tmpName][tmpSize-i-2][rateKey] == -1:
+                        badSum += 1
+                    scoreSum += info[tmpName][tmpSize-i-2][scoreKey]
+                    lostScoreSum += info[tmpName][tmpSize-i-2][lostKey]
+                mainParam =  [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount, rate]
+            
+
+                tmpName = client
+                tmpSize = clientSize
+                scoreSum = 0
+                lostScoreSum = 0
+                GoodSum = 0
+                badSum = 0
+                for i in range(lostCount):
+                    if info[tmpName][tmpSize-i-2][normalKey] == 1:
+                        GoodSum += 1
+                    if info[tmpName][tmpSize-i-2][normalKey] == -1:
+                        badSum += 1
+                    scoreSum += info[tmpName][tmpSize-i-2][scoreKey]
+                    lostScoreSum += info[tmpName][tmpSize-i-2][lostKey]
+                clientParam = [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount]
+
+                calRate = cal(mainParam, clientParam)
+                buyMain = False
+                if calRate > 0 :
+                    buyMain = True
+                elif calRate == 0:
+                    continue
+
+
+                if buyMain and main_score - client_score + rate> 0:
+                    winSum += 1
+                elif buyMain and main_score - client_score + rate < 0:
+                    lostSum += 1
+                
+                if buyMain == False and main_score - client_score + rate > 0:
+                    clientlostSum += 1
+                elif buyMain == False and main_score - client_score + rate < 0:
+                    clientWinSum += 1
+
+
+            mainRate = 0
+            if winSum+lostSum != 0:
+                mainRate = round(winSum/ (winSum+lostSum),2 )
+            
+
+            clientRate = 0
+            if clientWinSum+clientlostSum != 0:
+                clientRate =  round(clientWinSum/ (clientWinSum+clientlostSum),2 )
+
+            if mainRate > rateMax:
+                rateMax = mainRate
+                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1]
+            if clientRate > rateMax:
+                rateMax = clientRate
+                outputInfo = [id, lostCount, gameName, "让输", clientRate, -1]
+
+
+        if outputInfo[4] < 0.6:
+            continue
+        # print(outputInfo)
+        info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
+        sql.insert(info, tableName)
+ 
+
+
+# checkMain()
+# checkMain('k_rateBuy')
+# checkBig('k_scoreBuy')
+# checkCorner('k_cornerBuy')

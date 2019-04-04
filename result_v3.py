@@ -1,280 +1,110 @@
 from db.mysql import sqlMgr
 
-sql = sqlMgr('localhost', 'root', '861217', 'football')
-sizeMin = 20
 
-def getResult_1(name):
-    data = sql.queryByType(name, "k_rate_euro")
+def cal(mainParam, clientParam):
+   
+    # if mainParam[3] == mainParam[4] and mainParam[5] > 0: # 连续让输，主场让赢
+    #     return 1
+    # elif clientParam[2] == mainParam[4] and mainParam[5] > 0: # 连续让赢，客场让输
+    #     return -1
+    # return 0
 
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
-
-    flag_win = False
-    flag_lost = False
-    changeCount = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_win_first = one[6+ offset]
-        rate_lost = one[7]
-        rate_lost_first = one[7+ offset]
-
-        rate_tie = one[8]
-        rate_tie_first = one[8+ offset]
-
-        factor = 1/(1/rate_win + 1/rate_lost +  1/rate_tie)
-        factor_first = 1/(1/rate_win_first + 1/rate_lost_first +  1/rate_tie_first)
-
-        rate_win = (1/rate_win)*factor
-        rate_lost = (1/rate_lost)*factor
-        rate_win_first = (1/rate_win_first)*factor_first
-        rate_lost_first = (1/rate_lost_first)*factor_first
-
-        rate = 0
-        # if rate_lost > rate_lost_first :
-        if rate_win > rate_win_first :
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6+rate] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7+rate] -1
-                tie_win += -1
-            else :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8+rate] -1
-
-        if (main_win > 0 and flag_win == False)  :
-            changeCount += 1
-            flag_win = True
-        elif (main_win < 0 and flag_win == True) :
-            changeCount += 1
-            flag_win = False
-    if size == 0 :
-        return
-    # if main_win >0 or client_win >0 or tie_win >0 :
-    print("[主胜率升]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name, "changeCount=", changeCount)
-  
-def getResult_2(name):
-    data = sql.queryByType(name, "k_rate_euro")
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
-
-    flag_win = False
-    flag_lost = False
-    changeCount = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_win_first = one[6+ offset]
-        rate_lost = one[7]
-        rate_lost_first = one[7+ offset]
-
-        rate_tie = one[8]
-        rate_tie_first = one[8+ offset]
-
-        factor = 1/(1/rate_win + 1/rate_lost +  1/rate_tie)
-        factor_first = 1/(1/rate_win_first + 1/rate_lost_first +  1/rate_tie_first)
-
-        rate_win = (1/rate_win)*factor
-        rate_lost = (1/rate_lost)*factor
-        rate_win_first = (1/rate_win_first)*factor_first
-        rate_lost_first = (1/rate_lost_first)*factor_first
-
-        rate = 0
-        # if rate_lost > rate_lost_first :
-        if rate_win < rate_win_first :
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6+rate] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7+rate] -1
-                tie_win += -1
-            else :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8+rate] -1
-
-        if (main_win > 0 and flag_win == False)  :
-            changeCount += 1
-            flag_win = True
-        elif (main_win < 0 and flag_win == True) :
-            changeCount += 1
-            flag_win = False
-    if size == 0 :
-        return
-    # if main_win >0 or client_win >0 or tie_win >0 :
-    print("[主胜率降]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name, "changeCount=", changeCount)
+    if mainParam[3] == mainParam[4]: # 连续让输，主场让赢
+        return 1
+    elif clientParam[2] == mainParam[4]: # 连续让赢，客场让输
+        return -1
+    return 0
 
 
-def getResult_3(name):
-    data = sql.queryByType(name, "k_rate_euro")
+def checkMain():
+# key = 'k_rateBuy'
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    gameCode = sql.queryByTypeAll("k_gamedic")
 
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
+    outputInfo={}
+    tableName = "k_rateBuy_v3"
+    sql.cleanAll(tableName)
+    for code in gameCode:
+        id = code[0]
+        gameName = code[1]
+        data = sql.queryByTypeTime(gameName, 'k_corner')
 
-    flag_win = False
-    flag_lost = False
-    changeCount = 0
+        
+        outputInfo = {}
+        rateMax = -1
+        for i in range(1):
+            lostCount = i + 2
+            info = {}
+            winSum = 0
+            lostSum = 0
+            BigWinSum = 0
+            BiglostSum = 0
+            for one in data:
+                main = one[0]
+                client = one[1]
+                main_score = int(one[2])
+                client_score = int(one[3])
+                rate = one[4]
+                gameType = one[5]
+                mainCorner = one[6]
+                clientCorner = one[7]
+                time = one[9]
+                scoreRate = one[11]
+                if rate == "-" or rate == "-\n" :
+                    continue
+                rate = float(rate)
+                if scoreRate == "-" or scoreRate == "-\n" :
+                    continue
+                scoreRate = float(scoreRate)
 
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_win_first = one[6+ offset]
-        rate_lost = one[7]
-        rate_lost_first = one[7+ offset]
+                if info.__contains__(main) == False:
+                    info[main] = []
+                if info.__contains__(client) == False:
+                    info[client] = []
 
-        rate_tie = one[8]
-        rate_tie_first = one[8+ offset]
+                rateKey = "rateResult"
+                bigKey = "big"
+               
+                mainInput = {rateKey:0, }
+                clientInput = {rateKey:0, bigKey:0}
 
-        factor = 1/(1/rate_win + 1/rate_lost +  1/rate_tie)
-        factor_first = 1/(1/rate_win_first + 1/rate_lost_first +  1/rate_tie_first)
+                checkFlag = False
+                if main_score - client_score + rate > 0 and rate > 0:
+                    # mainInput[rateKey] = 1
+                    # clientInput[rateKey] = -1
+                    checkFlag = True
+                elif main_score - client_score + rate < 0 and rate < 0:
+                    # mainInput[rateKey] = -1
+                    # clientInput[rateKey] = 1
+                    checkFlag = True
 
-        rate_win = (1/rate_win)*factor
-        rate_lost = (1/rate_lost)*factor
-        rate_win_first = (1/rate_win_first)*factor_first
-        rate_lost_first = (1/rate_lost_first)*factor_first
+                if checkFlag == False:
+                    continue
 
+                if main_score + client_score - scoreRate > 0 :
+                    BigWinSum += 1
+                elif main_score + client_score - scoreRate < 0 :
+                    BiglostSum += 1
 
-        rate = 0
-        if rate_lost > rate_lost_first :
-        # if rate_win > rate_win_first :
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6+rate] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7+rate] -1
-                tie_win += -1
-            else :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8+rate] -1
+            bigRate = 0
+            if BigWinSum+BiglostSum != 0:
+                bigRate = round(BigWinSum/ (BigWinSum+BiglostSum),2 )
+            
 
-        if (main_win > 0 and flag_win == False)  :
-            changeCount += 1
-            flag_win = True
-        elif (main_win < 0 and flag_win == True) :
-            changeCount += 1
-            flag_win = False
-    if size == 0 :
-        return
-    # if main_win >0 or client_win >0 or tie_win >0 :
-    print("[客胜率升]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name, "changeCount=", changeCount)
-  
-def getResult_4(name):
-    data = sql.queryByType(name, "k_rate_euro")
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
-    size = 0
-
-    flag_win = False
-    flag_lost = False
-    changeCount = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        rate_win = one[6]
-        rate_win_first = one[6+ offset]
-        rate_lost = one[7]
-        rate_lost_first = one[7+ offset]
-
-        rate_tie = one[8]
-        rate_tie_first = one[8+ offset]
-
-        factor = 1/(1/rate_win + 1/rate_lost +  1/rate_tie)
-        factor_first = 1/(1/rate_win_first + 1/rate_lost_first +  1/rate_tie_first)
-
-        rate_win = (1/rate_win)*factor
-        rate_lost = (1/rate_lost)*factor
-        rate_win_first = (1/rate_win_first)*factor_first
-        rate_lost_first = (1/rate_lost_first)*factor_first
+            if bigRate > rateMax:
+                rateMax = bigRate
+                outputInfo = [id, gameName, "大球", bigRate, 1]
 
 
-        rate = 0
-        if rate_lost < rate_lost_first :
-        # if rate_win < rate_win_first :
-            size += 1
-            if one[4] == 1 :
-                main_win += one[6+rate] - 1
-                client_win += -1
-                tie_win += -1
-            elif one[4] == -1 :
-                main_win += - 1
-                client_win += one[7+rate] -1
-                tie_win += -1
-            else :
-                main_win += - 1
-                client_win += -1
-                tie_win += one[8+rate] -1
+        # if abs(outputInfo[4] - 0.5) < 0.09:
+        #     continue
+        print(outputInfo)
+        # info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
+        # sql.insert(info, tableName)
+ 
 
-        if (main_win > 0 and flag_win == False)  :
-            changeCount += 1
-            flag_win = True
-        elif (main_win < 0 and flag_win == True) :
-            changeCount += 1
-            flag_win = False
-    if size == 0 :
-        return
-    # if main_win >0 or client_win >0 or tie_win >0 :
-    print("[客胜率降]", "win",str(round(main_win/size, 2)), "   lost",str(round(client_win/size, 2)),"    tie",str(round(tie_win/size, 2)),"    ",str(size),"    ",name, "changeCount=", changeCount)
 
-def compare(name): 
-    getResult_1(name) 
-    getResult_2(name) 
-    getResult_3(name) 
-    getResult_4(name) 
-    # return
-
-# compare("美职业")
-# compare("阿甲")
-# compare("英超")
-# compare("英甲")
-# compare("英冠")
-# compare("英乙")
-# compare("意甲")
-# compare("德甲")
-# compare("德乙")
-# compare("西甲")
-# compare("葡超")
-# compare("法甲")
-# compare("法乙")
-# compare("荷甲")
-# compare("荷乙")
-# compare("日职联")
-# compare("日职乙")
-# compare("苏超")
-# compare("比甲")
-# compare("俄超")
-# compare("挪超")
-# compare("瑞典超")
-# compare("巴西甲")
-# compare("澳洲甲")
-# compare("韩联")
+checkMain()
+# checkMain('k_rateBuy')
+# checkBig('k_scoreBuy')
+# checkCorner('k_cornerBuy')

@@ -1,4 +1,5 @@
 from db.mysql import sqlMgr
+from result_v16 import checkMain
 
 def docal():
     sql = sqlMgr('localhost', 'root', '861217', 'football')
@@ -445,7 +446,7 @@ def docal():
         small = [0,0]
         for index in infoList:
             tmp = infoList[index]
-            info = "'{}','{}','{}','{}','{}'".format(tmp[0],tmp[1],tmp[2],tmp[3],tmp[5])
+            info = "'{}','{}','{}','{}','{}','0'".format(tmp[0],tmp[1],tmp[2],tmp[3],tmp[5])
             sql.insert(info, tableName)
             # print(tmp)
             if tmp[4] > 50:
@@ -463,8 +464,9 @@ def docal():
         infoList.clear()
 
     working(1)
-    working(2)
-    working(3)
-    working(4)
+    checkMain("k_rateBuy_v2")
+    # working(2)
+    # working(3)
+    # working(4)
 
 # docal()

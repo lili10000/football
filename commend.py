@@ -9,7 +9,7 @@ class commend:
         self.ScoreKey = "球"
         self.rateKey = "让"
 
-    def add(self, main, time, type):
+    def add(self, main, time, type, version=0, rate=None):
         buyBig = -1
         if "大" in type or "胜" in type:
             buyBig = 1
@@ -29,8 +29,23 @@ class commend:
         id = "{}_{}_{}".format(main, time, type)
 
 
-        info = "'{}', '{}', '{}','{}','{}'".format(id, time, type, buyBig, 0)
+        info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, type, buyBig, 0, version)
         self.sql.insert(info, self.key)
+
+        if (rate != None) and ("让" in type):
+            if rate == "-" or rate == "-\n" :
+                return
+            rate = float(rate)
+
+            if (rate < 0 and buyBig == 1) or  (rate > 0 and buyBig == -1):
+                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, self.ScoreKey, 1, 0, version)
+                self.sql.insert(info, self.key)
+
+            if (rate < 0 and buyBig == -1) or  (rate > 0 and buyBig == 1):
+                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, self.ScoreKey, -1, 0, version)
+                self.sql.insert(info, self.key)
+
+
 
     def check(self, main, time, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0):
         time = int(time / 10000)

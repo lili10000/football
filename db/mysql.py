@@ -43,6 +43,16 @@ class sqlMgr:
             # Rollback in case there is any error
             print ("error :" + inserSQL )
             self.db.rollback()
+    def cleanById(self, tableName, id):
+        inserSQL = "delete  from {} where gameId = {}".format(tableName, id) 
+
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :" + inserSQL )
+            self.db.rollback()
 
     def insert(self, data, tableName):
         inserSQL = "INSERT INTO "
@@ -206,6 +216,28 @@ class sqlMgr:
     
     def queryTeamData(self, gameName, teamName, key):
         SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and ((main like '%"+ teamName +"%')) or (client like '%"+ teamName +"%'))"
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def queryByTypeTime(self, gameName, key):
+        SQL = u"select * from {} where ( type = '{}') order by time".format(key, gameName)
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("query error ")
+    
+    def updateMainFlag(self, gameName, value, key):
+        SQL = "UPDATE {} SET flag = {} where (gameId = {})".format(key, value, gameName)
         SQL.encode('utf-8')
 
         try:  

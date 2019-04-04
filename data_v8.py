@@ -11,6 +11,7 @@ import ssl
 import result_v15 as GameType
 import result_v14 as lostCal
 import result_v17 as winCal
+import result_v2 as rateWinCal
 import _thread
 from commend import commend
 from tool import ipTool
@@ -222,7 +223,7 @@ def working(tableName, type = 0):
 
     if type == 1:
        gameCode = gameCodeAll  
-       end = 2 
+       end = 3 
 
     if len(gameCode) == 0 :
         return
@@ -278,6 +279,7 @@ def doUpdata():
     working("k_corner", 1)
     lostCal.docal()
     winCal.docal()
+    rateWinCal.checkMain()
     print("end doUpdata")
 
 # working("k_corner", 1)
