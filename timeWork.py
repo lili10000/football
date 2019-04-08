@@ -16,19 +16,25 @@ def getSleepTime():
     # skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
     # print ("Must sleep %d seconds" % skipSeconds)
     # return skipSeconds
-    return 1*60*60
+    return 60*60
 
 
+def doOnePerDay():
+    while 1:
+        time.sleep(24*60*60)
+        updata.doUpdata()
+
+_thread.start_new_thread(doOnePerDay, ())
         
 while 1:
-
     start = int(time.time()) 
     print ("start work", datetime.now())
-    updata.doUpdata()
-    # _thread.start_new_thread(lostCheck.doDayWork, ())
+    # updata.doUpdata()
+    
     # winCheck.doDayWork()
-    lostCheck.doDayWork()
     rateWinCheck.doDayWork()
+#     lostCheck.doDayWork()
+    
     end = int(time.time()) 
     print ("end work", end,"    use time=",end-start," s" )
     sleepTime = getSleepTime()

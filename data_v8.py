@@ -223,7 +223,7 @@ def working(tableName, type = 0):
 
     if type == 1:
        gameCode = gameCodeAll  
-       end = 3 
+       end = 2
 
     if len(gameCode) == 0 :
         return
@@ -275,13 +275,14 @@ def doUpdata():
     print("start doUpdata")
     # ipList = getIpList()
     GameType.updata()
-    _thread.start_new_thread(working,("k_corner",))
+    # _thread.start_new_thread(working,("k_corner",))
     working("k_corner", 1)
-    lostCal.docal()
-    winCal.docal()
+    # lostCal.docal()
+    # winCal.docal()
     rateWinCal.checkMain()
     print("end doUpdata")
 
-# working("k_corner", 1)
+working("k_corner")
+# doUpdata()
 
 

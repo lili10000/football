@@ -131,6 +131,16 @@ class parser:
                     client = clearStr(a.text)
                     break
 
+                gameId = ""
+                for td in tr.find_all('td', class_="text-center yellowTd BR0"):
+                    for a in td.find_all('a'):
+                        tmp = a.attrs['href']
+                        gameIdList = tmp.split('/')
+                        gameId = gameIdList[2]
+                        break
+                    if gameId != "":
+                        break
+
                 rateNow = ""
                 for td in tr.find_all('td', class_="text-center yellowTd BR0"):
                     for a in td.find_all('a', target="_blank"):
@@ -209,7 +219,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow)
+                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
 
                 elif client != "" and checkBuy(client, cmd) and cmd[5] == -1:
                     if "胜" in buyInfo:
@@ -220,7 +230,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow)
+                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
                     
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
@@ -254,6 +264,7 @@ class parser:
             # print(type_game)
             main = ""
             client = ""
+            gameId = ""
             for td in tr.find_all('td', class_="text-right BR0"):
                 for a in td.find_all('a', target="_blank"):
                     main = clearStr(a.text)
@@ -261,6 +272,12 @@ class parser:
             for td in tr.find_all('td', class_="text-left"):
                 for a in td.find_all('a', target="_blank"):
                     client = clearStr(a.text)
+
+            for div in tr.find_all('div', class_="statusListWrapper"):
+                for a in div.find_all('a'):
+                    tmp = a.attrs['href']
+                    gameIdList = tmp.split('/')
+                    gameId = gameIdList[2]
 
 
             rate = 0
@@ -300,7 +317,7 @@ class parser:
             input += ",'"+  main + "_" + str(gameTime) + "'" 
             input += ",'{}','{}'".format(scoreRate, cornerRate)
             self.sql.insert(input, "k_corner")
-            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate)
+            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate, id=gameId)
 
 
 
@@ -335,7 +352,7 @@ def working(tableName):
                 # print ("connect err")
                 continue
 
-            # print( index, gameCode[gameIndex][2])
+            print( index, gameCode[gameIndex][2])
             try:   
                 if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
                     break
@@ -360,10 +377,10 @@ def working(tableName):
         writeFile(info)
         # print(tableName, " size:", len(outputInfo))
 
-try:
-    os.remove(r"result_v3.txt")
-except :
-    pass
+# try:
+#     os.remove(r"result_v3.txt")
+# except :
+#     pass
 
 
 def doDayWork():

@@ -50,12 +50,16 @@ def checkMain():
                 clientCorner = one[7]
                 time = one[9]
                 scoreRate = one[11]
+                cornerRate = one[12]
                 if rate == "-" or rate == "-\n" :
                     continue
                 rate = float(rate)
                 if scoreRate == "-" or scoreRate == "-\n" :
                     continue
-                scoreRate = float(scoreRate)
+                # if cornerRate == "-" or cornerRate == "-\n" :
+                #     continue
+                # cornerRate = float(cornerRate)
+                scoreRate =  float(scoreRate)
 
                 if info.__contains__(main) == False:
                     info[main] = []
@@ -80,6 +84,11 @@ def checkMain():
 
                 if checkFlag == False:
                     continue
+
+                # if mainCorner + clientCorner - cornerRate > 0 :
+                #     BigWinSum += 1
+                # elif mainCorner + clientCorner - cornerRate < 0 :
+                #     BiglostSum += 1
 
                 if main_score + client_score - scoreRate > 0 :
                     BigWinSum += 1

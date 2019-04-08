@@ -9,7 +9,17 @@ class commend:
         self.ScoreKey = "球"
         self.rateKey = "让"
 
-    def add(self, main, time, type, version=0, rate=None):
+    def __insertData(self,id, type, info, logInfo):
+
+        retn = self.sql.queryCountByID(self.key, id, type)
+        if retn == None or retn[0][0] == 0:
+            with open(r"buyPerDay.txt", 'a') as f:
+                logInfo = "{}   {}\n".format(id, logInfo)
+                f.write(logInfo)
+                print(logInfo)
+            self.sql.insert(info, self.key)
+
+    def add(self, main, time, type, version=0, rate=None, logInfo="", id=""):
         buyBig = -1
         if "大" in type or "胜" in type:
             buyBig = 1
@@ -26,35 +36,42 @@ class commend:
         else:
             return
 
-        id = "{}_{}_{}".format(main, time, type)
+
+        id_key = "{}_{}_{}".format(main, id, type)
 
 
-        info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, type, buyBig, 0, version)
-        self.sql.insert(info, self.key)
+        info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, type, buyBig, 0, version)
+        self.__insertData(id_key, type, info, logInfo)
 
         if (rate != None) and ("让" in type):
             if rate == "-" or rate == "-\n" :
                 return
             rate = float(rate)
 
-            if (rate < 0 and buyBig == 1) or  (rate > 0 and buyBig == -1):
-                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, self.ScoreKey, 1, 0, version)
-                self.sql.insert(info, self.key)
+            id_key = "{}_{}_{}".format(main, id, self.ScoreKey)
 
-            if (rate < 0 and buyBig == -1) or  (rate > 0 and buyBig == 1):
-                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id, time, self.ScoreKey, -1, 0, version)
-                self.sql.insert(info, self.key)
+            if (rate < 0 and buyBig == 1) or  (rate > 0 and buyBig == -1): # 买强队赢买大
+                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, 1, 0, version)
+                logInfo = logInfo.replace("让胜", "大球")
+                logInfo = logInfo.replace("让输", "大球")
+                self.__insertData(id_key, type, info, logInfo)
+
+            if (rate < 0 and buyBig == -1) or  (rate > 0 and buyBig == 1): # 买弱队赢买小
+                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, -1, 0, version)
+                logInfo = logInfo.replace("让胜", "小球")
+                logInfo = logInfo.replace("让输", "小球")
+                self.__insertData(id_key, type, info, logInfo)
 
 
 
-    def check(self, main, time, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0):
+    def check(self, main, time, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0,  id=0):
         time = int(time / 10000)
         time = str(time) + '....' 
 
 
-        def checkRate(main, main_score, client_score,rate):
+        def checkRate(main, main_score, client_score,rate, id):
             type = self.rateKey
-            id = "{}_{}_{}".format(main, time,type)
+            id = "{}_{}_{}".format(main, id, type)
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
@@ -72,13 +89,13 @@ class commend:
             rateResult = rateResult * retn[0][3]
             self.sql.updateCommend(id, type, rateResult, self.key)
 
-        def checkScore(main_score, client_score, scoreRate):
+        def checkScore(main_score, client_score, scoreRate, id):
             if scoreRate == "-":
                 return
             scoreRate = float (scoreRate)
 
             type = self.ScoreKey
-            id = "{}_{}_{}".format(main, time,type)
+            id = "{}_{}_{}".format(main, id, type)
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
@@ -94,13 +111,14 @@ class commend:
             rateResult = rateResult * retn[0][3]
             self.sql.updateCommend(id, type, rateResult, self.key)
         
-        def checkCorner(main, time, corner, cornerRate):
+        def checkCorner(main, time, corner, cornerRate, id):
             if cornerRate == "-":
                 return
             cornerRate = float (cornerRate)
 
             type = self.CornerKey
-            id = "{}_{}_{}".format(main, time,type)
+
+            id = "{}_{}_{}".format(main, id, type)
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
@@ -117,9 +135,9 @@ class commend:
             self.sql.updateCommend(id, type, rateResult, self.key)
 
 
-        checkRate(main, main_score, client_score,rate)
-        checkScore(main_score, client_score, scoreRate)
-        checkCorner(main, time, corner, cornerRate)
+        checkRate(main, main_score, client_score,rate, id)
+        checkScore(main_score, client_score, scoreRate, id)
+        checkCorner(main, time, corner, cornerRate, id)
         
 
 
