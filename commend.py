@@ -54,13 +54,13 @@ class commend:
                 info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, 1, 0, version)
                 logInfo = logInfo.replace("让胜", "大球")
                 logInfo = logInfo.replace("让输", "大球")
-                self.__insertData(id_key, type, info, logInfo)
+                self.__insertData(id_key, self.ScoreKey, info, logInfo)
 
             if (rate < 0 and buyBig == -1) or  (rate > 0 and buyBig == 1): # 买弱队赢买小
                 info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, -1, 0, version)
                 logInfo = logInfo.replace("让胜", "小球")
                 logInfo = logInfo.replace("让输", "小球")
-                self.__insertData(id_key, type, info, logInfo)
+                self.__insertData(id_key, self.ScoreKey, info, logInfo)
 
 
 

@@ -9,10 +9,19 @@ def cal(mainParam, clientParam):
     #     return -1
     # return 0
 
-    if mainParam[3] == mainParam[4]: # 连续让输，主场让赢
-        return 1
-    elif clientParam[2] == mainParam[4]: # 连续让赢，客场让输
+    if mainParam[2] == mainParam[4]: # 连续让赢，买让输
         return -1
+
+    if clientParam[2] == clientParam[4]: # 连续让赢，买让赢
+        return 1
+    if clientParam[3] == clientParam[4]: # 连续让输，买让输
+        return -1
+
+
+    # if mainParam[2] == mainParam[4]: # 连续让赢，买让输
+    #     return -1
+    # if clientParam[2] == clientParam[4]: # 连续让赢，买让输
+    #     return 1
     return 0
 
 
@@ -24,6 +33,8 @@ def checkMain():
     outputInfo={}
     tableName = "k_rateBuy_v3"
     sql.cleanAll(tableName)
+    size = 0
+    rateSum = 0
     for code in gameCode:
         id = code[0]
         gameName = code[1]
@@ -32,6 +43,7 @@ def checkMain():
         
         outputInfo = {}
         rateMax = -1
+        
         for i in range(2):
             # rateMax = -1
             lostCount = i + 2
@@ -180,9 +192,12 @@ def checkMain():
         if outputInfo[4] < 0.6:
             continue
         # print(outputInfo)
+        size += 1
+        rateSum += outputInfo[4]
+
         info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
         sql.insert(info, tableName)
- 
+    print("size:", size, " rate:", round(rateSum/size, 2))
 
 
 # checkMain()

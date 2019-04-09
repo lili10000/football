@@ -9,10 +9,18 @@ def cal(mainParam, clientParam):
     #     return -1
     # return 0
 
-    if mainParam[3] == mainParam[4]: # 连续让输，主场让赢
-        return 1
-    elif clientParam[2] == mainParam[4]: # 连续让赢，客场让输
+# [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount, rate]
+
+    if mainParam[2] == mainParam[4]: # 主连续大球，主场让输
         return -1
+    if clientParam[3] == clientParam[4]: # 客连续小球，主场让输
+        return -1
+    if clientParam[2] == clientParam[4]: # 客连续大球，主场让赢
+        return 1
+
+
+    # elif clientParam[3] == mainParam[4]: # 客连续小球，主场让输
+    #     return 1
     return 0
 
 
@@ -22,8 +30,10 @@ def checkMain():
     gameCode = sql.queryByTypeAll("k_gamedic")
 
     outputInfo={}
-    tableName = "k_rateBuy_v3"
-    sql.cleanAll(tableName)
+    tableName = "k_rateBuy_v4"
+    # sql.cleanAll(tableName)
+    size = 0
+    rateSum = 0
     for code in gameCode:
         id = code[0]
         gameName = code[1]
@@ -32,13 +42,18 @@ def checkMain():
         
         outputInfo = {}
         rateMax = -1
-        for i in range(1):
+        for i in range(2):
+            # rateMax = -1
             lostCount = i + 2
+            # lostCount = 3
+            # gameName = "英超"
+            # index = lostCount
+
             info = {}
             winSum = 0
             lostSum = 0
-            BigWinSum = 0
-            BiglostSum = 0
+            clientWinSum = 0
+            clientlostSum = 0
             for one in data:
                 main = one[0]
                 client = one[1]
@@ -48,72 +63,156 @@ def checkMain():
                 gameType = one[5]
                 mainCorner = one[6]
                 clientCorner = one[7]
-                time = one[9]
                 scoreRate = one[11]
-                cornerRate = one[12]
+                time = one[9]
                 if rate == "-" or rate == "-\n" :
                     continue
                 rate = float(rate)
                 if scoreRate == "-" or scoreRate == "-\n" :
                     continue
-                # if cornerRate == "-" or cornerRate == "-\n" :
-                #     continue
-                # cornerRate = float(cornerRate)
-                scoreRate =  float(scoreRate)
-
+                scoreRate = float(scoreRate)
                 if info.__contains__(main) == False:
                     info[main] = []
                 if info.__contains__(client) == False:
                     info[client] = []
 
                 rateKey = "rateResult"
-                bigKey = "big"
-               
-                mainInput = {rateKey:0, }
-                clientInput = {rateKey:0, bigKey:0}
+                normalKey = "normal"
+                scoreKey = "score"
+                lostKey = "lost"
+                timeKey = "time"
+                goodKey = "rate"
+                scoreResult = "scoreResult"
+                mainInput = {rateKey:0, normalKey:0, scoreKey:0, lostKey:0, timeKey:0, goodKey:0, scoreResult:0}
+                clientInput = {rateKey:0, normalKey:0, scoreKey:0, lostKey:0, timeKey:0, goodKey:0, scoreResult:0}
+                if main_score - client_score + rate> 0:
+                    mainInput[rateKey] = 1
+                    clientInput[rateKey] = -1
+                elif main_score - client_score + rate < 0:
+                    mainInput[rateKey] = -1
+                    clientInput[rateKey] = 1
 
-                checkFlag = False
-                if main_score - client_score + rate > 0 and rate > 0:
-                    # mainInput[rateKey] = 1
-                    # clientInput[rateKey] = -1
-                    checkFlag = True
-                elif main_score - client_score + rate < 0 and rate < 0:
-                    # mainInput[rateKey] = -1
-                    # clientInput[rateKey] = 1
-                    checkFlag = True
 
-                if checkFlag == False:
+                if main_score - client_score> 0:
+                    mainInput[normalKey] = 1
+                    clientInput[normalKey] = -1
+                elif main_score - client_score < 0:
+                    mainInput[normalKey] = -1
+                    clientInput[normalKey] = 1
+
+                if main_score + client_score - scoreRate> 0:
+                    mainInput[scoreResult] = 1
+                    clientInput[scoreResult] = 1
+                elif main_score + client_score - scoreRate < 0:
+                    mainInput[scoreResult] = -1
+                    clientInput[scoreResult] = -1
+
+                mainInput[scoreKey] = main_score
+                mainInput[lostKey] = client_score
+                mainInput[goodKey] = rate
+
+                clientInput[scoreKey] = client_score
+                clientInput[lostKey] = main_score
+                clientInput[goodKey] = rate * -1
+
+                info[main].append(mainInput)
+                info[client].append(clientInput)
+
+                        
+                mainSize = len(info[main])
+                clientSize = len(info[client])
+
+                # lostCount = 5
+                if mainSize < lostCount + 1:
+                    continue
+                if clientSize < lostCount + 1:
                     continue
 
-                # if mainCorner + clientCorner - cornerRate > 0 :
-                #     BigWinSum += 1
-                # elif mainCorner + clientCorner - cornerRate < 0 :
-                #     BiglostSum += 1
 
-                if main_score + client_score - scoreRate > 0 :
-                    BigWinSum += 1
-                elif main_score + client_score - scoreRate < 0 :
-                    BiglostSum += 1
+                tmpName = main
+                tmpSize = mainSize
+                checkFlag = False
 
-            bigRate = 0
-            if BigWinSum+BiglostSum != 0:
-                bigRate = round(BigWinSum/ (BigWinSum+BiglostSum),2 )
+                scoreSum = 0
+                lostScoreSum = 0
+                GoodSum = 0
+                badSum = 0
+                for i in range(lostCount):
+                    if info[tmpName][tmpSize-i-2].__contains__(scoreResult) == False:
+                        print(info[tmpName][tmpSize-i-2])
+                        continue
+                    if info[tmpName][tmpSize-i-2][scoreResult] == 1:
+                        GoodSum += 1
+                    if info[tmpName][tmpSize-i-2][scoreResult] == -1:
+                        badSum += 1
+                    scoreSum += info[tmpName][tmpSize-i-2][scoreKey]
+                    lostScoreSum += info[tmpName][tmpSize-i-2][lostKey]
+                mainParam =  [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount, rate]
             
 
-            if bigRate > rateMax:
-                rateMax = bigRate
-                outputInfo = [id, gameName, "大球", bigRate, 1]
+                tmpName = client
+                tmpSize = clientSize
+                scoreSum = 0
+                lostScoreSum = 0
+                GoodSum = 0
+                badSum = 0
+                for i in range(lostCount):
+                    if info[tmpName][tmpSize-i-2][normalKey] == 1:
+                        GoodSum += 1
+                    if info[tmpName][tmpSize-i-2][normalKey] == -1:
+                        badSum += 1
+                    scoreSum += info[tmpName][tmpSize-i-2][scoreKey]
+                    lostScoreSum += info[tmpName][tmpSize-i-2][lostKey]
+                clientParam = [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount]
+
+                calRate = cal(mainParam, clientParam)
+                buyMain = False
+                if calRate > 0 :
+                    buyMain = True
+                elif calRate == 0:
+                    continue
 
 
-        # if abs(outputInfo[4] - 0.5) < 0.09:
-        #     continue
-        print(outputInfo)
-        # info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
-        # sql.insert(info, tableName)
- 
+                if buyMain and main_score - client_score + rate> 0:
+                    winSum += 1
+                elif buyMain and main_score - client_score + rate < 0:
+                    lostSum += 1
+                
+                if buyMain == False and main_score - client_score + rate > 0:
+                    clientlostSum += 1
+                elif buyMain == False and main_score - client_score + rate < 0:
+                    clientWinSum += 1
 
 
-checkMain()
+            mainRate = 0
+            if winSum+lostSum != 0:
+                mainRate = round(winSum/ (winSum+lostSum),2 )
+            
+
+            clientRate = 0
+            if clientWinSum+clientlostSum != 0:
+                clientRate =  round(clientWinSum/ (clientWinSum+clientlostSum),2 )
+
+            if mainRate > rateMax:
+                rateMax = mainRate
+                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1]
+            if clientRate > rateMax:
+                rateMax = clientRate
+                outputInfo = [id, lostCount, gameName, "让输", clientRate, -1]
+
+
+        if outputInfo[4] < 0.6:
+            continue
+        # print(outputInfo)
+        size += 1
+        rateSum += outputInfo[4]
+        info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
+        sql.insert(info, tableName)
+
+    print("size:", size, " rate:", round(rateSum/size, 2))
+
+
+# checkMain()
 # checkMain('k_rateBuy')
 # checkBig('k_scoreBuy')
 # checkCorner('k_cornerBuy')

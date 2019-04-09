@@ -73,7 +73,7 @@ class parser:
         self.param = []
 
         self.commend = commend()
-        self.version = 1
+        self.version = 2
 
     def getHtmlText(self, url, ipList):
 
@@ -163,23 +163,27 @@ class parser:
                         client_score = one[3]
                         rate = float(one[4])
                         gameTime = one[9]
+                        scoreRate = one[11]
+                        if scoreRate == "-" or scoreRate == "-\n" :
+                            continue
+                        scoreRate = float(scoreRate)
 
                         key = gameTime
-                        if main_score - client_score + rate > 0:
+                        if main_score + client_score - scoreRate > 0:
                             if result.__contains__(key) == False:
                                 result[key] = {}
                             if main == teamName:
                                 result[key] = 1
                             elif client == teamName:
-                                result[key] = -1
+                                result[key] = 1
 
-                        elif main_score - client_score + rate < 0:
+                        elif main_score + client_score - scoreRate < 0:
                             if result.__contains__(key) == False:
                                 result[key] = {}
                             if main == teamName:
                                 result[key] = -1
                             elif client == teamName:
-                                result[key] = 1
+                                result[key] = -1
                         else:
                             if result.__contains__(key) == False:
                                 result[key] = {}
@@ -388,7 +392,7 @@ def doDayWork():
     # _thread.start_new_thread(working,("k_rateBuy_v3",))
     # _thread.start_new_thread(working,("k_compBuy",))
     # _thread.start_new_thread(working,("k_scoreBuy_v2",))
-    working("k_rateBuy_v3")
+    working("k_rateBuy_v4")
     print("end do doDayWork")
 
 

@@ -12,6 +12,7 @@ import result_v15 as GameType
 import result_v14 as lostCal
 import result_v17 as winCal
 import result_v2 as rateWinCal
+import result_v3 as BigWinCal
 import _thread
 from commend import commend
 from tool import ipTool
@@ -280,9 +281,10 @@ def doUpdata():
     # lostCal.docal()
     # winCal.docal()
     rateWinCal.checkMain()
+    BigWinCal.checkMain()
     print("end doUpdata")
 
-working("k_corner")
+# working("k_corner")
 # doUpdata()
 
 
