@@ -220,7 +220,7 @@ class parser:
                 buyInfo = cmd[3]
                 if main != "" and mainFlag == 1 and checkBuy(main, cmd):
                     addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
+                    infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
                     self.commend.add(main, getTime(gameTime), buyInfo)
 
@@ -231,7 +231,7 @@ class parser:
                         buyInfo = buyInfo.replace("输", "胜")
 
                     addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
+                    infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
                     self.commend.add(main, getTime(gameTime), buyInfo)
                     

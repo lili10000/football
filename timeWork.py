@@ -17,7 +17,7 @@ def getSleepTime():
     # skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
     # print ("Must sleep %d seconds" % skipSeconds)
     # return skipSeconds
-    return 60*60
+    return 5*60
 
 
 def doOnePerDay():
@@ -34,7 +34,7 @@ while 1:
     
     # winCheck.doDayWork()
     rateWinCheck.doDayWork()
-    rateBigCheck.doDayWork()
+    # rateBigCheck.doDayWork()
 #     lostCheck.doDayWork()
     
     end = int(time.time()) 

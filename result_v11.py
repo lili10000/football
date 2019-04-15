@@ -27,6 +27,10 @@ def cal(ver):
         # print(ver, index, sum[index], round(index/sum[index], 2))
         print(ver, index, sum[index][1]+sum[index][-1], round( (sum[index][1]+sum[index][-1]) *100/sum[index]["sum"] , 2),"%    ",sum[index])
 
-cal(2)
-cal(1)
+
+cal(5)
+# cal(4)
+# cal(3)
+# cal(2)
+# cal(1)
     

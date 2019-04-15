@@ -201,6 +201,13 @@ class parser:
                     winSum = 0
                     checkSum = cmd[1]
 
+
+                    winFlag = False
+                    lostFlag = False
+
+                    if len(values) < checkSum:
+                        return winFlag, lostFlag 
+
                     for index in range(checkSum):
                         key = values[index]
                         if result[key] == -1:
@@ -209,28 +216,81 @@ class parser:
                             winSum += 1
                     
 
-                    if mainFlag and winSum == checkSum and cmd[5] == -1 : 
-                        return True
-                    elif mainFlag == False and lostSum == checkSum and cmd[5] == -1 :                    
-                        return True
-                    elif mainFlag == False and winSum == checkSum and cmd[5] == 1 : 
-                        return True
-                    return False
+
+                    if winSum == checkSum:
+                        winFlag = True
+                    if lostSum == checkSum:
+                        lostFlag = True
+                    return winFlag, lostFlag
+
+
+                def condition_v3(mainFlag, winFlag, lostFlag, cmd):
+                    def check(mainFlag, winFlag, lostFlag, cmd):
+                        if mainFlag and winFlag and cmd[5] == -1 : 
+                            return True
+                        elif mainFlag == False and lostFlag and cmd[5] == -1 :                    
+                            return True
+                        elif mainFlag == False and winFlag and cmd[5] == 1 : 
+                            return True
+                        return False
+
+                    if check(mainFlag, winFlag, lostFlag, cmd) == False:
+                        return
+                    
+                    addInfo = "【" + buyInfo + "】"
+                    infoTmp = "[3] {} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
+                    addOutputInfo(gameTime, infoTmp,outputInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo, 3 , rate=rateNow, logInfo=infoTmp, id=gameId)
+
+
+                def condition_v4(mainFlag, winFlag, lostFlag, cmd):
+                    def check(mainFlag, winFlag, lostFlag, cmd):
+                        if lostFlag and cmd[5] == 1 :                    
+                            return True
+                        elif winFlag and cmd[5] == -1 : 
+                            return True
+                        return False
+
+                    if check(mainFlag, winFlag, lostFlag, cmd) == False:
+                        return
+                    
+                    addInfo = "【" + buyInfo + "】"
+                    infoTmp = "[4] {} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
+                    addOutputInfo(gameTime, infoTmp,outputInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo, 4 , rate=rateNow, logInfo=infoTmp, id=gameId)
+
+                def condition_v5(mainFlag, winFlag, lostFlag, cmd):
+                    def check(mainFlag, winFlag, lostFlag, cmd):
+                        if mainFlag and winFlag and cmd[5] == -1 : 
+                            return True                       
+                        elif mainFlag == False and winFlag and cmd[5] == 1 : 
+                            return True
+                        return False
+
+                    if check(mainFlag, winFlag, lostFlag, cmd) == False:
+                        return
+                    
+                    addInfo = "【" + buyInfo + "】"
+                    infoTmp = "[5] {} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
+                    addOutputInfo(gameTime, infoTmp,outputInfo)
+                    self.commend.add(main, getTime(gameTime), buyInfo, 5 , rate=rateNow, logInfo=infoTmp, id=gameId)
 
                 buyInfo = cmd[3]
-                if main != "" and checkBuy(main, cmd, mainFlag=True):
-                    addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
-                    addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
+                if main != "":
+                    winFlag, lostFlag = checkBuy(main, cmd, True)
 
-                elif client != "" and checkBuy(client, cmd, mainFlag=False):
-                    
-                    addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
-                    addOutputInfo(gameTime, infoTmp, outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
-                    
+                    # condition_v3(True, winFlag, lostFlag, cmd)
+                    # condition_v4(True, winFlag, lostFlag, cmd)
+                    condition_v5(True, winFlag, lostFlag, cmd)
+
+                if client != "":
+                    winFlag, lostFlag = checkBuy(client, cmd, False)
+
+                    # condition_v3(False, winFlag, lostFlag, cmd)
+                    # condition_v4(False, winFlag, lostFlag, cmd)
+                    condition_v5(False, winFlag, lostFlag, cmd)
+
+
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
             if td == None:

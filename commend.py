@@ -14,7 +14,7 @@ class commend:
         retn = self.sql.queryCountByID(self.key, id, type)
         if retn == None or retn[0][0] == 0:
             with open(r"buyPerDay.txt", 'a') as f:
-                logInfo = "{}   {}\n".format(id, logInfo)
+                logInfo = "{}   {}\n".format(logInfo, id)
                 f.write(logInfo)
                 print(logInfo)
             self.sql.insert(info, self.key)
@@ -37,18 +37,19 @@ class commend:
             return
 
 
-        id_key = "{}_{}_{}".format(main, id, type)
+        id_key = "{}_{}_{}_{}".format(main, id, type,version)
 
 
         info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, type, buyBig, 0, version)
         self.__insertData(id_key, type, info, logInfo)
 
+        return 
         if (rate != None) and ("让" in type):
             if rate == "-" or rate == "-\n" :
                 return
             rate = float(rate)
 
-            id_key = "{}_{}_{}".format(main, id, self.ScoreKey)
+            id_key = "{}_{}_{}_{}".format(main, id, self.ScoreKey,version)
 
             if (rate < 0 and buyBig == 1) or  (rate > 0 and buyBig == -1): # 买强队赢买大
                 info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, 1, 0, version)
@@ -69,9 +70,9 @@ class commend:
         time = str(time) + '....' 
 
 
-        def checkRate(main, main_score, client_score,rate, id):
+        def checkRate(main, main_score, client_score,rate, id, version):
             type = self.rateKey
-            id = "{}_{}_{}".format(main, id, type)
+            id = "{}_{}_{}_{}".format(main, id, type,version)
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
@@ -89,13 +90,13 @@ class commend:
             rateResult = rateResult * retn[0][3]
             self.sql.updateCommend(id, type, rateResult, self.key)
 
-        def checkScore(main_score, client_score, scoreRate, id):
+        def checkScore(main_score, client_score, scoreRate, id, version):
             if scoreRate == "-":
                 return
             scoreRate = float (scoreRate)
 
             type = self.ScoreKey
-            id = "{}_{}_{}".format(main, id, type)
+            id = "{}_{}_{}_{}".format(main, id, type,version)
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
@@ -111,14 +112,14 @@ class commend:
             rateResult = rateResult * retn[0][3]
             self.sql.updateCommend(id, type, rateResult, self.key)
         
-        def checkCorner(main, time, corner, cornerRate, id):
+        def checkCorner(main, time, corner, cornerRate, id, version):
             if cornerRate == "-":
                 return
             cornerRate = float (cornerRate)
 
             type = self.CornerKey
 
-            id = "{}_{}_{}".format(main, id, type)
+            id = "{}_{}_{}_{}".format(main, id, type,version)
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
@@ -135,9 +136,11 @@ class commend:
             self.sql.updateCommend(id, type, rateResult, self.key)
 
 
-        checkRate(main, main_score, client_score,rate, id)
-        checkScore(main_score, client_score, scoreRate, id)
-        checkCorner(main, time, corner, cornerRate, id)
+        for index in range(5):
+            version = index+ 1
+            checkRate(main, main_score, client_score,rate, id, version)
+            checkScore(main_score, client_score, scoreRate, id, version)
+            checkCorner(main, time, corner, cornerRate, id, version)
         
 
 

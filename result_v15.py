@@ -4,6 +4,7 @@ def updata():
 # class GameType:
     sql = sqlMgr('localhost', 'root', '861217', 'football')
     params = [
+        [1271, "芬K"  , 4],
         [681, "葡甲"  , 4],
         [45, "南非超"  , 4],
         [369, "德西"  , 4],

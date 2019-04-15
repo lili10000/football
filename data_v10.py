@@ -212,26 +212,21 @@ class parser:
                         if result[key] == 1:
                             winSum += 1
                     
-
-                    if mainFlag and winSum == checkSum and cmd[5] == -1 : 
-                        return True
-                    elif mainFlag == False and lostSum == checkSum and cmd[5] == -1 :                    
-                        return True
-                    elif mainFlag == False and winSum == checkSum and cmd[5] == 1 : 
-                        return True
+                   
+                    if mainFlag == False and winSum == checkSum :                    
+                        return True                    
                     return False
 
                 buyInfo = cmd[3]
-                if main != "" and checkBuy(main, cmd, mainFlag=True):
-                    addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
-                    addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
+                # if main != "" and checkBuy(main, cmd, mainFlag=True):
+                #     addInfo = "【" + buyInfo + "】"
+                #     infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
+                #     addOutputInfo(gameTime, infoTmp,outputInfo)
+                #     self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
 
-                elif client != "" and checkBuy(client, cmd, mainFlag=False):
-                    
+                if client != "" and checkBuy(client, cmd, mainFlag=False):
                     addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} game info: {} {} {} {}".format(type_game,addInfo, gameTime, main, client, cmd[4])
+                    infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
                     self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
                     

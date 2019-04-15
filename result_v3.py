@@ -11,16 +11,25 @@ def cal(mainParam, clientParam):
 
 # [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount, rate]
 
-    if mainParam[2] == mainParam[4]: # 主连续大球，主场让输
-        return -1
-    if clientParam[3] == clientParam[4]: # 客连续小球，主场让输
-        return -1
-    if clientParam[2] == clientParam[4]: # 客连续大球，主场让赢
-        return 1
-
-
-    # elif clientParam[3] == mainParam[4]: # 客连续小球，主场让输
+    # if mainParam[2] == mainParam[4]: # 主连续大球，主场让输
+    #     return -1
+    # if clientParam[3] == clientParam[4]: # 客连续小球，主场让输
+    #     return -1
+    # if clientParam[2] == clientParam[4]: # 客连续大球，主场让赢
     #     return 1
+
+
+    # if clientParam[3] == clientParam[4]: # 主连续大球，小球
+    #     return -1
+    if clientParam[2] == clientParam[4]: # 客连续大球，小球
+        return -1
+
+
+
+
+    # if clientParam[3] == clientParam[4]: # 客连续小球，主场让输
+    #     return -1
+
     return 0
 
 
@@ -31,7 +40,7 @@ def checkMain():
 
     outputInfo={}
     tableName = "k_rateBuy_v4"
-    # sql.cleanAll(tableName)
+    sql.cleanAll(tableName)
     size = 0
     rateSum = 0
     for code in gameCode:
@@ -166,21 +175,24 @@ def checkMain():
                 clientParam = [round(scoreSum / lostCount, 2), round(lostScoreSum / lostCount, 2), GoodSum, badSum, lostCount]
 
                 calRate = cal(mainParam, clientParam)
-                buyMain = False
-                if calRate > 0 :
-                    buyMain = True
-                elif calRate == 0:
+                if calRate == 0:
                     continue
 
 
-                if buyMain and main_score - client_score + rate> 0:
+                if calRate == 1 and main_score + client_score - scoreRate> 0:
                     winSum += 1
-                elif buyMain and main_score - client_score + rate < 0:
+                    # clientWinSum += 1
+
+                elif calRate == 1 and main_score + client_score - scoreRate < 0:
                     lostSum += 1
+                    # clientlostSum += 1
                 
-                if buyMain == False and main_score - client_score + rate > 0:
+                if calRate == -1 and main_score + client_score - scoreRate > 0:
                     clientlostSum += 1
-                elif buyMain == False and main_score - client_score + rate < 0:
+                    # lostSum += 1
+
+                elif calRate == -1 and main_score + client_score - scoreRate < 0:
+                    # winSum += 1
                     clientWinSum += 1
 
 
@@ -195,10 +207,10 @@ def checkMain():
 
             if mainRate > rateMax:
                 rateMax = mainRate
-                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1]
+                outputInfo = [id, lostCount, gameName, "大球", mainRate, 1]
             if clientRate > rateMax:
                 rateMax = clientRate
-                outputInfo = [id, lostCount, gameName, "让输", clientRate, -1]
+                outputInfo = [id, lostCount, gameName, "小球", clientRate, -1]
 
 
         if outputInfo[4] < 0.6:

@@ -14,8 +14,8 @@ def cal(mainParam, clientParam):
 
     if clientParam[2] == clientParam[4]: # 连续让赢，买让赢
         return 1
-    if clientParam[3] == clientParam[4]: # 连续让输，买让输
-        return -1
+    # if clientParam[3] == clientParam[4]: # 连续让输，买让输
+    #     return -1
 
 
     # if mainParam[2] == mainParam[4]: # 连续让赢，买让输

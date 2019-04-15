@@ -15,28 +15,33 @@ class ipTool:
         self.loopSize = 0
 
     def getIpList(self):
-        urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-        req = requests.get(urlTmp)
-        s = req.text
-        ips = s.split('<br>')
-        if len(ips) == 0:
-            time.sleep(3)
-            return ips
-        ips.pop(0)
-        if len(ips) == 0:
-            time.sleep(3)
-            return ips
-        ips.pop(0)
-        if len(ips) == 0:
-            time.sleep(3)
-            return ips
-        ips.pop(len(ips)-1)
-        print("get ips size:", len(ips))
-        if len(ips) == 0:
-            time.sleep(3)
-            return ips
-
-        return ips
+        while 1:
+            try:
+                urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
+                req = requests.get(urlTmp)
+                s = req.text
+                ips = s.split('<br>')
+                if len(ips) == 0:
+                    time.sleep(3)
+                    return ips
+                ips.pop(0)
+                if len(ips) == 0:
+                    time.sleep(3)
+                    return ips
+                ips.pop(0)
+                if len(ips) == 0:
+                    time.sleep(3)
+                    return ips
+                ips.pop(len(ips)-1)
+                print("get ips size:", len(ips))
+                if len(ips) == 0:
+                    time.sleep(3)
+                    return ips
+                return ips
+            except :
+                time.sleep(5)
+                pass
+            
 
 
     # def getIpList(self):
