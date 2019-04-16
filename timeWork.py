@@ -4,7 +4,7 @@ import data_v8 as updata
 import data_v7 as lostCheck
 import data_v4 as winCheck
 import data_v9 as rateWinCheck
-import data_v10 as rateBigCheck
+import data_v10 as rateDivCheck
 import _thread
 
 SECONDS_PER_DAY = 24 * 60 * 60
@@ -35,7 +35,7 @@ while 1:
     # winCheck.doDayWork()
     rateWinCheck.doDayWork()
     # rateBigCheck.doDayWork()
-#     lostCheck.doDayWork()
+    rateDivCheck.doDayWork()
     
     end = int(time.time()) 
     print ("end work", end,"    use time=",end-start," s" )

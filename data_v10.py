@@ -73,7 +73,7 @@ class parser:
         self.param = []
 
         self.commend = commend()
-        self.version = 2
+        self.version = 6
 
     def getHtmlText(self, url, ipList):
 
@@ -148,87 +148,40 @@ class parser:
                         break
                     if rateNow != "":
                         break
+
+                rateNow = ""
+                for td in tr.find_all('td', class_="text-center yellowTd BR0"):
+                    for a in td.find_all('a', target="_blank"):
+                        rateNow = clearStr(a.text)
+                        break
+                    if rateNow != "":
+                        break
+                rateBig = ""
+                for td in tr.find_all('td', class_="text-center BR0"):
+                    for a in td.find_all('a', target="_blank"):
+                        rateBig = clearStr(a.text)
+                        break
+                    if rateBig != "":
+                        break
                 
                 def checkBuy(teamName, cmd, mainFlag=False):
-                    # if teamName == "":
-                    #     teamName = teamName
-                    # else:
-                    #     # print(teamName)
-                    data = self.sql.queryTeamData(type_game, teamName, 'k_corner')
-                    result = {}
-                    for one in data:
-                        main = one[0]
-                        client = one[1]
-                        main_score = one[2]
-                        client_score = one[3]
-                        rate = float(one[4])
-                        gameTime = one[9]
-                        scoreRate = one[11]
-                        if scoreRate == "-" or scoreRate == "-\n" :
-                            continue
-                        scoreRate = float(scoreRate)
+                    if rateNow == "-" or rateNow == "-\n" :
+                        return False
+                    if rateBig == "-" or rateNow == "-\n" :
+                        return False
 
-                        key = gameTime
-                        if main_score + client_score - scoreRate > 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = 1
-                            elif client == teamName:
-                                result[key] = 1
-
-                        elif main_score + client_score - scoreRate < 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = -1
-                            elif client == teamName:
-                                result[key] = -1
-                        else:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
-                            if main == teamName:
-                                result[key] = 0
-                            elif client == teamName:
-                                result[key] = 0
-                    # keys = result.keys()
-                    values = list(result.keys())
-                    values.sort(reverse = True)
-
-
-                    def chechResult(gameTmp):
-                        if gameTmp == 1 :
-                            return 1
-                        return 0
-
-                    lostSum = 0
-                    winSum = 0
-                    checkSum = cmd[1]
-
-                    for index in range(checkSum):
-                        key = values[index]
-                        if result[key] == -1:
-                            lostSum += 1
-                        if result[key] == 1:
-                            winSum += 1
-                    
-                   
-                    if mainFlag == False and winSum == checkSum :                    
-                        return True                    
+                    rateDiv = float(rateBig) - abs(float(rateNow))
+                    if rateDiv == float(cmd[2]):
+                        return True
                     return False
-
+                    
                 buyInfo = cmd[3]
-                # if main != "" and checkBuy(main, cmd, mainFlag=True):
-                #     addInfo = "【" + buyInfo + "】"
-                #     infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
-                #     addOutputInfo(gameTime, infoTmp,outputInfo)
-                #     self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
-
-                if client != "" and checkBuy(client, cmd, mainFlag=False):
+                if main != "" and checkBuy(main, cmd) == True:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
                     self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
+                buyInfo = cmd[3]
                     
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
@@ -350,7 +303,7 @@ def working(tableName):
                 # print ("connect err")
                 continue
 
-            print( index, gameCode[gameIndex][2])
+            print( index, gameCode[gameIndex][1])
             try:   
                 if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
                     break
@@ -383,11 +336,7 @@ def working(tableName):
 
 def doDayWork():
     print("start do doDayWork")
-    
-    # _thread.start_new_thread(working,("k_rateBuy_v3",))
-    # _thread.start_new_thread(working,("k_compBuy",))
-    # _thread.start_new_thread(working,("k_scoreBuy_v2",))
-    working("k_rateBuy_v4")
+    working("k_rateDiv")
     print("end do doDayWork")
 
 

@@ -1,497 +1,426 @@
 from db.mysql import sqlMgr
-from db.htmlParser import parser
+import result_v16 as tool
 
-sql = sqlMgr('localhost', 'root', '861217', 'football')
-sizeMin = 20
+def docal():
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
 
-Kong = 1 
+    name = None
 
-def getRate(rate):
-    reduce = 1.05
-    return 1/(reduce*(1-1/(rate*reduce))) 
+    loopSize = 2
+    params = sql.queryByTypeAll("k_gameDic")
+    infoList = {}
+
+    ngeFlag =True
+    ngeFlag =False
+
+    class getMinValue:
+        def __init__(self):
+            self.data = {}
+            self.sum = 0
+
+        def add(self, value):
+            if self.data.__contains__(value) == False:
+                self.data[value] = 0
+            self.data[value] += 1
+            self.sum += 1
+
+        def getResult(self):
+            sumTmp = 0
+            keys = sorted(self.data.keys())
+            for key in keys:
+                sumTmp += self.data[key]
+                if sumTmp > (self.sum /2):
+                    return key - 0.5
 
 
+    def getResult(param, rateParam, checkType):
+        data = []
+        name = param[1]
+        # gameParam = param[1]
 
-def getResult_1(name, rateMin, rateMax, num):
-    db_name = "k_163_2017"
 
-    data = sql.queryByTypeNum(name, db_name, str(num))
-    if num == -1 :
-        data = sql.queryByType(name, db_name)
+        if name == None:
+            data = sql.queryByTypeAll("k_corner")
+        else:
+            data = sql.queryByType(name, "k_corner")
 
-    main_win = 0
-    client_win = 0
-    tie_win = 0
+        if len(data) == 0 :
+            return
+        # print("sum = ", len(data))
+        win_size = 0
+        lost_size = 0
+        scoreMin = getMinValue()
+        gameSum = 0
 
-    winScoreSum = 0
-    lostScoreSum = 0
+        cornerMin = getMinValue()
 
-    winSize = 0
-    lostSize = 0 
+        class DataSize:
+            def __init__(self):  
+                self.main_win_size = 0     
+                self.main_lost_size = 0    
+                self.client_win_size = 0     
+                self.client_lost_size = 0        
 
-    size = 0
-    sizeAll = 0
 
-    scoreAll = 0
-    score_total =[0, 0, 0, 0, 0, 0]
+        result_slice = {}
+        result_slice_v2 = {}
+        for one in data :
+            main = one[0]
+            client = one[1]
+            main_score = one[2]
+            client_score = one[3]
+            rate = one[4]
+            gameType = one[5]
 
-    rate_1 = 0
-    rate_2 = 0
-    rate_3 = 0
+            mainCorner = one[6]
+            clientCorner = one[7]
+            cornerSum = int(mainCorner) + int(clientCorner)
 
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
+            gameTime = one[9]
+            score_rate = one[11]
+            corner_rate = one[12]
 
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
-
-        result = int(one[4])
-
-        sizeAll += 1
-
-        condition_1 = (main_win < rateMax and main_win > rateMin and main_win < client_win)
-        condition_2 = (client_win < rateMax and client_win > rateMin and client_win < main_win )
-        if condition_1:
-            if result == 1:
-                rate_1 += main_win - 1
-            else:
-                rate_1 -= 1
             
-            if result == 0:
-                rate_3 += ping -1 
+
+            if rate == "-" or rate == "-\n" :
+                continue
+            if score_rate == "-" or score_rate == "-\n" :
+                continue
+            if corner_rate == "-" or corner_rate == "-\n" :
+                continue
+
+            
+            # scoreSum += main_score + client_score
+            scoreMin.add(main_score + client_score)
+            # cornerTotal += cornerSum
+            cornerMin.add(cornerSum)
+            gameSum += 1
+
+            rate = float(rate)
+            def addData(result_slice, key, gameTime, value, mainFlag=False, rate=0, score=0, corner=0, score_rate=0, corner_rate=0):
+                if result_slice.__contains__(key) == False:
+                    result_slice[key] = {}
+
+                if score_rate == "-" or corner_rate == "-":
+                    return result_slice
+                
+                score_rate = float(score_rate)
+                corner_rate = float(corner_rate)
+                result_slice[key][gameTime] = [value, mainFlag, rate, score, corner, score_rate, corner_rate]
+                return result_slice
+            if main_score - client_score + rate> 0:
+                key = main
+                result_slice = addData(result_slice, key, gameTime, 1, True, rate, score=(main_score+client_score), corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+
+                key = client
+                result_slice = addData(result_slice, key, gameTime, -1,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+            elif main_score - client_score + rate < 0:
+                key = client
+                result_slice = addData(result_slice, key, gameTime, 1,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+
+                key = main
+                result_slice = addData(result_slice, key, gameTime, -1, True,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             else :
-                rate_3 -= 1
+                key = client
+                result_slice = addData(result_slice, key, gameTime, 0,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
-            size += 1 
-        elif  condition_2:
-            if result == -1:
-                rate_1 += client_win - 1
-            else:
-                rate_1 -= 1
+                key = main
+                result_slice = addData(result_slice, key, gameTime, 0, True,rate=rate, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
-            if result == 0:
-                rate_3 += ping -1 
+
+            if main_score - client_score> 0:
+                key = main
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+
+                key = client
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+            elif main_score - client_score < 0:
+                key = client
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 1, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+
+                key = main
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, -1, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
             else :
-                rate_3 -= 1
-            size += 1 
+                key = client
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
 
-        if condition_1:
-            if result == -1:
-                rate_2 += client_win - 1
-            else:
-                rate_2 -= 1
-        elif  condition_2:
-            if result == 1:
-                rate_2 += main_win - 1
-            else:
-                rate_2 -= 1
- 
-    print(name,round(rateMin, 2), "num:", num, "买赢：", round(rate_1, 2), " 买输：", round(rate_2, 2), " size = ", size, " size all = ",sizeAll)
-       
-def getResult_2(name, rateMin, rateMax, num):
-    db_name = "k_163_2016"
-
-    data = sql.queryByTypeNum(name, db_name, str(num))
-    if num == -1 :
-        data = sql.queryByType(name, db_name)
-
-    main_win = 0
-    client_win = 0
-    tie_win = 0
+                key = main
+                result_slice_v2 = addData(result_slice_v2, key, gameTime, 0, True, score=(main_score+client_score),corner=cornerSum, 
+                    score_rate=score_rate, corner_rate=corner_rate)
+            
 
 
-    size = 0
-    sizeAll = 0
+        rateMax = rateParam
+        for gameTotalTmp in range(loopSize):
+            for chechSumTmp in range(1):
+                # chechSum = gameTotal - 1
 
-    rate_1 = 0
-    rate_2 = 0
-    rate_3 = 0
+                # if loopSize == 1:
+                #     gameTotalTmp = gameParam - 1
 
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
+                gameTotal = gameTotalTmp + 2
+                chechSum = gameTotalTmp + 2
 
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
+                # gameTotal = 3
+                # chechSum = 3
 
-        result = int(one[4])
+                winSum = 0
+                lostSum = 0
 
-        sizeAll += 1
+                checkScoreMin = getMinValue()
+                checkGameSum = 0
 
-        teamName = "佩斯卡拉"
-        condition_1 = (main == teamName)
-        condition_2 = (client == teamName)
-
-        # if num == 37:
-        #     print(1)
-
-        if condition_1:
-            if result == -1:
-                rate_1 += client_win - 1
-            else:
-                rate_1 -= 1
-
-            size += 1 
-        elif  condition_2:
-            if result == 1:
-                rate_1 += main_win - 1
-            else:
-                rate_1 -= 1
-            size += 1 
-    if size == 0 :
-        return
-
-    print(name, num,  "做空：", round(rate_1, 2),  " size = ", size, " size all = ",sizeAll)
+                win_winScore = 0
+                win_lostScore = 0
+                lost_winScore = 0
+                lost_lostScore = 0
 
 
-def getResult_3(name, rateMin, rateMax, num):
-    db_name = "k_163_2017"
+                main_win_size = 0
+                main_lost_size = 0
+                client_win_size = 0
+                client_lost_size = 0
 
-    data = sql.queryByTypeNum(name, db_name, str(num))
-    if num == -1 :
-        data = sql.queryByType(name, db_name)
+                winCorner = 0
+                lostCorner = 0
+                checkCorner = getMinValue()
 
-    main_win = 0
-    client_win = 0
+                win_winCorner = 0
+                win_lostCorner = 0
+                lost_winCorner = 0
+                lost_lostCorner = 0
+                # checkWinCorner = 0
+                checkParam = 30
 
+                comCheck = {}
 
-    size = 0
-    sizeAll = 0
+                ping = 0
+                for result in result_slice:
+                    tmp = result_slice[result]  # 让球
+                    tmp_v2 = result_slice_v2[result] #不让球
+                    sorted(tmp.keys(),reverse=True)
+                    index = 0
+                    keys = list(tmp.keys())
+                    keys.sort()
+                    # print(result)
+                    
+                    while index + gameTotal < len(keys):
+                        gameTmp = []
+                        gameTmp_v2 = [] #不让球
+                        for add in range(gameTotal):
+                            gameTmp.append(tmp[keys[index + add]])
+                            gameTmp_v2.append(tmp_v2[keys[index + add]]) #不让球
+                        game_check = tmp[keys[index + gameTotal]] 
+                        game_check_v2 = tmp_v2[keys[index + gameTotal]]  #不让球
 
-    rate = {}
+                        game_check_pre = tmp[keys[index + gameTotal - 1]]
 
+                        lost = 0
 
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
+                        def chechResult( gameTmp, lost):
+                            cond = (gameTmp == -1)
+                            # if ngeFlag:
+                            #     cond = (gameTmp == 1)
 
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
+                            if cond :
+                                return 1
+                            return 0
 
-        result = int(one[4])
+                        for tmp_1 in gameTmp_v2: #不让球
+                        # for tmp_1 in gameTmp:
+                            lost += chechResult(tmp_1[0], lost)
 
-        sizeAll += 1
+                        cond_1 = (game_check[2] >= 0) 
+                        cond_2 = (lost == chechSum)
+                        # if ngeFlag :
+                        #     cond_2 = (lost == 0) 
 
-        if not rate.__contains__(main):
-            rate[main] = 0
-        if not rate.__contains__(client):
-            rate[client] = 0
+                        # cond_2 = (lost == chechSum-1) and (gameTmp[0][0] != -1)
 
-        rateMain = rate[main]
-        rateclient = rate[client]
+                        gameCheck = game_check #让球
 
-        
+                        # gameCheck = game_check_v2  #不让球
 
-        if Kong == 1:
-            if result == 1:
-                rateMain -= 1
-                rateclient += main_win - 1
-            elif result == -1:
-                rateMain += client_win - 1
-                rateclient -= 1
-            else:
-                rateMain -= 1
-                rateclient -= 1
-        else:
-            if result == -1:
-                rateMain -= 1
-                rateclient += client_win - 1
-            elif result == 1:
-                rateMain += main_win - 1
-                rateclient -= 1
-            else:
-                rateMain -= 1
-                rateclient -= 1
+                        scorePerGame = scoreMin.getResult()
+                        # cornerPerGame = cornerTotal / gameSum
+                        cornerPerGame = cornerMin.getResult()
+                        if cond_2 and gameCheck[0] > 0 :
+                            winSum += 1
 
-        rate[main] = rateMain
-        rate[client] = rateclient
+                            # checkScoreSum += gameCheck[3]
+                            checkScoreMin.add(gameCheck[3])
+                            checkGameSum += 1
+                            key = ""
+                            if gameCheck[3] > gameCheck[5]:
+                                win_winScore += 1
+                                key +="大球 "
+                            else:
+                                win_lostScore += 1
+                                key +="小球 "
 
-    # sorted(rate.items(), key=lambda x:x[0], reverse=True)
-    rate = sorted(rate.items(), key=lambda e:e[1], reverse=True)
-    print(rate)
-    print(sizeAll)
+                            winCorner += gameCheck[4]
+                            checkCorner.add(gameCheck[4]) 
 
+                            if gameCheck[4] > gameCheck[6]:
+                                win_winCorner += 1
+                                key += "大角"
+                            else:
+                                win_lostCorner += 1
+                                key += "小角"
 
-def getResult_4(name, rateMin, rateMax, num, url):
-    db_name = "k_163_2016"
+                            if comCheck.__contains__(key) == False:
+                                comCheck[key] = 0
+                            comCheck[key] += 1
 
-    data = sql.queryByTypeNum(name, db_name, str(num))
-    if num == -1 :
-        data = sql.queryByType(name, db_name)
+                        elif cond_2 and gameCheck[0] == -1:
+                            lostSum += 1
+                            # lostScore += gameCheck[3]
 
-    main_win = 0
-    client_win = 0
+                            # checkScoreSum += gameCheck[3]
+                            checkScoreMin.add(gameCheck[3])
+                            checkGameSum += 1
 
-    size = 0
-    size_1 = 0
-    sizeAll = 0
+                            key = ""
+                            if gameCheck[3] > gameCheck[5]:
+                                lost_winScore += 1
+                                key +="大球 "
+                            else:
+                                lost_lostScore += 1
+                                key +="小球 "
 
-    rate = {}
-    rate_1 = {}
-
-    num = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
-
-        mainScore = one[2]
-        clientScore = one[3]
-
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
-
-        numGet= one[10]
-        if num < numGet:
-            num = numGet
-
-        result = int(one[4])
-
-        sizeAll += 1
-
-        if not rate.__contains__(main):
-            rate[main] = {"count":0, "value":0,"rate":0}
-        if not rate.__contains__(client):
-            rate[client] = {"count":0, "value":0,"rate":0}
-        if not rate_1.__contains__(client):
-            rate_1[client] = {"count":0, "value":0,"rate":0}
-
-        tmp = rate[main]
-        if mainScore > 0: 
-            tmp["count"] += 1
-            tmp["value"] += 1
-            tmp["rate"] = round(tmp["value"] / tmp["count"], 2) 
-        else:
-            tmp["count"] += 1
-
-        rate[main] = tmp
-
-        tmp = rate_1[client]
-        if clientScore > 0: 
-            tmp["count"] += 1
-            tmp["value"] += 1
-            tmp["rate"] = round(tmp["value"] / tmp["count"], 2) 
-        else:
-            tmp["count"] += 1
-        rate_1[client] = tmp
+                            lostCorner += gameCheck[4]
+                            checkCorner.add(gameCheck[4]) 
 
 
-        if mainScore > 0 and clientScore > 0:
-            size += 1
+                            if gameCheck[4] > gameCheck[6]:
+                                lost_winCorner += 1
+                                key += "大角"
+                            else:
+                                lost_lostCorner += 1
+                                key += "小角"
 
-    if 0:
-        print("主场进球")
-        rate = sorted(rate.items(), key=lambda e:e[1]["rate"], reverse=False)
-        for key in rate:
-            print(key[0], key[1]["rate"],  key[1]["count"])
-        
-        print("\n 客场进球 \n")
-        rate_1 = sorted(rate_1.items(), key=lambda e:e[1]["rate"], reverse=False)
-        for key in rate_1:
-            print(key[0], key[1]["rate"],  key[1]["count"])
+                            if comCheck.__contains__(key) == False:
+                                comCheck[key] = 0
+                            comCheck[key] += 1
 
-    html = parser(url)
-    data = html.getData()
-    result = []
-    for game in data :
-        main = game[0]
-        client = game[1]
 
-        a =  rate[main]["rate"] * rate_1[client]["rate"]
-        if a == 1:
-            p = 100
-        else:
-            p = 1/(1 - rate[main]["rate"] * rate_1[client]["rate"])
-        p = round(p,2)
-        tmp = []
-        tmp.append(main)
-        tmp.append(client)
-        tmp.append(p)
-        result.append(tmp)
+                        index += 1
+                    # print(result, winSum, lostSum)
+                if lostSum == 0:
+                    continue
+                rate  = winSum * 100 /(winSum+ lostSum)
+
+                
+                cond = (rateMax > rate and (checkGameSum > checkParam))
+                infoType = "比小"
+                if rateParam < 0:
+                    cond = (rateMax < rate  and (checkGameSum > checkParam))
+                    infoType = "比大"
+
+
+                # # 让球
+                if cond and checkType == 1:
+                    rateMax = rate
+                    winRate = round(winSum*100/(winSum+lostSum), 2)
+                    # info = "{} {}  总场数：{}    连输数：{}   赢球比例：{}%    赢球场数：{}       输球数：{}".format(infoType, name,len(data),gameTotal,winRate,winSum,lostSum)
+                    
+                    info = "让胜"
+                    if rate < 50:
+                        info = "让输"
+
+                    rateDivNew = abs(winRate - 50)
+                    rateDivOld = 0
+                    if infoList.__contains__(name):
+                        rateDivOld = abs(infoList[name][4] - 50)
+
+                    if rateDivNew > rateDivOld and rateDivNew > 5:
+                        infoList[name]=[param[0], gameTotal, param[1], info, winRate, winRate]
+                    
+                
+
+
+                # 大小球
+                checkScorePer = round(checkScoreMin.getResult(),2)
+                scorePerGame = round(scorePerGame,2)
+                rate = (win_winScore + lost_winScore)*100/(win_winScore + lost_winScore + win_lostScore + lost_lostScore)
+                if (lost_lostScore + lost_winScore) == 0 or (win_lostScore + win_winScore) == 0:
+                    continue  
+
+                cond = (rateMax > rate and (checkGameSum > checkParam))
+                if rateParam < 0:
+                    cond = (rateMax < rate and (checkGameSum > checkParam))
+                if cond and checkType == 2:
+                    rateMax = rate
+                    winBig = win_winScore*100/(win_lostScore + win_winScore)
+                    lostBig = lost_winScore*100/(lost_lostScore + lost_winScore)
+                    # if abs(rate - 50) < 5 and abs(winBig - 50) < 5 and abs(lostBig - 50) < 5:
+                    #     continue
+                    # info = "{} {}  连输数：{}   大球比率：{}%    平均进球：{}".format(infoType, name,gameTotal,round(rate,1),scorePerGame)
+                    
+                    info = "大球"
+                    if rate < 50:
+                        info = "小球"
+
+                    rateDivNew = abs(rate - 50)
+                    rateDivOld = 0
+                    if infoList.__contains__(name):
+                        rateDivOld = abs(infoList[name][4] - 50)
+
+                    if rateDivNew > rateDivOld and rateDivNew > 9:
+                        infoList[name]=[param[0], gameTotal, param[1], info, rate, checkScorePer]
+
+                # 角球
+                checkCornerPer = round(checkCorner.getResult(), 2)
+                cornerPerGame = round(cornerPerGame,2)
+                rate = (win_winCorner + lost_winCorner)*100/(win_winCorner + lost_winCorner + win_lostCorner + lost_lostCorner)
+
+                winBig = win_winCorner*100/(win_lostCorner + win_winCorner)
+                lostBig = lost_winCorner*100/(lost_lostCorner + lost_winCorner)
+                checkWeig = rate * 0.01 * checkGameSum
+
+                cond = (rateMax > rate and (checkGameSum > checkParam))
+                if rateParam < 0:
+                    cond = (rateMax < rate and len(data)/(winSum+lostSum) < checkParam)
+                if cond and checkType == 3:
+                    rateMax = rate
+                    # info = "{} {}  连输数：{}   大角比率：{}%    场均角球：{}".format(infoType, name,gameTotal,round(rate,1),cornerPerGame)
+
+                    info = "大角"
+                    if rate < 50:
+                        info = "小角"
+
+                    rateDivNew = abs(rate - 50)
+                    rateDivOld = 0
+                    if infoList.__contains__(name):
+                        rateDivOld = abs(infoList[name][4] - 50)
+
+                    if rateDivNew > rateDivOld and rateDivNew > 9:
+                        infoList[name]=[param[0], gameTotal, param[1], info, rate, checkCornerPer]
+
+                if checkType == 4:
+                    for key in  comCheck:
+                        dataTmp =  comCheck[key]
+                        rate = round(dataTmp*100 / checkGameSum,2)
+
+                        rateDivNew = rate 
+                        rateDivOld = 0
+                        if infoList.__contains__(name):
+                            rateDivOld = abs(infoList[name][4])
+
+                        if rateDivNew > rateDivOld and rateDivNew >= 35:
+                            infoList[name]=[param[0], gameTotal, param[1], key, rate,rate]
+
     
-    # result.sort(lambda)
-    print(sorted(result, key=lambda x:x[2], reverse=False))
 
-    # print(round(sizeAll/(sizeAll - size), 2))
-    print(round((sizeAll - size)/sizeAll, 2))
-    # print(num)
-    # print(name, "做空：", rate)
-
-def getResult_5(name, rateMin, rateMax):
-# def getResult_5(name, rateMin, rateMax):
-    db_name = "k_163_2016"
-
-    data = sql.queryByType(name, db_name)
-    main_win = 0
-    client_win = 0
-
-    size = 0
-    size_1 = 0
-    sizeAll = 0
-
-    rate = 0
-    num = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
-
-        mainScore = one[2]
-        clientScore = one[3]
-
-        result = one[4]
-
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
-
-        sizeAll += 1
-
-        # teamName = "利物浦"
-        # if main != teamName and client != teamName:
-        #     continue
-
-        if main_win < rateMax and main_win > rateMin:
-            if result == 1:
-                rate += main_win - 1
-            else:
-                rate += - 1 
-                size_1 += 1
-            size += 1
-        elif client_win < rateMax and client_win > rateMin:
-            if result == -1:
-                rate += client_win -1
-            else:
-                rate += - 1 
-                size_1 += 1
-            size += 1
-
-
-
-        # if main_win < rateMax:
-        #     if result == 1:
-        #         rate += -1
-        #     else:
-        #         rate += getRate(main_win) - 1 
-        #         size_1 += 1
-        #     size += 1
-        # elif client_win < rateMax:
-        #     if result == -1:
-        #         rate += -1
-        #     else:
-        #         rate += getRate(client_win)- 1 
-        #         size_1 += 1
-        #     size += 1
-  
-    print(name, round(rateMax,2), round(rate, 2), size_1, size, sizeAll)
-
-def getResult_6(name, rateMax):
-    db_name = "k_163_2016"
-
-    data = sql.queryByType(name, db_name)
-    main_win = 0
-    client_win = 0
-
-    size = 0
-    size_1 = 0
-    sizeAll = 0
-
-    rate = 0
-    rate_1 = 0
-    num = 0
-
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main = one[0]
-        client = one[1]
-
-        mainScore = one[2]
-        clientScore = one[3]
-
-        result = one[4]
-
-        ping = one[6]
-        main_win =  one[8]
-        client_win = one[9]
-
-        sizeAll += 1
-
-        # if main_win < rateMax:
-        #     continue
-
-
-        if result == 1:
-            rate += main_win - 1
-            size += 1
-            rate_1 += -1
-        else:
-            rate_1 += getRate(main_win) - 1
-            rate += -1
-
-
-    print(name,round(rateMax,2),round(size/sizeAll,2),"做多",round(rate, 2), "做空",round(rate_1, 2),size, sizeAll)
-
-
-def compare_1(name): 
-    for i in range(17) :
-        rateMin = i*0.1 + 1
-        rateMax = rateMin + 0.1*1
-        getResult_1(name, rateMin,  rateMax, -1)
-
-def compare_2(name): 
-    getResult_1(name, 2,  2.6, -1)
-
-def compare_3(name): 
-    for i in range(39) :
-        getResult_1(name, 1,  2.4, i)
-
-def compare_4(name):
-    getResult_2(name, 1,  2.6, -1)
-
-def compare_5(name):
-    for i in range(39) :
-        getResult_2(name, 1,  2.6, i)
-
-def compare_6(name):
-    getResult_3(name, 1,  2.6, -1)  
-
-def compare_7(name, url):
-    getResult_4(name, 1,  2.6, -1, url)  
-
-def compare_8(name):
-    getResult_5(name, 1.5, 1.7)
-    # for i in range(9) :
-    #     rateMax = 1.1 + 0.1*i
-    #     getResult_5(name, 1, rateMax)  
-
-# getResult_6("巴乙", 1.6)
-for i in range(1) :
-    rateMax = 1.3 + 0.1*i
-    getResult_6("西乙", rateMax)
-
-
-
-compare_7("西乙","http://saishi.caipiao.163.com/12/14464.html?weekId=11&groupId=&roundId=42973&indexType=0&guestTeamId=")
-
+working(1)
