@@ -136,8 +136,8 @@ class commend:
             self.sql.updateCommend(id, type, rateResult, self.key)
 
 
-        for index in range(5):
-            version = index+ 1
+        for index in range(3):
+            version = index+ 5
             checkRate(main, main_score, client_score,rate, id, version)
             checkScore(main_score, client_score, scoreRate, id, version)
             checkCorner(main, time, corner, cornerRate, id, version)

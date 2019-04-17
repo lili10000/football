@@ -178,7 +178,7 @@ class parser:
                 buyInfo = cmd[3]
                 if main != "" and checkBuy(main, cmd) == True:
                     addInfo = "【" + buyInfo + "】"
-                    infoTmp = "{} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
+                    infoTmp = "[6] {} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
                     self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
                 buyInfo = cmd[3]

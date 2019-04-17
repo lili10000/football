@@ -22,7 +22,7 @@ def getSleepTime():
 
 def doOnePerDay():
     while 1:
-        time.sleep(24*60*60)
+        time.sleep(6*60*60)
         updata.doUpdata()
 
 _thread.start_new_thread(doOnePerDay, ())

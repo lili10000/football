@@ -279,12 +279,13 @@ def doUpdata():
     GameType.updata()
     # _thread.start_new_thread(working,("k_corner",))
     working("k_corner", 1)
+    # working("k_corner")
     # lostCal.docal()
     # winCal.docal()
     rateWinCal.checkMain()
     rateDivCal.checkMain()
     print("end doUpdata")
 
-# working("k_corner")
+
 # doUpdata()
 

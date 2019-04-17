@@ -29,6 +29,7 @@ def cal(ver):
 
 
 cal(5)
+cal(6)
 # cal(4)
 # cal(3)
 # cal(2)
