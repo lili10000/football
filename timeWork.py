@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-import data_v8 as updata
+import updataGame as updata
 import data_v7 as lostCheck
 import data_v4 as winCheck
 import data_v9 as rateWinCheck

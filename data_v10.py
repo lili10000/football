@@ -180,7 +180,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "[6] {} {} {} game info: {} {} {}".format(gameTime, type_game, addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp, outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId)
+                    self.commend.add(main, getTime(gameTime), buyInfo, self.version , rate=rateNow, logInfo=infoTmp, id=gameId, game=type_game)
                 buyInfo = cmd[3]
                     
         for tr in self.soup.find_all('tr') :

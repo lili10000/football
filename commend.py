@@ -1,5 +1,6 @@
 # encoding=utf8
 from db.mysql import sqlMgr
+import time
 
 class commend:
     def __init__(self):
@@ -19,7 +20,7 @@ class commend:
                 print(logInfo)
             self.sql.insert(info, self.key)
 
-    def add(self, main, time, type, version=0, rate=None, logInfo="", id=""):
+    def add(self, main, timeIn, type, version=0, rate=None, logInfo="", id="", game=""):
         buyBig = -1
         if "大" in type or "胜" in type:
             buyBig = 1
@@ -39,8 +40,10 @@ class commend:
 
         id_key = "{}_{}_{}_{}".format(main, id, type,version)
 
+        timeArray = time.localtime(timeIn)
+        timeFormat = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
 
-        info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, type, buyBig, 0, version)
+        info = "'{}', '{}', '{}','{}','{}', '{}', '{}', '{}'".format(id_key, timeIn, game,type, buyBig, 0, version, timeFormat)
         self.__insertData(id_key, type, info, logInfo)
 
         return 
@@ -52,22 +55,22 @@ class commend:
             id_key = "{}_{}_{}_{}".format(main, id, self.ScoreKey,version)
 
             if (rate < 0 and buyBig == 1) or  (rate > 0 and buyBig == -1): # 买强队赢买大
-                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, 1, 0, version)
+                info = "'{}', '{}', '{}','{}','{}', '{}', '{}', '{}'".format(id_key, timeIn, game, self.ScoreKey, 1, 0, version, timeFormat)
                 logInfo = logInfo.replace("让胜", "大球")
                 logInfo = logInfo.replace("让输", "大球")
                 self.__insertData(id_key, self.ScoreKey, info, logInfo)
 
             if (rate < 0 and buyBig == -1) or  (rate > 0 and buyBig == 1): # 买弱队赢买小
-                info = "'{}', '{}', '{}','{}','{}', '{}'".format(id_key, time, self.ScoreKey, -1, 0, version)
+                info = "'{}', '{}', '{}', '{}','{}','{}', '{}', '{}'".format(id_key, timeIn, game, self.ScoreKey, -1, 0, version, timeFormat)
                 logInfo = logInfo.replace("让胜", "小球")
                 logInfo = logInfo.replace("让输", "小球")
                 self.__insertData(id_key, self.ScoreKey, info, logInfo)
 
 
 
-    def check(self, main, time, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0,  id=0):
-        time = int(time / 10000)
-        time = str(time) + '....' 
+    def check(self, main, timeIn, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0,  id=0):
+        timeIn = int(timeIn / 10000)
+        timeIn = str(timeIn) + '....' 
 
 
         def checkRate(main, main_score, client_score,rate, id, version):
@@ -87,7 +90,7 @@ class commend:
                 return
 
             retn = self.sql.queryById(self.key, id)
-            rateResult = rateResult * retn[0][3]
+            rateResult = rateResult * retn[0][4]
             self.sql.updateCommend(id, type, rateResult, self.key)
 
         def checkScore(main_score, client_score, scoreRate, id, version):
@@ -109,10 +112,10 @@ class commend:
             else:
                 return
             retn = self.sql.queryById(self.key, id)
-            rateResult = rateResult * retn[0][3]
+            rateResult = rateResult * retn[0][4]
             self.sql.updateCommend(id, type, rateResult, self.key)
         
-        def checkCorner(main, time, corner, cornerRate, id, version):
+        def checkCorner(main, timeIn, corner, cornerRate, id, version):
             if cornerRate == "-":
                 return
             cornerRate = float (cornerRate)
@@ -132,7 +135,7 @@ class commend:
             else:
                 return
             retn = self.sql.queryById(self.key, id)
-            rateResult = rateResult * retn[0][3]
+            rateResult = rateResult * retn[0][4]
             self.sql.updateCommend(id, type, rateResult, self.key)
 
 
@@ -140,7 +143,7 @@ class commend:
             version = index+ 5
             checkRate(main, main_score, client_score,rate, id, version)
             checkScore(main_score, client_score, scoreRate, id, version)
-            checkCorner(main, time, corner, cornerRate, id, version)
+            checkCorner(main, timeIn, corner, cornerRate, id, version)
         
 
 

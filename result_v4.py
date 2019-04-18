@@ -80,14 +80,14 @@ def checkMain():
                 rateTmp = round (abs(tmp[0]) / tmp[2], 2)
                 rateDiv = key
 
-            if abs(tmp[1]) > bigMax:
-                bigMax = abs(tmp[1])
-                getData = tmp
-                info = "球"
-                rateTmp = round (abs(tmp[1]) / tmp[2], 2)
-                rateDiv = key
+            # if abs(tmp[1]) > bigMax:
+            #     bigMax = abs(tmp[1])
+            #     getData = tmp
+            #     info = "球"
+            #     rateTmp = round (abs(tmp[1]) / tmp[2], 2)
+            #     rateDiv = key
 
-        if rateTmp < 0.2:
+        if rateTmp < 0.15:
             continue
 
         if info == "让" and getData[0] < 0:

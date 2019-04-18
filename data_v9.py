@@ -273,7 +273,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "[5] {} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, 5 , rate=rateNow, logInfo=infoTmp, id=gameId)
+                    self.commend.add(main, getTime(gameTime), buyInfo, 5 , rate=rateNow, logInfo=infoTmp, id=gameId, game=type_game)
 
                 buyInfo = cmd[3]
                 if main != "":
@@ -427,13 +427,13 @@ def working(tableName):
         values = list(outputInfo.keys())
         values.sort()
 
-        for value in values:
-            for tmp in outputInfo[value]:
-                writeFile(tmp)
+        # for value in values:
+        #     for tmp in outputInfo[value]:
+        #         writeFile(tmp)
         
-        outputInfo.clear()
-        info = "================================"
-        writeFile(info)
+        # outputInfo.clear()
+        # info = "================================"
+        # writeFile(info)
         # print(tableName, " size:", len(outputInfo))
 
 # try:
