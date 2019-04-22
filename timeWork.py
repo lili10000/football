@@ -35,7 +35,7 @@ while 1:
     # winCheck.doDayWork()
     rateWinCheck.doDayWork()
     # rateBigCheck.doDayWork()
-    rateDivCheck.doDayWork()
+#     rateDivCheck.doDayWork()
     
     end = int(time.time()) 
     print ("end work", end,"    use time=",end-start," s" )

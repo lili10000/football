@@ -259,9 +259,13 @@ class parser:
 
             tmp = td.text
             tmp = tmp.replace(" ", "")
-            cornerTmp = tmp.split(':')
-            main_corner = int(cornerTmp[0])
-            client_corner = int(cornerTmp[1])
+            main_corner = 0
+            client_corner = 0
+
+            if ("-" in tmp) == False:
+                cornerTmp = tmp.split(':')
+                main_corner = int(cornerTmp[0])
+                client_corner = int(cornerTmp[1])
 
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
@@ -285,6 +289,7 @@ def working(tableName):
     gameCode = sql.queryByTypeAll(tableName)
     # 买预备=========================
     gameIndex = 0
+
 
     while index < end:
         gameIndex = 0

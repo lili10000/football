@@ -44,7 +44,7 @@ def checkMain():
         outputInfo = {}
         rateMax = -1
         
-        for i in range(2):
+        for i in range(3):
             # rateMax = -1
             lostCount = i + 2
             # lostCount = 3
@@ -183,10 +183,10 @@ def checkMain():
 
             if mainRate > rateMax:
                 rateMax = mainRate
-                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1]
+                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1, clientWinSum+clientlostSum]
             if clientRate > rateMax:
                 rateMax = clientRate
-                outputInfo = [id, lostCount, gameName, "让输", clientRate, -1]
+                outputInfo = [id, lostCount, gameName, "让输", clientRate, -1, clientWinSum+clientlostSum]
 
 
         if outputInfo[4] < 0.6:
@@ -197,10 +197,11 @@ def checkMain():
 
         info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
         sql.insert(info, tableName)
+        # print(outputInfo[6], info)
     print("size:", size, " rate:", round(rateSum/size, 2))
 
 
-# checkMain()
+checkMain()
 # checkMain('k_rateBuy')
 # checkBig('k_scoreBuy')
 # checkCorner('k_cornerBuy')

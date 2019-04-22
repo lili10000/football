@@ -7,8 +7,14 @@ data = sql.queryByTypeAll("k_commend")
 
 
 
-def cal(ver):
-    for i in range(1):
+def cal(ver, caltype):
+    size = 1
+    if caltype == 1:
+        size = 7
+    if caltype == 2:
+        size = 6
+
+    for i in range(size):
         sum = {}
         for one in data :
             timeCreate = int(one[1])
@@ -25,8 +31,13 @@ def cal(ver):
             timeStruct = time.localtime(timeCreate)
             # print(timeStruct)
 
-            # if timeStruct.tm_wday != i:
-            #     continue
+            if caltype == 1:
+                if timeStruct.tm_wday != i:
+                    continue
+            
+            if caltype == 2:
+                if timeStruct.tm_hour < 4*(i+1):
+                    continue
 
             if "球" in type:
                 continue
@@ -42,9 +53,19 @@ def cal(ver):
 
 
 # cal(5)
-cal(6)
+
+for i in range(3):
+    cal(6, i)
+    print(" ")
+    cal(5, i)
+    print(" ")
+
+
+
+# cal(6, False)
+# cal(5, False)
 # cal(4)
 # cal(3)
 # cal(2)
-cal(5)
+
     

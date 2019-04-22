@@ -87,7 +87,7 @@ def checkMain():
             #     rateTmp = round (abs(tmp[1]) / tmp[2], 2)
             #     rateDiv = key
 
-        if rateTmp < 0.15:
+        if rateTmp < 0.2:
             continue
 
         if info == "让" and getData[0] < 0:
@@ -119,6 +119,3 @@ def checkMain():
 
 
 # checkMain()
-# checkMain('k_rateBuy')
-# checkBig('k_scoreBuy')
-# checkCorner('k_cornerBuy')
