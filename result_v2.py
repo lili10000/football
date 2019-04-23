@@ -201,7 +201,7 @@ def checkMain():
     print("size:", size, " rate:", round(rateSum/size, 2))
 
 
-checkMain()
+# checkMain()
 # checkMain('k_rateBuy')
 # checkBig('k_scoreBuy')
 # checkCorner('k_cornerBuy')

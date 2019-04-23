@@ -36,7 +36,7 @@ def cal(ver, caltype):
                     continue
             
             if caltype == 2:
-                if timeStruct.tm_hour < 4*(i+1):
+                if timeStruct.tm_hour > 4*(i+1) or timeStruct.tm_hour < 4*i:
                     continue
 
             if "球" in type:
@@ -55,8 +55,6 @@ def cal(ver, caltype):
 # cal(5)
 
 for i in range(3):
-    cal(6, i)
-    print(" ")
     cal(5, i)
     print(" ")
 
