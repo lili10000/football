@@ -286,6 +286,6 @@ def doUpdata():
     rateDivCal.checkMain()
     print("end doUpdata")
 
-
-# doUpdata()
+GameType.updata()
+working("k_corner")
 

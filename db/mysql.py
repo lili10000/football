@@ -120,7 +120,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryByType  query error, sql:",SQL)
     
     def queryByTypeNum(self, type, key, num):
 
@@ -132,7 +132,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryByTypeNum  query error, sql:",SQL)
 
     def queryByTypeAll(self, key):
 
@@ -144,7 +144,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryByTypeAll  query error, sql:",SQL)
 
     def queryById(self, key, id):
         SQL = u"select * from {} where (id REGEXP '{}')".format(key, id)  
@@ -155,7 +155,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryById  query error, sql:",SQL)
     
     def queryCount(self, key, name):
 
@@ -167,7 +167,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryCount  query error, sql:",SQL)
     
     def queryCountRate(self, type, key, result):
 
@@ -179,7 +179,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryCountRate  query error, sql:",SQL)
     
     def queryCountByID(self, key, id, type):
         SQL = u"select count(*) from {} where (id REGEXP '{}' and type = '{}') ".format(key, id, type)
@@ -190,7 +190,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryCountByID  query error, sql:",SQL)
     
     def queryTeamDataMain(self, gameName, teamName, key):
         SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and (main like '%"+ teamName +"%')) "
@@ -201,7 +201,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryTeamDataMain  query error, sql:",SQL)
     
     def queryTeamDataClient(self, gameName, teamName, key):
         SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and (client like '%"+ teamName +"%')) "
@@ -212,7 +212,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryTeamDataClient  query error, sql:",SQL)
     
     def queryTeamData(self, gameName, teamName, key):
         SQL = u"select * from "+ key +" where (( type like '%" + gameName + "%' ) and ((main like '%"+ teamName +"%')) or (client like '%"+ teamName +"%'))"
@@ -223,7 +223,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryTeamData  query error, sql:",SQL)
     
     def queryByTypeTime(self, gameName, key):
         SQL = u"select * from {} where ( type = '{}') order by time".format(key, gameName)
@@ -234,7 +234,7 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("queryByTypeTime  query error, sql:",SQL)
     
     def updateMainFlag(self, gameName, value, key):
         SQL = "UPDATE {} SET flag = {} where (gameId = {})".format(key, value, gameName)
@@ -245,4 +245,5 @@ class sqlMgr:
             results = self.cursor.fetchall()
             return results 
         except:
-            print ("query error ")
+            print ("updateMainFlag  query error, sql:",SQL)
+

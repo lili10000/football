@@ -1,6 +1,10 @@
 # encoding=utf8
 from db.mysql import sqlMgr
 import time
+import re
+
+
+
 
 class commend:
     def __init__(self):
@@ -20,7 +24,17 @@ class commend:
                 print(logInfo)
             self.sql.insert(info, self.key)
 
+    def __clearStr(self, str):
+        str = str.replace("'", "")
+        str = str.replace("[", "")
+        str = str.replace("]", "")
+        return str
+
+        # str.sub("[\s+\.\!\/_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+".encode('utf-8').decode('utf-8'), "".encode('utf-8').decode('utf-8'),str)
+
     def add(self, main, timeIn, type, version=0, rate=None, logInfo="", id="", game=""):
+        main = self.__clearStr(main)
+
         buyBig = -1
         if "大" in type or "胜" in type:
             buyBig = 1
@@ -38,7 +52,9 @@ class commend:
             return
 
 
+       
         id_key = "{}_{}_{}_{}".format(main, id, type,version)
+        
 
         timeArray = time.localtime(timeIn)
         timeFormat = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -71,11 +87,13 @@ class commend:
     def check(self, main, timeIn, main_score, client_score, rate, scoreRate, corner=0, cornerRate=0,  id=0):
         timeIn = int(timeIn / 10000)
         timeIn = str(timeIn) + '....' 
-
+        main = self.__clearStr(main)
 
         def checkRate(main, main_score, client_score,rate, id, version):
             type = self.rateKey
             id = "{}_{}_{}_{}".format(main, id, type,version)
+            id = id.replace("'", " ")
+
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
@@ -100,6 +118,8 @@ class commend:
 
             type = self.ScoreKey
             id = "{}_{}_{}_{}".format(main, id, type,version)
+            id = id.replace("'", " ")
+
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
@@ -123,6 +143,8 @@ class commend:
             type = self.CornerKey
 
             id = "{}_{}_{}_{}".format(main, id, type,version)
+            id = id.replace("'", " ")
+
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
                 return
