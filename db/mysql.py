@@ -21,8 +21,8 @@ class sqlMgr:
         self.db = MySQLdb.connect(ipAddr, user, passwd, db_name, charset="utf8")
         self.cursor = self.db.cursor()
 
-    def __del__(self):
-        self.db.close()
+    # def __del__(self):
+    #     self.db.close()
 
     def test(self):
         '''
@@ -53,13 +53,27 @@ class sqlMgr:
             # Rollback in case there is any error
             print ("error :" + inserSQL )
             self.db.rollback()
+    
+    def cleanByIdGame(self, tableName, id):
+        inserSQL = "delete  from {} where id_game = {}".format(tableName, id) 
 
-    def insert(self, data, tableName):
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            # print ("error :" + inserSQL )
+            self.db.rollback()
+
+    def insert(self, data, tableName, id=None):
         inserSQL = "INSERT INTO "
         inserSQL += tableName
         inserSQL += " VALUES ("
         inserSQL += data 
         inserSQL += ")"
+
+        if id != None:
+            self.cleanByIdGame(tableName, id)
 
         try:  
             self.cursor.execute(inserSQL)

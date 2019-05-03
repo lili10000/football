@@ -183,7 +183,7 @@ def checkMain():
 
             if mainRate > rateMax:
                 rateMax = mainRate
-                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1, clientWinSum+clientlostSum]
+                outputInfo = [id, lostCount, gameName, "让胜", mainRate, 1, winSum+lostSum]
             if clientRate > rateMax:
                 rateMax = clientRate
                 outputInfo = [id, lostCount, gameName, "让输", clientRate, -1, clientWinSum+clientlostSum]

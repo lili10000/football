@@ -12,8 +12,8 @@ import result_v15 as GameType
 import result_v14 as lostCal
 import result_v17 as winCal
 import result_v2 as rateWinCal
-# import result_v3 as BigWinCal
-import result_v4 as rateDivCal
+import result_v3 as BigWinCal
+# import result_v4 as rateDivCal
 import _thread
 from commend import commend
 from tool import ipTool
@@ -225,7 +225,7 @@ def working(tableName, type = 0):
 
     if type == 1:
        gameCode = gameCodeAll  
-       end = 2
+       end = 5
 
     if len(gameCode) == 0 :
         return
@@ -283,9 +283,10 @@ def doUpdata():
     # lostCal.docal()
     # winCal.docal()
     rateWinCal.checkMain()
-    rateDivCal.checkMain()
+    BigWinCal.checkMain()
     print("end doUpdata")
 
-GameType.updata()
-working("k_corner")
+# GameType.updata()
+# working("k_corner")
+# working("k_corner", 1)
 

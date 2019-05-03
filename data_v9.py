@@ -166,26 +166,33 @@ class parser:
 
                         key = gameTime
                         if main_score - client_score + rate > 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
+                            
                             if main == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = 1
                             elif client == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = -1
 
-                        elif main_score - client_score + rate < 0:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
+                        elif main_score - client_score + rate < 0:                           
                             if main == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = -1
                             elif client == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = 1
-                        else:
-                            if result.__contains__(key) == False:
-                                result[key] = {}
+                        else:                            
                             if main == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = 0
                             elif client == teamName:
+                                if result.__contains__(key) == False:
+                                    result[key] = {}
                                 result[key] = 0
                     # keys = result.keys()
                     values = list(result.keys())
@@ -375,11 +382,12 @@ class parser:
                 main_corner = int(cornerTmp[0])
                 client_corner = int(cornerTmp[1])
 
+            idGame = main + "_" + str(gameId)
+
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
-            input += ",'"+  main + "_" + str(gameTime) + "'" 
-            input += ",'{}','{}'".format(scoreRate, cornerRate)
-            self.sql.insert(input, "k_corner")
+            input += ",'{}','{}','{}'".format(idGame, scoreRate, cornerRate)
+            self.sql.insert(input, "k_corner", idGame)
             self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate, id=gameId)
 
 
@@ -458,3 +466,4 @@ def doDayWork():
 
 # doDayWork()
 # working("k_cornerBuy")
+working("k_rateBuy_v3")
