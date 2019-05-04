@@ -247,6 +247,7 @@ def docal():
                         #     cond_2 = (lost == 0) 
 
                         # cond_2 = (lost == chechSum-1) and (gameTmp[0][0] != -1)
+                        
 
                         gameCheck = game_check #让球
 

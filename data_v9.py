@@ -466,4 +466,4 @@ def doDayWork():
 
 # doDayWork()
 # working("k_cornerBuy")
-working("k_rateBuy_v3")
+# working("k_rateBuy_v3")

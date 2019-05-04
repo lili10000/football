@@ -248,7 +248,7 @@ class parser:
                     addInfo = "【" + buyInfo + "】"
                     infoTmp = "[4] {} {} {} game info: {} {} {}".format(gameTime, type_game,addInfo,  main, client, cmd[4])
                     addOutputInfo(gameTime, infoTmp,outputInfo)
-                    self.commend.add(main, getTime(gameTime), buyInfo, 4 , rate=rateNow, logInfo=infoTmp, id=gameId)
+                    self.commend.add(main, getTime(gameTime), buyInfo, 4 , rate=rateNow, logInfo=infoTmp, id=gameId, game=type_game)
 
 
                     # condition_v3(False, winFlag, lostFlag, cmd)
