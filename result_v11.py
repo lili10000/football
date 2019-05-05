@@ -39,7 +39,7 @@ def cal(ver, caltype):
                 if timeStruct.tm_hour > 4*(i+1) or timeStruct.tm_hour < 4*i:
                     continue
 
-            if "球" in type:
+            if "球" in type and ver == 5:
                 continue
 
             if sum.__contains__(type) == False:
@@ -56,6 +56,8 @@ def cal(ver, caltype):
 
 for i in range(3):
     cal(5, i)
+    print(" ")
+    cal(4, i)
     print(" ")
 
 

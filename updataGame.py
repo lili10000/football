@@ -154,6 +154,7 @@ class parser:
             # print(type_game)
             main = ""
             client = ""
+            gameId = ""
             for td in tr.find_all('td', class_="text-right BR0"):
                 for a in td.find_all('a', target="_blank"):
                    main = clearStr(a.text)
@@ -162,6 +163,11 @@ class parser:
                 for a in td.find_all('a', target="_blank"):
                    client = clearStr(a.text)
 
+            for div in tr.find_all('div', class_="statusListWrapper"):
+                for a in div.find_all('a'):
+                    tmp = a.attrs['href']
+                    gameIdList = tmp.split('/')
+                    gameId = gameIdList[2]
 
             rate = 0
             tds = tr.find_all('td', class_="text-center")
@@ -193,12 +199,13 @@ class parser:
             main_corner = int(cornerTmp[0])
             client_corner = int(cornerTmp[1])
 
+            idGame = main + "_" + str(gameId)
+
             input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
             input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
-            input += ",'"+  main + "_" + str(gameTime) + "'" 
-            input += ",'{}','{}'".format(scoreRate, cornerRate)
-            self.sql.insert(input, "k_corner")
-            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate)
+            input += ",'{}','{}','{}'".format(idGame, scoreRate, cornerRate)
+            self.sql.insert(input, "k_corner", idGame)
+            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate, id=gameId)
 
 
 
@@ -225,7 +232,7 @@ def working(tableName, type = 0):
 
     if type == 1:
        gameCode = gameCodeAll  
-       end = 5
+       end = 2
 
     if len(gameCode) == 0 :
         return

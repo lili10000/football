@@ -346,6 +346,7 @@ class parser:
             input += ",'{}','{}','{}'".format(idGame, scoreRate, cornerRate)
             self.sql.insert(input, "k_corner", idGame)
             self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate, id=gameId)
+            
 
 
 
