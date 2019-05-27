@@ -44,7 +44,7 @@ class sqlMgr:
             print ("error :" + inserSQL )
             self.db.rollback()
     def cleanById(self, tableName, id):
-        inserSQL = "delete  from {} where gameId = {}".format(tableName, id) 
+        inserSQL = "delete  from {} where id = {}".format(tableName, id) 
 
         try:  
             self.cursor.execute(inserSQL)
@@ -73,12 +73,13 @@ class sqlMgr:
         inserSQL += ")"
 
         if id != None:
-            self.cleanByIdGame(tableName, id)
+            self.cleanById(tableName, id)
 
         try:  
             self.cursor.execute(inserSQL)
             self.db.commit()
-        except:
+        except Exception as e:
+            print(e)
             # Rollback in case there is any error
             # print ("error :" + data )
             self.db.rollback()
@@ -91,6 +92,7 @@ class sqlMgr:
         inserSQL += data 
         inserSQL += "where id = " + id
 
+        inserSQL.encode('utf-8')
         try:  
             self.cursor.execute(inserSQL)
             self.db.commit()
@@ -261,3 +263,67 @@ class sqlMgr:
         except:
             print ("updateMainFlag  query error, sql:",SQL)
 
+    def queryByTime(self, key,time):
+        SQL = u"select * from {} where ( time > '{}')  order by time".format(key, time)
+        SQL.encode('utf-8')
+        # print(SQL)
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryByTypeTime  query error, sql:",SQL)
+
+
+    def updateParam(self, tableName, gameType, param):
+
+        SQL = u"UPDATE {} SET param = '{}' where (name = '{}')".format(tableName, param, gameType)
+        SQL.encode('utf-8')
+        try:  
+            self.cursor.execute(SQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("updateParam   error, sql:",SQL)
+            self.db.rollback()
+    
+    def queryByName(self, key, gameName):
+        SQL = u"select * from {} where ( name = '{}') ".format(key, gameName)
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryByName  query error, sql:",SQL)
+
+    def queryMainLimit(self, key, teamName, limit):
+        SQL = u"select * from {} where (main like '%{}%') ORDER BY time desc limit {}".format(key, teamName, limit)
+        SQL.encode('utf-8')
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryMainLimit  query error, sql:",SQL)
+    
+    def queryClientLimit(self, gameName, teamName, key):
+        SQL = u"select * from {} where (client like '%{}%') ORDER BY time desc limit {}".format(key, teamName, limit)
+        SQL.encode('utf-8')
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryClientLimit  query error, sql:",SQL)
+        
+    def queryAllLimit(self, gameName, teamName, key):
+        SQL = u"select * from {} where ((main like '%{}%') or (client like '%{}%')) ORDER BY time desc limit {}".format(key, teamName, limit)
+        SQL.encode('utf-8')
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryAllLimit  query error, sql:",SQL)

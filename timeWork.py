@@ -34,7 +34,7 @@ while 1:
     
     # winCheck.doDayWork()
     rateWinCheck.doDayWork()
-    rateBigCheck.doDayWork()
+    # rateBigCheck.doDayWork()
 #     rateDivCheck.doDayWork()
     
     end = int(time.time()) 

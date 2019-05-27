@@ -4,65 +4,48 @@ import re
 import time
 from datetime import datetime
 from bs4 import BeautifulSoup
-from html.parser import HTMLParser
 from db.mysql import sqlMgr
 import random
 import ssl
-import result_v15 as GameType
-import result_v14 as lostCal
-import result_v17 as winCal
-import result_v2 as rateWinCal
-import result_v3 as BigWinCal
-# import result_v4 as rateDivCal
+import os
 import _thread
 from commend import commend
 from tool import ipTool
 
 
-# def addOutputInfo(key, info, outputInfo):
-#     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
-#     key = int(time.mktime(timeArray))
-#     if outputInfo.__contains__(key) == False:
-#         outputInfo[key] = []
-    # outputInfo[key].append(info)
 
 
+def addOutputInfo(key, info, outputInfo):
+    timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
+    key = int(time.mktime(timeArray))
+    if outputInfo.__contains__(key) == False:
+        outputInfo[key] = []
+    outputInfo[key].append(info)
 
 
-
-# def getIpList():
-#     urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
-#     sleepTime = 5
-#     req = requests.get(urlTmp)
-#     s = req.text
-
-#     ips = s.split('<br>')
-#     if len(ips) == 0:
-#         time.sleep(sleepTime)
-#         return ips
-#     ips.pop(0)
-#     if len(ips) == 0:
-#         time.sleep(sleepTime)
-#         return ips
-#     ips.pop(0)
-#     if len(ips) == 0:
-#         time.sleep(sleepTime)
-#         return ips
-#     ips.pop(len(ips)-1)
-#     print("get ips size:", len(ips))
-#     if len(ips) == 0:
-#         time.sleep(sleepTime)
-#         return ips
-#     return ips
-
-
-# ipList = []
-
+def writeFile(info):
+    # with open(r"result_v3.txt", 'a') as f:
+    #     f.write(info + "\n")
+        # print(info)
+    return 
 
 def clearStr(str):
     str = str.replace(" ", "")
     str = str.replace("\n", "")
+    str = str.replace("[", "")
+    str = str.replace("]", "")
     return str
+
+def longTime(timeStr):
+    timeArray= time.strptime('20'+ timeStr, "%Y/%m/%d %H:%M")
+    gameTime = int(time.mktime(timeArray))
+    now = int(time.time()) 
+    if gameTime - now > 60*60*24:
+        return True
+    return False
+def getTime(timeStr):
+    timeArray= time.strptime('20'+ timeStr, "%Y/%m/%d %H:%M")
+    return int(time.mktime(timeArray))
 
 class parser:
     class gameData:
@@ -79,7 +62,9 @@ class parser:
             self.lost_rate = float(0)
             self.time = 0
 
-    def __init__(self, url, ipList,sql):
+
+
+    def __init__(self, url, ipList, sql):
 
         self.sql = sql
         self.soup = BeautifulSoup(self.getHtmlText(url, ipList))
@@ -88,17 +73,17 @@ class parser:
         self.client = []
         self.score = []
         self.param = []
+
         self.commend = commend()
+        self.version = 6
 
     def getHtmlText(self, url, ipList):
-        if len(ipList) == 0 :
-            raise Exception()
-
 
         def addIp(ipStr):
             proxies =[]
             proxies.append({'http': ipStr,'https': ipStr})
             return proxies
+
 
         ipChoice = random.choice(ipList)
 
@@ -120,10 +105,7 @@ class parser:
         for title in self.soup.find_all('title') :
             if title.string.find('404') != -1:
                 return False
-
-        type_game = ""
-
-                 
+                    
         for tr in self.soup.find_all('tr') :
             td = tr.find('td', class_="bg1")
             if td == None:
@@ -157,11 +139,11 @@ class parser:
             gameId = ""
             for td in tr.find_all('td', class_="text-right BR0"):
                 for a in td.find_all('a', target="_blank"):
-                   main = clearStr(a.text)
+                    main = clearStr(a.text)
 
             for td in tr.find_all('td', class_="text-left"):
                 for a in td.find_all('a', target="_blank"):
-                   client = clearStr(a.text)
+                    client = clearStr(a.text)
 
             for div in tr.find_all('div', class_="statusListWrapper"):
                 for a in div.find_all('a'):
@@ -169,7 +151,10 @@ class parser:
                     gameIdList = tmp.split('/')
                     gameId = gameIdList[2]
 
+
             rate = 0
+            scoreRate = 0
+            cornerRate = 0
             tds = tr.find_all('td', class_="text-center")
             for tdTmp in tds :
                 a = tdTmp.find('a', target="_blank")
@@ -195,34 +180,39 @@ class parser:
 
             tmp = td.text
             tmp = tmp.replace(" ", "")
-            cornerTmp = tmp.split(':')
-            main_corner = int(cornerTmp[0])
-            client_corner = int(cornerTmp[1])
+            main_corner = 0
+            client_corner = 0
 
-            idGame = main + "_" + str(gameId)
+            if ("-" in tmp) == False:
+                cornerTmp = tmp.split(':')
+                main_corner = int(cornerTmp[0])
+                client_corner = int(cornerTmp[1])
+            
+            leagueRank_main = -10
+            leagueRank_client = -10
+        
+            for td in tr.find_all('td', class_="text-right BR0"):
+                for leagueRank in td.find_all('span', class_="leagueRank"):
+                    leagueRank_main = int(clearStr(leagueRank.text))
 
-            input = "'"+ main + "','" + client +"','" + str(main_score) +"','" + str(client_score) + "','"  + str(rate) + "','"+ type_game +"'"
-            input += ",'"+  str(main_corner) + "','" + str(client_corner)+ "','" + str(client_corner + main_corner)+ "','" + str(gameTime) +"'" 
-            input += ",'{}','{}','{}'".format(idGame, scoreRate, cornerRate)
-            self.sql.insert(input, "k_corner", idGame)
-            self.commend.check(main, gameTime, main_score, client_score, rate, scoreRate, client_corner + main_corner, cornerRate, id=gameId)
+            for td in tr.find_all('td', class_="text-left"):
+                for leagueRank in td.find_all('span', class_="leagueRank"):
+                    leagueRank_client = int(clearStr(leagueRank.text))
+            
+            input = "'{}','{}','{}','{}','{}','{}','{}'".format(gameId, main, client, main_score, client_score, rate, scoreRate)
+            input += ",'{}','{}','{}','{}'".format(leagueRank_main, leagueRank_client, type_game, gameTime)
+            self.sql.insert(input, "k_baseAnaylse")
 
-
-
-# key = "k_gameDic"
-
-def working(tableName, type = 0):
-    print("start do working")
-    global outputInfo
+            
+def working(tableName):
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
     ipObj = ipTool()
     ipList = ipObj.getIpList()
-
-    sql = sqlMgr('localhost', 'root', '861217', 'football')
     index = 1
     end = 40
-    
+
     gameCode = []
-    gameCodeAll = sql.queryByTypeAll("k_gameDic")
+    gameCodeAll = sql.queryByTypeAll("k_gameDic_v2")
 
     for code in  gameCodeAll:
         dataRecv = sql.queryCount(tableName, code[1])
@@ -236,11 +226,10 @@ def working(tableName, type = 0):
 
     if len(gameCode) == 0 :
         return
-
     # 买预备=========================
     gameIndex = 0
-    
-    
+
+
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
@@ -260,7 +249,7 @@ def working(tableName, type = 0):
 
             print( index, gameCode[gameIndex][1])
             try:   
-                if html.getData("k_gameDic", gameCode[gameIndex]) == False :
+                if html.getData(tableName, gameCode[gameIndex]) == False :
                     break
             except:
                 if len(ipList) < 2:
@@ -271,29 +260,10 @@ def working(tableName, type = 0):
             gameIndex += 1
         index += 1
 
-        # values = list(outputInfo.keys())
-        # values.sort()
-        # for value in values:
-        #     for tmp in outputInfo[value]:
-        #         print(tmp)
-        
-        # outputInfo.clear()
-    print("end do working")
 
-def doUpdata():
-    print("start doUpdata")
-    # ipList = getIpList()
-    GameType.updata()
-    # _thread.start_new_thread(working,("k_corner",))
-    working("k_corner", 1)
-    # working("k_corner")
-    # lostCal.docal()
-    # winCal.docal()
-    rateWinCal.checkMain()
-    # BigWinCal.checkMain()
-    print("end doUpdata")
 
-# GameType.updata()
-# working("k_corner")
-# working("k_corner", 1)
+
+working("k_baseAnaylse")
+
+
 

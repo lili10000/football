@@ -16,6 +16,7 @@ def cal(ver, caltype):
 
     for i in range(size):
         sum = {}
+        typeSum = {}
         for one in data :
             timeCreate = int(one[1])
             type = one[3]
@@ -46,19 +47,25 @@ def cal(ver, caltype):
                 sum[type] = {-1:0, 1:0, "sum":0}
             sum[type][buyBig] += result
             sum[type]["sum"] += 1
+            if typeSum.__contains__(buyBig) == False:
+                typeSum[buyBig] = 0
+            typeSum[buyBig] += 1
 
         for index in sum:
             # print(ver, index, sum[index], round(index/sum[index], 2))
-            print(i+1," | ",ver, index, sum[index][1]+sum[index][-1], round( (sum[index][1]+sum[index][-1]) *100/sum[index]["sum"] , 2),"%    ",sum[index])
+            # print(i+1," | ",ver, index, sum[index][1]+sum[index][-1], round( (sum[index][1]+sum[index][-1]) *100/sum[index]["sum"] , 2),"%    ",sum[index])
+            print(i+1," | ",ver, index, sum[index][1]+sum[index][-1], round( (sum[index][1]+sum[index][-1]) *100/sum[index]["sum"] , 2),"%    ",sum[index],
+            round(sum[index][-1]/typeSum[-1],2), round(sum[index][1]/typeSum[1], 2))
 
 
 # cal(5)
+# cal(4, 0)
 
 for i in range(3):
     cal(5, i)
     print(" ")
-    cal(4, i)
-    print(" ")
+    # cal(4, i)
+    # print(" ")
 
 
 

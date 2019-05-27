@@ -7,6 +7,13 @@ import time
 from io import StringIO
 import gzip
 
+import requests
+import random
+import ssl
+
+
+from commend import commend
+
 
 
 class ipTool:
@@ -17,7 +24,7 @@ class ipTool:
     def getIpList(self):
         while 1:
             try:
-                urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=30&port=&address=&isp=电信"
+                urlTmp = "http://www.89ip.cn/tqdl.html?api=1&num=10&port=&address=&isp=电信"
                 req = requests.get(urlTmp)
                 s = req.text
                 ips = s.split('<br>')
@@ -33,7 +40,7 @@ class ipTool:
                     time.sleep(3)
                     return ips
                 ips.pop(len(ips)-1)
-                print("get ips size:", len(ips))
+                # print("get ips size:", len(ips))
                 if len(ips) == 0:
                     time.sleep(3)
                     return ips
@@ -80,3 +87,49 @@ class ipTool:
     #         self.loopSize -= 1
     #         print("ipList size:", len(ipList))
     #         return ipList
+
+
+
+def getHtmlText(url, ipList):
+    def addIp(ipStr):
+        proxies =[]
+        proxies.append({'http': ipStr,'https': ipStr})
+        return proxies
+
+    ipChoice = random.choice(ipList)
+    content =""
+    try:
+        req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=5)
+        # req = requests.get(url)
+        s = req.content.decode('gbk')
+
+    except Exception as e:
+        # print(e)
+
+        ipList.remove(ipChoice)
+        raise Exception()
+    
+    if len(s) < 100:
+        ipList.remove(ipChoice)
+        raise Exception()
+    return s
+
+
+ipObj = ipTool()
+ipList = ipObj.getIpList()
+url = "https://liansai.500.com/index.php?c=score&a=getmatch&stid=13894&round=3"
+while 1:
+    try:
+        req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=5)
+        soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
+
+
+    except Exception as e:
+        if len(ipList) < 2:
+            ipList = ipObj.getIpList()
+        continue
+
+    with open(r"test.html", 'a', encoding='gbk') as f:
+        f.write(html)
+    break
+    
