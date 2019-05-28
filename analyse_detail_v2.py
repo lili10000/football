@@ -8,14 +8,17 @@ from db.mysql import sqlMgr
 import random
 import ssl
 import os
-import _thread
+import threading
 from commend import commend
 from tool import ipTool
+import tool
 import chardet
 from common import gameData
 import json
 import queue
 import cal_rank_today
+import cal_rank_v2
+import analyse_detail
 
 def addOutputInfo(key, info, outputInfo):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
@@ -88,7 +91,7 @@ class parser:
 
         self.sql = sql
         # self.soup = BeautifulSoup(self.getHtmlText(url, ipList), from_encoding="gb18030")
-        self.soup = BeautifulSoup(getHtmlText(url, ipList))
+        self.soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
         self.url = url
         self.main = []
         self.client = []
@@ -288,46 +291,55 @@ class parser:
         
             
 
-def threadFun(channel):
+def threadFun(id):
     ipObj = ipTool()
     # ipList = ipObj.getIpList()
     sql = sqlMgr('localhost', 'root', '861217', 'football')
 
+    ipList = ipObj.getIpList()
+    url = "https://odds.500.com/fenxi/shuju-{}.shtml".format(id)
     while 1:
-        id = channel.get()
-        ipList = ipObj.getIpList()
-        url = "https://odds.500.com/fenxi/shuju-{}.shtml".format(id)
-        while 1:
-            try:
-                html =  parser(url, ipList, sql)
-                html.getData(id)
-                print(id,"  ok")
+        try:
+            html =  parser(url, ipList, sql)
+            html.getData(id)
+            print(id,"  ok")
+            break
+        except Exception as e:
+            if len(ipList) < 2:
                 break
-            except Exception as e:
-                if len(ipList) < 2:
-                    break
 
 
 
 
-def working(start, end):
+def working(url):
     
-    channel = queue.Queue()
-    for i in range(20):
-        _thread.start_new_thread(threadFun,(channel,))
+    codeList = tool.getGameCodeList(url)
 
-    print("start work")
+    threadPool = []
+
+    print("start work, code size:", len(codeList))
     ipObj = ipTool()
     ipList = ipObj.getIpList()
 
+    count = 0
+    for id in codeList:
+        # id = index + start
+        # channel.put(id)
+        t=threading.Thread(target=threadFun,args=(id,))
+        t.start()
+        threadPool.append(t)
+        count += 1
+        if count % 20 == 0:
+            for t in  threadPool:
+                t.join()
 
-    for index in range(end - start + 1):
-        id = index + start
-        channel.put(id)
-    time.sleep(60*60)
+    for t in  threadPool:
+        t.join()
              
 
+url = "https://liansai.500.com/zuqiu-5168/jifen-14028/"
+working(url)
+cal_rank_v2.docal()
+analyse_detail.working(url)
 
-working(783817, 783983)
-# threadFun(777206)
 

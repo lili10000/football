@@ -8,7 +8,7 @@ from db.mysql import sqlMgr
 import random
 import ssl
 import os
-import _thread
+import threading
 from commend import commend
 from tool import ipTool
 import chardet
@@ -16,6 +16,20 @@ from common import gameData
 import json
 import queue
 import cal_rank_today
+
+
+
+# urlList = []       
+# urlList.append("https://liansai.500.com/zuqiu-5128/jifen-13916/") #美职足
+# urlList.append("https://liansai.500.com/zuqiu-5243/jifen-14345/") #芬甲
+
+# urlList.append("https://liansai.500.com/zuqiu-5239/jifen-14335/") #巴甲
+# urlList.append("https://liansai.500.com/zuqiu-5126/jifen-13914/") #日职
+# urlList.append("https://liansai.500.com/zuqiu-5124/jifen-13912/") #日乙
+# urlList.append("https://liansai.500.com/zuqiu-5151/jifen-13981/") #韩职
+# urlList.append("https://liansai.500.com/zuqiu-4826/jifen-13070/") #英超
+# urlList.append("https://liansai.500.com/zuqiu-5188/jifen-14068/") #瑞典超
+
 
 def addOutputInfo(key, info, outputInfo):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
@@ -347,82 +361,78 @@ def getRate(id):
             return None   
 
 
-def threadFun(channel, channelOut):
-# def threadFun(id):
-    while 1:
-        id = channel.get()
-        # print(id)
-        ret = getData(id)
-        rateOk = ret[0]
-        main = ret[1]
-        gameType = ret[2]
-        if rateOk == None:
-            continue
-        rateNow = getRate(id)
-        if rateNow == None:
-            continue
-        if abs (rateNow - rateOk) < 0.2:
-            continue
-        if rateNow - rateOk > 0:
-            info = "【{}】  {}  买小    {}, {}".format(gameType, main, rateNow, rateOk)
-            channelOut.put(info)
-        elif rateNow - rateOk < 0:
-            info = "【{}】  {}          买大    {}, {}".format(gameType, main, rateNow, rateOk)
-            channelOut.put(info)
+# def threadFun(channel, channelOut):
+def threadFun(id,channelOut):
+
+    # id = channel.get()
+    # print(id)
+    ret = getData(id)
+    rateOk = ret[0]
+    main = ret[1]
+    gameType = ret[2]
+    if rateOk == None:
+        return
+    rateNow = getRate(id)
+    if rateNow == None:
+        return
+    if abs (rateNow - rateOk) < 0.2:
+        return
+    if rateNow - rateOk > 0:
+        info = "【{}】  {}  买小    {}, {}".format(gameType, main, rateNow, rateOk)
+        channelOut.put(info)
+    elif rateNow - rateOk < 0:
+        info = "【{}】  {}          买大    {}, {}".format(gameType, main, rateNow, rateOk)
+        channelOut.put(info)
 
 def threadLogOut(channelOut):
     while 1:
         info = channelOut.get()
         print(info)
 
-def working(urlList):
-    
-    channel = queue.Queue()
+def working(url):
     channelOut = queue.Queue()
-    for i in range(20):
-        _thread.start_new_thread(threadFun,(channel,channelOut,))
-    _thread.start_new_thread(threadLogOut,(channelOut,))
+    threadPool = []
 
     ipObj = ipTool()
     ipList = ipObj.getIpList()
+    end = threading.Thread(target=threadLogOut,args=(channelOut,))
+    end.start()
 
-    for url in urlList:
-        while 1:   
-            try:
-                soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
-                if len(ipList) < 2:
-                    ipList = ipObj.getIpList()
-                try: 
-                    tbody = soup.find('tbody', id='match_list_tbody')
-                    gameList = []
-                    for tr in tbody.find_all('tr'):
-                        gameList.append(tr.attrs['data-fid'])
-                    for id in gameList:
-                        channel.put(int(id))
-                except Exception as e:
-                    print(e)
-                    if len(ipList) < 2:
-                        ipList = ipObj.getIpList()
+
+    while 1:   
+        try:
+            soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
+            if len(ipList) < 2:
+                ipList = ipObj.getIpList()
+            try: 
+                tbody = soup.find('tbody', id='match_list_tbody')
+                gameList = []
+                for tr in tbody.find_all('tr'):
+                    gameList.append(tr.attrs['data-fid'])
+                for id in gameList:
+                    t=threading.Thread(target=threadFun,args=(id,channelOut))
+                    threadPool.append(t)
+                    t.start()
             except Exception as e:
+                print(e)
                 if len(ipList) < 2:
                     ipList = ipObj.getIpList()
-                continue
-            break
-    time.sleep(60*60)
+        except Exception as e:
+            if len(ipList) < 2:
+                ipList = ipObj.getIpList()
+            continue
+        break
+    for t in threadPool:
+        t.join()
+
+    time.sleep(3*60)
              
 
        
-urlList = []       
-# urlList.append("http://liansai.500.com/zuqiu-5128/jifen-13916/") #美职足
-# urlList.append("http://liansai.500.com/zuqiu-5239/jifen-14335/") #巴甲
-# urlList.append("http://liansai.500.com/zuqiu-5126/jifen-13914/") #日职
-# urlList.append("http://liansai.500.com/zuqiu-5124/jifen-13912/") #日乙
-# urlList.append("http://liansai.500.com/zuqiu-5151/jifen-13981/") #韩职
-# urlList.append("https://liansai.500.com/zuqiu-4826/jifen-13070/") #英超
-urlList.append("https://liansai.500.com/zuqiu-5188/jifen-14068/") #瑞典超
 
 
-working(urlList)
+
+# working(urlList)
 
 # threadFun(777206)
 

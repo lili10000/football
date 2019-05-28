@@ -6,7 +6,7 @@ import json
 sql = sqlMgr('localhost', 'root', '861217', 'football')
 
 
-
+for 
 
     min = 100
 

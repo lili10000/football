@@ -6,13 +6,14 @@ import time
 # from gzip import GzipFile
 from io import StringIO
 import gzip
-
 import requests
 import random
 import ssl
-
-
+import json
+import queue
+from db.mysql import sqlMgr
 from commend import commend
+import threading
 
 
 
@@ -89,13 +90,19 @@ class ipTool:
     #         return ipList
 
 
+def clearStr(str):
+    str = str.replace(" ", "")
+    str = str.replace("\r", "")
+    str = str.replace("\n", "")
+    return str
+
+def addIp(ipStr):
+    proxies =[]
+    proxies.append({'http': ipStr,'https': ipStr})
+    return proxies
 
 def getHtmlText(url, ipList):
-    def addIp(ipStr):
-        proxies =[]
-        proxies.append({'http': ipStr,'https': ipStr})
-        return proxies
-
+    
     ipChoice = random.choice(ipList)
     content =""
     try:
@@ -115,21 +122,108 @@ def getHtmlText(url, ipList):
     return s
 
 
-ipObj = ipTool()
-ipList = ipObj.getIpList()
-url = "https://liansai.500.com/index.php?c=score&a=getmatch&stid=13894&round=3"
-while 1:
-    try:
-        req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=5)
-        soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
+def updateGameDic():
+    ipObj = ipTool()
+    ipList = ipObj.getIpList()
+    url = "https://liansai.500.com/zuqiu-5114/"
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    while 1:
+        try:
+            soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
+            select = soup.find('select', id='select_notcups')
+            info = []
+            for option in select.find_all('option'):
+                value = option.attrs['value']
+                gameType = option.text
+                gameType = gameType[2:]
+                info.append([value, gameType])
+            info.pop(0)
+
+            sql.cleanAll('k_gamedic_v2')
+            for data in info:
+                input = "'{}','{}',''".format(data[0], data[1])
+                
+                sql.insert(input, 'k_gamedic_v2')
+            return
+
+        except Exception as e:
+            if len(ipList) < 2:
+                ipList = ipObj.getIpList()
+            continue
 
 
-    except Exception as e:
-        if len(ipList) < 2:
-            ipList = ipObj.getIpList()
-        continue
 
-    with open(r"test.html", 'a', encoding='gbk') as f:
-        f.write(html)
-    break
+def getData(subUrl, channelOut):
+    req = ""
+    ipObj = ipTool()
+    ips = ipObj.getIpList()
+    while 1:
+        try:
+            req = requests.get(subUrl,proxies=random.choice(addIp(random.choice(ips))),timeout=5)
+            req = clearStr(req.text)
+            # print("ok",subUrl)
+        except Exception as e:
+            if len(ips) < 2:
+                ips = ipObj.getIpList()
+            continue
+        break
+    channelOut.put(req)
+
+def getGameCodeList(url):
+
+    # channel = queue.Queue()
+    channelOut = queue.Queue()
+
+    jifenId = url.split("jifen-")
+    jifenId = jifenId[1][:-1]
+
+    ipObj = ipTool()
+    ipList = ipObj.getIpList()
     
+    # sql = sqlMgr('localhost', 'root', '861217', 'football')
+
+    codeList = []
+
+    threadPool = []
+
+
+    while 1:
+        try:
+            soup = BeautifulSoup(getHtmlText(url, ipList), features="html.parser")
+            group = 1
+            for li in soup.find_all('li', class_='on'):
+                a = li.find('a')
+                group = 1
+                if a.attrs.__contains__('data-group'):
+                    group = int(a.attrs['data-group'])
+            print("need get data size:",group)
+            for index in range(group):
+                subUrl = "https://liansai.500.com/index.php?c=score&a=getmatch&stid={}&round={}".format(jifenId, index + 1)
+                # _thread.start_new_thread(getData,(subUrl, channelOut, ))
+                t=threading.Thread(target=getData,args=(subUrl, channelOut))
+                t.start()
+                threadPool.append(t)
+
+            for t in threadPool:
+                t.join()
+
+            while not channelOut.empty():
+                try:
+                    req = channelOut.get() 
+                    # print("recv data")                   
+                    jsonObj = json.loads(req)
+                    for obj in jsonObj:
+                        codeList.append(obj['fid'])
+                except Exception as e:
+                    print(e)
+            break
+
+        except Exception as e:
+            if len(ipList) < 2:
+                ipList = ipObj.getIpList()
+            continue
+
+    return codeList
+
+# url = "https://liansai.500.com/zuqiu-5114/jifen-13894/"
+# getGameCodeList(url)
