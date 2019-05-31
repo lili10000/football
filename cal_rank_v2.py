@@ -18,7 +18,7 @@ def docal():
         # 
         if len(data) == 0 :
             continue
-        print(gameName, "   size:", len(data))
+        # print(gameName, "   size:", len(data))
 
         minValue = 100
         # minValue = 100
@@ -99,6 +99,6 @@ def docal():
         dic = {"1": record[gameName][1], "2": record[gameName][2],"3": record[gameName][3]}
         param=json.dumps(dic)
         sql.updateParam("k_gamedic_v2", gameName, param)
-        print(gameName, record[gameName])
+        # print(gameName, record[gameName])
 
 # docal()

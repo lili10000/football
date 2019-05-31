@@ -239,7 +239,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_main_all_socre = float(tmp[1][:-1])
+                gameInfo.his_main_all_mean_score = float(tmp[1][:-1])
                 gameInfo.his_main_main_socre = float(tmp[2][:-1])
                 gameInfo.his_main_client_socre = float(tmp[3][:-1])
 
@@ -248,7 +248,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_main_all_socre_lost = float(tmp[1][:-1])
+                gameInfo.his_main_all_mean_score_lost = float(tmp[1][:-1])
                 gameInfo.his_main_main_socre_lost = float(tmp[2][:-1])
                 gameInfo.his_main_client_socre_lost = float(tmp[3][:-1])
                 break
@@ -262,7 +262,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_client_all_socre = float(tmp[1][:-1])
+                gameInfo.his_client_all_mean_score = float(tmp[1][:-1])
                 gameInfo.his_client_main_socre = float(tmp[2][:-1])
                 gameInfo.his_client_client_socre = float(tmp[3][:-1])
 
@@ -271,7 +271,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_client_all_socre_lost = float(tmp[1][:-1])
+                gameInfo.his_client_all_mean_score_lost = float(tmp[1][:-1])
                 gameInfo.his_client_main_socre_lost = float(tmp[2][:-1])
                 gameInfo.his_client_client_socre_lost = float(tmp[3][:-1])
                 break
@@ -343,12 +343,11 @@ def getRate(id):
                 if len(ipList) < 2:
                     ipList = ipObj.getIpList()
                 try: 
-                    div = soup.find('div', id='table_btm')
-                    table = div.find('table', class_="pl_table_data")
-                    rateList = []
-                    for td in table.find_all('td'):
-                        rateList.append(td.text)
-                    rate = rateList[1]
+                    tr = soup.find('tr', id='3')
+                    if tr == None:
+                        return None
+                    td = tr.find('td', class_="tb_tdul_pan")
+                    rate = abs(float(td.attrs['ref']))
                     return float(rate)
                 except Exception as e:
                     print(e)
@@ -387,7 +386,10 @@ def threadFun(id,channelOut):
 def threadLogOut(channelOut):
     while 1:
         info = channelOut.get()
-        print(info)
+        with open(r"buyPerDay.txt", 'a') as f:
+            logInfo = "{}   \n".format(info)
+            f.write(logInfo)
+            print(info)
 
 def working(url):
     channelOut = queue.Queue()
@@ -424,15 +426,20 @@ def working(url):
         break
     for t in threadPool:
         t.join()
+    print("end work ")
+    time.sleep(60*3)
+    return
 
-    time.sleep(3*60)
              
 
        
 
 
-
+# url = "https://liansai.500.com/zuqiu-5196/jifen-14090/"
 # working(urlList)
+# channelOut = queue.Queue()
+# threadFun(791436, channelOut)
 
 # threadFun(777206)
+# getRate(751476)
 

@@ -45,8 +45,8 @@ for
                 int(info['his_client_all_score']), int(info['his_client_all_score_lost']))
             score1 = checkScore(int(info['his_main_1_score']), int(info['his_main_1_score_lost']), 
                 int(info['his_client_1_score']), int(info['his_client_1_score_lost']))
-            score = checkScore(int(info['his_main_main_socre']), int(info['his_main_main_socre_lost']), 
-                int(info['his_client_client_socre']), int(info['his_client_client_socre_lost']))
+            score = 10 * checkScore(int(info['his_main_main_socre']*10), int(info['his_main_main_socre_lost']*10), 
+                int(info['his_client_client_socre']*10), int(info['his_client_client_socre_lost']*10))
            
 
             weg = getWeg()

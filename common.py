@@ -41,18 +41,18 @@ class gameData:
         self.his_client_1_score_lost = 0
 
         #近10场主队平均球数
-        self.his_main_all_socre = 0
+        self.his_main_all_mean_score = 0
         self.his_main_main_socre = 0
         self.his_main_client_socre = 0
-        self.his_main_all_socre_lost = 0
+        self.his_main_all_mean_score_lost = 0
         self.his_main_main_socre_lost = 0
         self.his_main_client_socre_lost = 0
 
         #近10场客队平均球数
-        self.his_client_all_socre = 0
+        self.his_client_all_mean_score = 0
         self.his_client_main_socre = 0
         self.his_client_client_socre = 0
-        self.his_client_all_socre_lost = 0
+        self.his_client_all_mean_score_lost = 0
         self.his_client_main_socre_lost = 0
         self.his_client_client_socre_lost = 0
 

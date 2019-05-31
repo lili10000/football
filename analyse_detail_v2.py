@@ -20,6 +20,10 @@ import cal_rank_today
 import cal_rank_v2
 import analyse_detail
 
+
+url = "https://liansai.500.com/zuqiu-5205/jifen-14135/"
+
+
 def addOutputInfo(key, info, outputInfo):
     timeArray= time.strptime('20'+ key, "%Y/%m/%d %H:%M")
     key = int(time.mktime(timeArray))
@@ -228,7 +232,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_main_all_socre = float(tmp[1][:-1])
+                gameInfo.his_main_all_mean_score = float(tmp[1][:-1])
                 gameInfo.his_main_main_socre = float(tmp[2][:-1])
                 gameInfo.his_main_client_socre = float(tmp[3][:-1])
 
@@ -237,7 +241,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_main_all_socre_lost = float(tmp[1][:-1])
+                gameInfo.his_main_all_mean_score_lost = float(tmp[1][:-1])
                 gameInfo.his_main_main_socre_lost = float(tmp[2][:-1])
                 gameInfo.his_main_client_socre_lost = float(tmp[3][:-1])
                 break
@@ -251,7 +255,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_client_all_socre = float(tmp[1][:-1])
+                gameInfo.his_client_all_mean_score = float(tmp[1][:-1])
                 gameInfo.his_client_main_socre = float(tmp[2][:-1])
                 gameInfo.his_client_client_socre = float(tmp[3][:-1])
 
@@ -260,7 +264,7 @@ class parser:
                 tmp = []
                 for td in tr.find_all('td'):
                     tmp.append(td.text)
-                gameInfo.his_client_all_socre_lost = float(tmp[1][:-1])
+                gameInfo.his_client_all_mean_score_lost = float(tmp[1][:-1])
                 gameInfo.his_client_main_socre_lost = float(tmp[2][:-1])
                 gameInfo.his_client_client_socre_lost = float(tmp[3][:-1])
                 break
@@ -268,8 +272,13 @@ class parser:
         div = self.soup.find('div', id='odds_hd_ls')
         a = div.find('a', class_='hd_name').text
         tmp = a.split('第')
-        # gameInfo.type = tmp[0][5:]
-        gameInfo.type = delNum(tmp[0])
+        tmp = tmp[0]
+        if "/" in tmp:
+            tmp = tmp [5:]
+        else:
+            tmp = tmp [2:]
+
+        gameInfo.type = tmp
 
         tmp = self.soup.find('p', class_='game_time').text
         tmp = getTime(tmp[4:])
@@ -296,6 +305,11 @@ def threadFun(id):
     # ipList = ipObj.getIpList()
     sql = sqlMgr('localhost', 'root', '861217', 'football')
 
+    count = sql.queryCountId("k_gameinfodetail", id)
+    count = count[0][0]
+    if count > 0:
+        return
+
     ipList = ipObj.getIpList()
     url = "https://odds.500.com/fenxi/shuju-{}.shtml".format(id)
     while 1:
@@ -307,8 +321,6 @@ def threadFun(id):
         except Exception as e:
             if len(ipList) < 2:
                 break
-
-
 
 
 def working(url):
@@ -337,7 +349,7 @@ def working(url):
         t.join()
              
 
-url = "https://liansai.500.com/zuqiu-5168/jifen-14028/"
+
 working(url)
 cal_rank_v2.docal()
 analyse_detail.working(url)

@@ -145,8 +145,8 @@ def calScore(info):
         int(info['his_client_all_score']), int(info['his_client_all_score_lost']))
     score1 = checkScore_v2(int(info['his_main_all_score']), int(info['his_main_all_score']), 
         int(info['his_client_all_score']), int(info['his_client_all_score_lost']))
-    score = checkScore_v2(int(info['his_main_main_socre']), int(info['his_main_main_socre_lost']), 
-        int(info['his_client_client_socre']), int(info['his_client_client_socre_lost']))
+    score = checkScore_v2(int(info['his_main_main_socre']*10), int(info['his_main_main_socre_lost']*10), 
+        int(info['his_client_client_socre']*10), int(info['his_client_client_socre_lost']*10))
     
 
     weg = getWegScore(index_1, index_2, index_3)

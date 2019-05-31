@@ -327,3 +327,15 @@ class sqlMgr:
             return results 
         except:
             print ("queryAllLimit  query error, sql:",SQL)
+
+    def queryCountId(self, key, id):
+
+        SQL = u"select count(*) from {} where (id = '{}' ) ".format(key, id)
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryCountId  query error, sql:",SQL)
