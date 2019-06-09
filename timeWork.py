@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import updataGame as updata
 import data_v7 as lostCheck
 import data_v4 as winCheck
-import data_v9 as rateWinCheck
+import analyse_detail_v3 as rateWinCheck
 import data_v8 as rateBigCheck
 import _thread
 
@@ -17,7 +17,7 @@ def getSleepTime():
     # skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
     # print ("Must sleep %d seconds" % skipSeconds)
     # return skipSeconds
-    return 5*60
+    return 1*60*60
 
 
 def doOnePerDay():
@@ -25,12 +25,12 @@ def doOnePerDay():
         time.sleep(6*60*60)
         updata.doUpdata()
 
-_thread.start_new_thread(doOnePerDay, ())
+# _thread.start_new_thread(doOnePerDay, ())
         
 while 1:
     start = int(time.time()) 
     print ("start work", datetime.now())
-    # updata.doUpdata()
+    updata.doUpdata()
     
     # winCheck.doDayWork()
     rateWinCheck.doDayWork()

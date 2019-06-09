@@ -13,6 +13,7 @@ class commend:
         self.CornerKey = "角"
         self.ScoreKey = "球"
         self.rateKey = "让"
+        self.complexe = "综合"
 
     def __insertData(self,id, type, info, logInfo):
 
@@ -48,6 +49,9 @@ class commend:
             type = self.ScoreKey
         elif self.rateKey in type:
             type = self.rateKey
+        elif version == 10:
+            type = self.complexe
+            # type = type
         else:
             return
 
@@ -160,12 +164,75 @@ class commend:
             rateResult = rateResult * retn[0][4]
             self.sql.updateCommend(id, type, rateResult, self.key)
 
+        def checkComplext(main, main_score, client_score, rate, scoreRate, id, version):
+            if rate == "-" or scoreRate == "-":
+                return
+            rate = float (rate)
+            scoreRate = float (scoreRate)
 
-        for index in range(3):
-            version = index+ 4
-            checkRate(main, main_score, client_score,rate, id, version)
-            checkScore(main_score, client_score, scoreRate, id, version)
-            checkCorner(main, timeIn, corner, cornerRate, id, version)
+            type = self.complexe
+
+            id = "{}_{}_{}_{}".format(main, id, type,version)
+            id = id.replace("'", " ")
+
+            retn = self.sql.queryCountByID(self.key, id, type)
+            if retn == None or retn[0][0] == 0:
+                return
+        
+            rateResult = 0
+            winFlag = -1
+            if main_score - client_score + rate > 0:
+                winFlag = 1
+            elif main_score - client_score + rate < 0:
+                winFlag = -1
+            else:
+                winFlag = 0
+
+            bigFlag = -1
+            if main_score + client_score - scoreRate > 0:
+                bigFlag = 1
+            elif main_score + client_score - scoreRate < 0:
+                bigFlag = -1
+            else:
+                bigFlag = 0
+
+
+
+            if rate < 0:
+                if winFlag + bigFlag == 2:
+                    rateResult = 1
+                elif winFlag + bigFlag == 1:
+                    rateResult = 0.5
+                else:
+                    rateResult = -1
+            elif rate > 0:
+                if winFlag == 1 and bigFlag == -1:
+                    rateResult = 1
+                elif (winFlag == 1 and bigFlag == 0) or (winFlag == 0 and bigFlag == -1):
+                    rateResult = 0.5
+                else:
+                    rateResult = -1
+            elif rate == 0:
+                if winFlag + bigFlag == 2:
+                    rateResult = 1
+                elif winFlag + bigFlag == 1:
+                    rateResult = 0.5
+                else:
+                    rateResult = -1
+
+            if winFlag == 0 and bigFlag == 0:
+                rateResult = 0
+
+            retn = self.sql.queryById(self.key, id)
+            # rateResult = rateResult * retn[0][4]
+            self.sql.updateCommend(id, type, rateResult, self.key)
+
+        # for index in range(3):
+        #     version = index+ 4
+        #     checkRate(main, main_score, client_score,rate, id, version)
+        #     checkScore(main_score, client_score, scoreRate, id, version)
+        #     checkCorner(main, timeIn, corner, cornerRate, id, version)
+        checkComplext(main, main_score, client_score, rate, scoreRate, id, 10)
         
 
 

@@ -377,10 +377,10 @@ def threadFun(id,channelOut):
     if abs (rateNow - rateOk) < 0.2:
         return
     if rateNow - rateOk > 0:
-        info = "【{}】  {}  买小    {}, {}".format(gameType, main, rateNow, rateOk)
+        info = "【{}】  {}  买大    {}, {}".format(gameType, main, rateNow, rateOk)
         channelOut.put(info)
     elif rateNow - rateOk < 0:
-        info = "【{}】  {}          买大    {}, {}".format(gameType, main, rateNow, rateOk)
+        info = "【{}】  {}          买小    {}, {}".format(gameType, main, rateNow, rateOk)
         channelOut.put(info)
 
 def threadLogOut(channelOut):

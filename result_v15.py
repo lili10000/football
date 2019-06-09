@@ -179,3 +179,5 @@ def updata():
     for param in params:
         input = "'{}','{}'".format(param[0], param[1])
         sql.insert(input,key)
+
+# updata()

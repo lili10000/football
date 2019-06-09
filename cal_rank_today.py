@@ -94,6 +94,9 @@ def cal(info):
 
 
     rate = int(rate / 0.25) * 0.25
+
+
+    
     return rate
 
 

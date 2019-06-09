@@ -57,7 +57,7 @@ def checkMain():
         
         for i in range(3):
             # rateMax = -1
-            lostCount = i + 2
+            # lostCount = i + 2
             # lostCount = 3
             # gameName = "英超"
             # index = lostCount

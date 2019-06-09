@@ -44,7 +44,7 @@ class sqlMgr:
             print ("error :" + inserSQL )
             self.db.rollback()
     def cleanById(self, tableName, id):
-        inserSQL = "delete  from {} where id = {}".format(tableName, id) 
+        inserSQL = "delete  from {} where id = '{}'".format(tableName, id) 
 
         try:  
             self.cursor.execute(inserSQL)
@@ -55,7 +55,7 @@ class sqlMgr:
             self.db.rollback()
     
     def cleanByIdGame(self, tableName, id):
-        inserSQL = "delete  from {} where id_game = {}".format(tableName, id) 
+        inserSQL = "delete  from {} where id_game = '{}'".format(tableName, id) 
 
         try:  
             self.cursor.execute(inserSQL)
@@ -73,7 +73,8 @@ class sqlMgr:
         inserSQL += ")"
 
         if id != None:
-            self.cleanById(tableName, id)
+            self.cleanByIdGame(tableName, id)
+            # self.cleanById(tableName, id)
 
         try:  
             self.cursor.execute(inserSQL)

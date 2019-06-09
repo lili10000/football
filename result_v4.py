@@ -1,6 +1,7 @@
 from db.mysql import sqlMgr
 
-
+indexList = [0,0,0,0]
+rateList = {}
 def checkMain():
 
     sql = sqlMgr('localhost', 'root', '861217', 'football')
@@ -11,7 +12,7 @@ def checkMain():
     sql.cleanAll(tableName)
     size = 0
     rateSum = 0
-    
+
     for code in gameCode:
         id = code[0]
         gameName = code[1]
@@ -19,9 +20,10 @@ def checkMain():
 
         
         outputInfo = {}
-        rateMax = -1
+   
         result = {}
 
+        total = len(data)
         for one in data:
             main = one[0]
             client = one[1]
@@ -42,27 +44,41 @@ def checkMain():
 
             
 
-            rateWinFlag = 0
+            rateWinFlag = False
             if main_score - client_score + rate> 0:
-                rateWinFlag = 1
+                rateWinFlag = True
             elif main_score - client_score + rate < 0:
-                rateWinFlag = -1
+                rateWinFlag = False
+            else :
+                continue
 
 
-            BigFlag = 0
+            BigFlag = False
             if main_score + client_score - scoreRate > 0:
-                BigFlag = 1
-            if main_score + client_score - scoreRate < 0:
-                BigFlag = -1
+                BigFlag = True
+            elif main_score + client_score - scoreRate < 0:
+                BigFlag = False
+            else :
+                continue
 
+            if rate < 0:
+                continue
 
             rateDiv = scoreRate - abs(rate)
             if result.__contains__(rateDiv) == False:
-                result[rateDiv] = [0, 0, 0]
+                result[rateDiv] = [0, 0, 0, 0]
+
             tmp = result[rateDiv]
-            tmp[0] += rateWinFlag
-            tmp[1] += BigFlag
-            tmp[2] += 1
+
+            if rateWinFlag and BigFlag:
+                tmp[0] += 1
+            elif rateWinFlag  and BigFlag == False:
+                tmp[1] += 1
+            elif rateWinFlag  == False and BigFlag:
+                tmp[2] += 1
+            elif rateWinFlag  == False and BigFlag == False:
+                tmp[3] += 1
+
             result[rateDiv] = tmp
 
         bigMax = -1
@@ -71,51 +87,61 @@ def checkMain():
         rateDiv = 0
         rateTmp = 0
        
+        info = ""
+        rateMax = 0
+        keyTmp = 0
         for key in result:
-            tmp = result[key]
-            if abs(tmp[0]) > bigMax:
-                bigMax = abs(tmp[0])
-                getData = tmp
-                info = "让"
-                rateTmp = round (abs(tmp[0]) / tmp[2], 2)
-                rateDiv = key
 
-            # if abs(tmp[1]) > bigMax:
-            #     bigMax = abs(tmp[1])
-            #     getData = tmp
-            #     info = "球"
-            #     rateTmp = round (abs(tmp[1]) / tmp[2], 2)
-            #     rateDiv = key
+            # if key < 1.5 or key > 2.25:
+            #     continue
 
-        if rateTmp < 0.2:
-            continue
+            data = result[key]
+            dataSum = data[0] + data[1]+ data[2]+ data[3]
+            
 
-        if info == "让" and getData[0] < 0:
-            info += "输"
-        if info == "让" and getData[0] > 0:
-            info += "赢"
-        if info == "球" and getData[1] > 0:
-            info = "大" + info
-        if info == "球" and getData[1] < 0:
-            info = "小" + info
+            def getRate(sum, data, rateCmp, index):
+                # global indexList
+                tmpRate = round(data/sum, 2)
+                if rateCmp < tmpRate:
+                    if tmpRate > 0.3:
+                        indexList[index] += 1
+                    return tmpRate
+                return rateCmp
+            
+            rateTmp = rateMax
+            rateTmp = getRate(dataSum, data[0], rateTmp, 0)
+            rateTmp = getRate(dataSum, data[1], rateTmp, 1)
+            rateTmp = getRate(dataSum, data[2], rateTmp, 2)
+            rateTmp = getRate(dataSum, data[3], rateTmp, 3)
 
+            if rateTmp > 0.3 and dataSum > 0.03*total and rateTmp > rateMax:
+                rateMax = rateTmp
+                keyTmp = key
 
-        logInfo = "'{}','{}','{}','{}','{}'".format(id, gameName, rateDiv, info, rateTmp)
-        # print(logInfo)
-        sql.insert(logInfo, tableName)
-        size += 1
-            # return
+                # indexTmp = 0
+                # if data[indexTmp] < data[1] :
+                #     indexTmp = 1
+                # if data[indexTmp] < data[2] :
+                #     indexTmp = 2
+                # if data[indexTmp] < data[3] :
+                #     indexTmp = 3
 
-    print("size:", size)
-    #     if outputInfo[4] < 0.6:
-    #         continue
-    #     # print(outputInfo)
-    #     size += 1
-    #     rateSum += outputInfo[4]
+                # indexList[indexTmp] += 1
 
-    #     info = "'{}','{}','{}','{}','{}','{}'".format(outputInfo[0],outputInfo[1],outputInfo[2],outputInfo[3],outputInfo[4], outputInfo[5])
-    #     sql.insert(info, tableName)
-    # print("size:", size, " rate:", round(rateSum/size, 2))
+                # info = "【{}】 {}, {}, {}".format(gameName,rateMax, key, data)
 
 
-# checkMain()
+        # if len(info) > 0:
+
+        if not rateList.__contains__(keyTmp):
+            rateList[keyTmp] = 0
+        rateList[keyTmp] += 1
+    
+    print(indexList) 
+
+    keys = list(rateList.keys())
+    keys.sort(reverse = True)
+    for key in keys:
+        print(key, rateList[key])
+            
+checkMain()

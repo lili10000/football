@@ -17,6 +17,7 @@ import result_v3 as BigWinCal
 import _thread
 from commend import commend
 from tool import ipTool
+import threading
 
 
 # def addOutputInfo(key, info, outputInfo):
@@ -240,44 +241,53 @@ def working(tableName, type = 0):
     # 买预备=========================
     gameIndex = 0
     
-    
+    threadPool = []
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
             url = "https://www.dszuqiu.com/league/"+str(gameCode[gameIndex][0]) + "/p.1"
             url = url.replace("p.1", "p."+ str(index) )
             
-            try:
-                html =  parser(url, ipList, sql)
-                if len(ipList) < 2:
-                    ipList = ipObj.getIpList()
-            except:
-                # time.sleep(10)
-                if len(ipList) < 2:
-                    ipList = ipObj.getIpList()
-                # print ("connect err")
-                continue
 
-            print( index, gameCode[gameIndex][1])
-            try:   
-                if html.getData("k_gameDic", gameCode[gameIndex]) == False :
-                    break
-            except:
-                if len(ipList) < 2:
+            def getDataThread(url, gameCode):
+                while 1:
+                    ipObj = ipTool()
                     ipList = ipObj.getIpList()
-                # print ("error :")
-            # time.sleep(1)
-            
+                    sql = sqlMgr('localhost', 'root', '861217', 'football')
+                    try:
+                        html =  parser(url, ipList, sql)
+                        if len(ipList) < 2:
+                            ipList = ipObj.getIpList()
+                    except:
+                        # time.sleep(10)
+                        if len(ipList) < 2:
+                            ipList = ipObj.getIpList()
+                        # print ("connect err")
+                        continue
+
+                    print( index, gameCode[1])
+                    try:   
+                        if html.getData("k_gameDic", gameCode) == False :
+                            break
+                    except:
+                        if len(ipList) < 2:
+                            ipList = ipObj.getIpList()
+                    return
+
+
+            t=threading.Thread(target=getDataThread,args=(url,gameCode[gameIndex],))
+            t.start()
+            threadPool.append(t)
             gameIndex += 1
+            if gameIndex % 20 == 0:
+                for thread in threadPool:
+                    thread.join()
+            
         index += 1
 
-        # values = list(outputInfo.keys())
-        # values.sort()
-        # for value in values:
-        #     for tmp in outputInfo[value]:
-        #         print(tmp)
-        
-        # outputInfo.clear()
+    for thread in threadPool:
+        thread.join()
+
     print("end do working")
 
 def doUpdata():
