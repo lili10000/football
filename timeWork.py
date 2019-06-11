@@ -17,7 +17,7 @@ def getSleepTime():
     # skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
     # print ("Must sleep %d seconds" % skipSeconds)
     # return skipSeconds
-    return 1*60*60
+    return 20*60
 
 
 def doOnePerDay():

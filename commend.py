@@ -31,6 +31,11 @@ class commend:
         str = str.replace("]", "")
         return str
 
+    def __createId(self,main, id, type,version):
+        id = "{}_{}_{}".format(main, id,version)
+        id = id.replace("'", " ")
+        return id
+
         # str.sub("[\s+\.\!\/_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+".encode('utf-8').decode('utf-8'), "".encode('utf-8').decode('utf-8'),str)
 
     def add(self, main, timeIn, type, version=0, rate=None, logInfo="", id="", game=""):
@@ -50,14 +55,14 @@ class commend:
         elif self.rateKey in type:
             type = self.rateKey
         elif version == 10:
-            type = self.complexe
-            # type = type
+            # type = self.complexe
+            type = type
         else:
             return
 
 
        
-        id_key = "{}_{}_{}_{}".format(main, id, type,version)
+        id_key = self.__createId(main, id, type, version)
         
 
         timeArray = time.localtime(timeIn)
@@ -95,8 +100,8 @@ class commend:
 
         def checkRate(main, main_score, client_score,rate, id, version):
             type = self.rateKey
-            id = "{}_{}_{}_{}".format(main, id, type,version)
-            id = id.replace("'", " ")
+            # id = "{}_{}_{}_{}".format(main, id, type,version)
+            id = self.__createId(main, id, type, version)
 
 
             retn = self.sql.queryCountByID(self.key, id, type)
@@ -121,8 +126,7 @@ class commend:
             scoreRate = float (scoreRate)
 
             type = self.ScoreKey
-            id = "{}_{}_{}_{}".format(main, id, type,version)
-            id = id.replace("'", " ")
+            id = self.__createId(main, id, type, version)
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
@@ -146,8 +150,7 @@ class commend:
 
             type = self.CornerKey
 
-            id = "{}_{}_{}_{}".format(main, id, type,version)
-            id = id.replace("'", " ")
+            id = self.__createId(main, id, type, version)
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:
@@ -172,8 +175,7 @@ class commend:
 
             type = self.complexe
 
-            id = "{}_{}_{}_{}".format(main, id, type,version)
-            id = id.replace("'", " ")
+            id = self.__createId(main, id, type, version)
 
             retn = self.sql.queryCountByID(self.key, id, type)
             if retn == None or retn[0][0] == 0:

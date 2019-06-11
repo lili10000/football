@@ -314,13 +314,13 @@ def working(tableName):
 
             # print( index, gameCode[gameIndex][1])
             # try:   
-            #     if html.getData("k_corner", gameCode[gameIndex], outputInfo) == False :
-            #         break
+            #     html.getData("k_corner", gameCode[gameIndex], outputInfo)       
             # except:
             #     if len(ipList) < 2:
             #         ipList = ipObj.getIpList()
-                # print ("error :")
-            # time.sleep(1)
+            #     # print ("error :")
+            # # time.sleep(1)
+            # gameIndex += 1
             
             def getDataThread(url, gameCode):
                 while 1:
@@ -352,7 +352,7 @@ def working(tableName):
             t.start()
             threadPool.append(t)
             gameIndex += 1
-            if gameIndex % 20 == 0:
+            if gameIndex % 10 == 0:
                 count = 0
                 for thread in threadPool:
                     thread.join()          

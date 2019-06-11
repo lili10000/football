@@ -295,11 +295,11 @@ def doUpdata():
     # ipList = getIpList()
     GameType.updata()
     # _thread.start_new_thread(working,("k_corner",))
-    working("k_corner", 1)
+    # working("k_corner", 1)
     # working("k_corner")
     # lostCal.docal()
     # winCal.docal()
-    rateWinCal.checkMain()
+    # rateWinCal.checkMain()
     # BigWinCal.checkMain()
     print("end doUpdata")
 

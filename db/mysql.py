@@ -118,7 +118,7 @@ class sqlMgr:
             self.db.rollback()
 
     def updateCommend(self, id, type,value, tableName):
-        inserSQL = "UPDATE {} SET result = {} where ((id REGEXP '{}' )and(type = '{}'))".format(tableName, value, id, type)
+        inserSQL = "UPDATE {} SET result = {} where (id REGEXP '{}' )".format(tableName, value, id)
         try:  
             self.cursor.execute(inserSQL)
             self.db.commit()
@@ -199,7 +199,7 @@ class sqlMgr:
             print ("queryCountRate  query error, sql:",SQL)
     
     def queryCountByID(self, key, id, type):
-        SQL = u"select count(*) from {} where (id REGEXP '{}' and type = '{}') ".format(key, id, type)
+        SQL = u"select count(*) from {} where (id REGEXP '{}' ) ".format(key, id)
         SQL.encode('utf-8')
 
         try:  
