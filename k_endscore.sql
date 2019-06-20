@@ -1,33 +1,41 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost
-Source Server Version : 50721
+Source Server         : football
+Source Server Version : 80015
 Source Host           : localhost:3306
 Source Database       : football
 
 Target Server Type    : MYSQL
-Target Server Version : 50721
+Target Server Version : 80015
 File Encoding         : 65001
 
-Date: 2019-02-21 16:23:44
+Date: 2019-06-20 20:34:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for `k_endscore`
+-- Table structure for `k_checkrate`
 -- ----------------------------
-DROP TABLE IF EXISTS `k_endscore`;
-CREATE TABLE `k_endscore` (
-  `key` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `rate` float(3,3) DEFAULT NULL,
-  `hostScore` int(11) DEFAULT NULL,
-  `guestScore` int(11) DEFAULT NULL,
-  `haveScore` tinyint(4) DEFAULT NULL,
-  `mainRate` float(3,3) DEFAULT NULL,
-  `clientRate` float(3,3) DEFAULT NULL,
-  `scoreTime` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`key`)
+DROP TABLE IF EXISTS `k_checkrate`;
+CREATE TABLE `k_checkrate` (
+  `id_game` int(11) NOT NULL,
+  `newRate` float(6,3) DEFAULT NULL,
+  `oldRate` float(6,3) DEFAULT NULL,
+  `score` int(3) DEFAULT NULL,
+  PRIMARY KEY (`id_game`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of k_checkrate
+-- ----------------------------
+INSERT INTO `k_checkrate` VALUES ('630648', '3.000', '2.750', null);
+INSERT INTO `k_checkrate` VALUES ('630805', '3.000', '3.250', null);
+INSERT INTO `k_checkrate` VALUES ('632146', '3.250', '3.000', null);
+INSERT INTO `k_checkrate` VALUES ('632361', '3.250', '3.000', null);
+INSERT INTO `k_checkrate` VALUES ('632364', '3.250', '3.000', '-1');
+INSERT INTO `k_checkrate` VALUES ('632481', '2.750', '3.000', null);
+INSERT INTO `k_checkrate` VALUES ('632509', '2.750', '2.500', null);
+INSERT INTO `k_checkrate` VALUES ('632511', '3.750', '3.500', null);
+INSERT INTO `k_checkrate` VALUES ('632618', '3.500', '3.750', '-1');
