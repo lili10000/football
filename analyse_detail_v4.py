@@ -12,7 +12,7 @@ import _thread
 from commend import commend
 from tool import ipTool
 import threading
-
+import json
 
 
 def addOutputInfo(key, info, outputInfo):
@@ -87,6 +87,7 @@ class parser:
 
         try:
             req = requests.get(url,proxies=random.choice(addIp(ipChoice)),timeout=3)
+            # req = requests.get(url)
         except:
             ipList.remove(ipChoice)
             # print("remove ip, restSize:", len(ipList))
@@ -108,6 +109,12 @@ class parser:
         checkFlag = True
         if checkFlag:
             for tr  in self.soup.find_all('tr', class_='page-1'):
+            
+                result = self.sql.queryByGameId('k_gamedic_v4', cmd[0])
+                if len(result) == 0:
+                    break
+                param = json.loads(result[0][2])
+                
                 td = tr.find('td', class_="bg1")
                 if td == None:
                     continue
@@ -164,21 +171,41 @@ class parser:
 
                 rateDiv = float(rateBig) - abs(float(rateNow))
                 rate = float(rateNow)
-                if (rateDiv < 1.75 or rateDiv > 2.75) and rate > 0:
-                    continue
-                if (rateDiv < 1 or rateDiv > 2.25) and rate < 0:
-                    continue
-                if (rateDiv < 1.75 or rateDiv > 2.75) and rate == 0:
-                    continue
-                
-                buyInfo = ""
-                if rate > 0:
-                    buyInfo = "赢小"
-                elif rate < 0:
-                    buyInfo = "赢大"
-                elif rate == 0:
-                    buyInfo = "赢大"
 
+
+                buyInfo = ""
+                maxValue = 0
+                minValue = 0
+                def covInfo(index):
+                    if index == 0:
+                        return "赢大"
+                    elif index == 1:
+                        return "赢小"
+                    elif index == 2:
+                        return "输大"
+                    elif index == 3:
+                        return "输小"
+
+                if rate > 0:
+                    tmp = param["lost"]
+                    buyInfo = covInfo(tmp["buy"])
+                    maxValue = tmp["maxDiv"]
+                    minValue = tmp["minDiv"]
+                elif rate < 0:
+                    tmp = param["win"]
+                    buyInfo = covInfo(tmp["buy"])
+                    maxValue = tmp["maxDiv"]
+                    minValue = tmp["minDiv"]
+                elif rate == 0:
+                    tmp = param["ping"]
+                    buyInfo = covInfo(tmp["buy"])
+                    maxValue = tmp["maxDiv"]
+                    minValue = tmp["minDiv"]
+
+                if (rateDiv < minValue) or (rateDiv > maxValue) :
+                    continue
+
+                
                 # buyInfo = "输小"
                 addInfo = "【" + buyInfo + "】"
                 infoTmp = "{} {} {} game info: {} {}".format(gameTime, type_game, addInfo,  main, client)
@@ -352,30 +379,17 @@ def working(tableName):
             t.start()
             threadPool.append(t)
             gameIndex += 1
-            if gameIndex % 10 == 0:
+            if gameIndex % 20 == 0:
                 count = 0
                 for thread in threadPool:
                     thread.join()          
 
-       
-
+    
         for thread in threadPool:
             thread.join()
 
         index += 1
-        # for value in values:
-        #     for tmp in outputInfo[value]:
-        #         writeFile(tmp)
-        
-        # outputInfo.clear()
-        # info = "================================"
-        # writeFile(info)
-        # print(tableName, " size:", len(outputInfo))
 
-# try:
-#     os.remove(r"result_v3.txt")
-# except :
-#     pass
 
 
 def doDayWork():
@@ -384,7 +398,7 @@ def doDayWork():
     # _thread.start_new_thread(working,("k_rateBuy_v3",))
     # _thread.start_new_thread(working,("k_compBuy",))
     # _thread.start_new_thread(working,("k_scoreBuy_v2",))
-    working("k_gamedic_v3")
+    working("k_gamedic")
     print("end do doDayWork")
 
 

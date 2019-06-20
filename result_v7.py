@@ -1,240 +1,260 @@
+# -*- coding: utf-8 -*-
 from db.mysql import sqlMgr
+import json
 
-sql = sqlMgr('localhost', 'root', '861217', 'football')
-sizeMin = 20
+indexList = [0,0,0,0]
+rateList = {}
+def checkMain():
 
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    gameCode = sql.queryByTypeAll("k_gamedic")
 
-def getResult_1(gameName, mainName, clientName, type):
-    data = sql.queryTeamDataMain(gameName, mainName, "k_163")
+    outputInfo={}
+    tableName = "k_rateDiv"
+    sql.cleanAll(tableName)
+    size = 0
+    rateSum = 0
 
-    mainScore = []
-    main_0_score = 0
-    main_1_score = 0
-    main_2_score = 0
-    main_3_score = 0
-    main_3_more_score = 0
+    big_1 = 0
+    big_2 = 0
+    small_1 = 0
+    small_2 = 0
 
-    clientScore = []
-    client_0_score = 0
-    client_1_score = 0
-    client_2_score = 0
-    client_3_score = 0
-    client_3_more_score = 0
+    check_1 = 0
+    check_2 = 0
+    check_3 = 0
+    checkSum = 0
 
-    for one in data :
-        main_score = int(one[2])
-        client_score = int(one[3])
+    checkParam = [0,0,0,0]
+    # checkParam = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    for code in gameCode:
+        id = code[0]
 
-        mainScore.append(main_score)
-        if main_score == 0 :
-            main_0_score += 1
-        elif main_score == 1 :
-            main_1_score += 1
-        elif main_score == 2 :
-            main_2_score += 1
-        elif main_score == 3 :
-            main_3_score += 1
-        else :
-            main_3_more_score += 1
-
-    data = sql.queryTeamDataClient(gameName, clientName, "k_163")
-    for one in data :
-        main_score = int(one[2])
-        client_score = int(one[3])
-
-        clientScore.append(client_score)
-        if client_score == 0 :
-            client_0_score += 1
-        elif client_score == 1 :
-            client_1_score += 1
-        elif client_score == 2 :
-            client_2_score += 1
-        elif client_score == 3 :
-            client_3_score += 1
-        else :
-            client_3_more_score += 1
-    
-    if len(mainScore) > 0 :
-        main_0 = main_0_score / len(mainScore)
-        main_1 = main_1_score / len(mainScore)
-        main_2 = main_2_score / len(mainScore)
-        main_3 = main_2_score / len(mainScore)
-        main_3_more = main_3_more_score / len(mainScore)
-    else :
-        return
-
-    if len(clientScore) > 0 :
-        client_0 = client_0_score / len(clientScore)
-        client_1 = client_1_score / len(clientScore)
-        client_2 = client_2_score / len(clientScore)
-        client_3 = client_3_score / len(clientScore)
-        client_3_more = client_3_more_score / len(clientScore)
-    else :
-        return
-
-    mainMean = round(sum(mainScore)/len(mainScore),3)
-    clientMean = round(sum(clientScore)/len(clientScore),3)
-    print("主队", mainMean, len(mainScore), "客队", clientMean, len(clientScore), "进球", mainMean+ clientMean)
-
-    # print("<= 1", round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3))
-    rate_1 = round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3)
-    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0 +  main_1*client_1, 3)
-    rate_3 = round(rate_2 + main_0*client_3 + main_3*client_0 + main_1*client_2 + main_2*client_1, 3)
-    print("<= 1", rate_1)
-    print("<= 2", rate_2)
-    print("<= 3", rate_3)
-
-    # print("进球", round(sum(mainScore)/len(mainScore) + sum(clientScore)/len(clientScore) ,3))
-
-
-def getResult_2(gameName, mainName, clientName, type):
-    data = sql.queryTeamDataMain(gameName, mainName, "k_163")
-
-    mainScore = []
-    main_0_score = 0
-    main_1_score = 0
-    main_2_score = 0
-    main_3_score = 0
-    main_3_more_score = 0
-
-    clientScore = []
-    client_0_score = 0
-    client_1_score = 0
-    client_2_score = 0
-    client_3_score = 0
-    client_3_more_score = 0
-
-    for one in data :
-        main_score = int(one[2])
-        client_score = int(one[3])
-
-        rate_win = float(one[8])
-        rate_lost = float(one[9])
-
-        if type == 1 and rate_win > 2:
+        info = sql.queryByGameId('k_gamedic_v4',id)
+        if len(info) == 0:
             continue
-        elif type == 2 and rate_lost > 2:
-            continue
-        elif type == 3 and ((rate_win < 2) or (rate_lost < 2)):
-            continue
-
-        mainScore.append(main_score)
-        if main_score == 0 :
-            main_0_score += 1
-        elif main_score == 1 :
-            main_1_score += 1
-        elif main_score == 2 :
-            main_2_score += 1
-        elif main_score == 3 :
-            main_3_score += 1
-        else :
-            main_3_more_score += 1
-
-    data = sql.queryTeamDataClient(gameName, clientName, "k_163")
-    for one in data :
-        main_score = int(one[2])
-        client_score = int(one[3])
-
-        rate_win = float(one[8])
-        rate_lost = float(one[9])
-
-        if type == 1 and rate_win > 2:
-            continue
-        elif type == 2 and rate_lost > 2:
-            continue
-        elif type == 3 and ((rate_win < 2) or (rate_lost < 2)):
-            continue
-
-        clientScore.append(client_score)
-        if client_score == 0 :
-            client_0_score += 1
-        elif client_score == 1 :
-            client_1_score += 1
-        elif client_score == 2 :
-            client_2_score += 1
-        elif client_score == 3 :
-            client_3_score += 1
-        else :
-            client_3_more_score += 1
+        param = info[0][2]
+        param = json.loads(param)
 
 
-    main_0 = 0
-    main_1 = 0
-    main_2 = 0
-    main_3 = 0
-    main_3_more = 0
-    if len(mainScore) > 0 :
-        main_0 = main_0_score / len(mainScore)
-        main_1 = main_1_score / len(mainScore)
-        main_2 = main_2_score / len(mainScore)
-        main_3 = main_2_score / len(mainScore)
-        main_3_more = main_3_more_score / len(mainScore)
-    else :
-        return
-
-    client_0 = 0
-    client_1 = 0
-    client_2 = 0
-    client_3 = 0
-    client_3_more = 0
-    if len(clientScore) > 0 :
-        client_0 = client_0_score / len(clientScore)
-        client_1 = client_1_score / len(clientScore)
-        client_2 = client_2_score / len(clientScore)
-        client_3 = client_3_score / len(clientScore)
-        client_3_more = client_3_more_score / len(clientScore)
-    else :
-        return
-
-    mainMean = round(sum(mainScore)/len(mainScore),3)
-    clientMean = round(sum(clientScore)/len(clientScore),3)
-    print("主队", mainMean, len(mainScore), "客队", clientMean, len(clientScore), "进球", mainMean+ clientMean)
-
-    # print("<= 1", round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3))
-    rate_1 = round(main_0*client_0 + main_0*client_1 + main_1*client_0, 3)
-    rate_2 = round(rate_1 + main_0*client_2 + main_2*client_0 +  main_1*client_1, 3)
-
-    # print(main_0*client_3)
-    # print(main_3, client_0, main_3*client_0)
-    # print(main_1*client_2)
-    # print(main_2, client_1, main_2*client_1)
-    rate_3 = round(rate_2 + main_0*client_3 + main_3*client_0 + main_1*client_2 + main_2*client_1, 3)
-    print("<= 1", rate_1)
-    print("<= 2", rate_2)
-    print("<= 3", rate_3)
+        gameName = code[1]
+        data = sql.queryByTypeTime(gameName, 'k_corner')
 
 
-def compare(name, main, clien, type):
-    getResult_1(name, main, clien, type)
-    getResult_2(name, main, clien, type)
 
-compare("k联赛", "蔚山", "济州", 3)
-# compare("J联赛")
-# compare("J2联赛")
-# compare("日联杯")
-# compare("美职联")
-# compare("巴甲")
-# compare("阿甲")
-# compare("挪超")
-# compare("瑞典超")
-# compare("瑞典甲")
-# compare("冰岛超")
-# compare("k联赛")
-# compare("英超")
-# compare("英冠")
-# compare("英甲")
-# compare("意甲")
-# compare("意乙")
-# compare("德甲")
-# compare("西甲")
-# compare("法甲")
-# compare("国际A级")
-# compare("世界杯欧洲预选赛")
-# compare("澳A联")
-# compare("西乙")
-# compare("芬超")
-# compare("瑞典甲")
-# compare("巴乙")
-# compare("爱超")
-# compare("欧U21")
+        outputInfo = {}
+   
+        result = {}
 
+        total = len(data)
+        for one in data:
+            main = one[0]
+            client = one[1]
+            main_score = int(one[2])
+            client_score = int(one[3])
+            rate = one[4]
+            gameType = one[5]
+            mainCorner = one[6]
+            clientCorner = one[7]
+            scoreRate = one[11]
+            time = one[9]
+            if rate == "-" or rate == "-\n" :
+                continue
+            rate = float(rate)
+            if scoreRate == "-" or scoreRate == "-\n" :
+                continue
+            scoreRate = float(scoreRate)
+
+            
+
+            rateWinFlag = False
+            if main_score - client_score + rate> 0:
+                rateWinFlag = True
+            elif main_score - client_score + rate < 0:
+                rateWinFlag = False
+            else :
+                continue
+
+
+            BigFlag = False
+            if main_score + client_score - scoreRate > 0:
+                BigFlag = True
+            elif main_score + client_score - scoreRate < 0:
+                BigFlag = False
+            else :
+                continue
+
+            dan = ((main_score + client_score) % 2 == 1)
+            shuang = ((main_score + client_score) % 2 == 0)
+            dou = (main_score * client_score != 0)
+
+            # checkFlag = BigFlag
+            # if checkFlag and dan:
+            #     big_1 += 1
+            # elif checkFlag and shuang:
+            #     big_2 += 1
+            # elif checkFlag == False and dan:
+            #     small_1 += 1
+            # elif checkFlag == False and shuang:
+            #     small_2 += 1
+
+
+            key = ""
+            if rate > 0:
+                key = "lost"
+            elif rate < 0:
+                key = "win"
+            else:
+                key = "ping"
+
+            if result.__contains__(key) == False:
+                result[key]={}
+
+            tmpParam = param[key]
+            maxDiv = tmpParam["maxDiv"]
+            minDiv = tmpParam["minDiv"]
+
+            rateDiv = scoreRate - abs(rate)
+
+            if (rateDiv > maxDiv or rateDiv < minDiv):
+                continue
+
+            checkSum += 1
+            if rateWinFlag:
+                check_1 += 1
+            else:
+                check_1 -= 1
+
+            if BigFlag:
+                check_2 += 1
+            else:
+                check_2 -= 1
+
+
+            # condi_1 = False
+            # condi_2 = False
+
+            # if (tmpParam["buy"] == 1) or (tmpParam["buy"] == 3):
+            #     continue
+            # if not BigFlag :
+            #     continue
+
+            # if tmpParam["buy"] == 0:
+            #     condi_1 = (rateWinFlag and BigFlag)
+            # elif tmpParam["buy"] == 1:
+            #     condi_1 = (rateWinFlag and BigFlag == False)
+            # elif tmpParam["buy"] == 2:
+            #     condi_1 = (rateWinFlag == False and BigFlag)
+            # elif tmpParam["buy"] == 3:
+            #     condi_1 = (rateWinFlag == False and BigFlag == False)
+
+            # if condi_1:
+            #     check_1 += 3
+            #     check_2 += 1 
+            # else:
+            #     check_1 -= 1
+            #     check_3 += 1 
+
+
+            # if rateWinFlag and BigFlag:
+            #     checkParam[0] += 1
+            # elif rateWinFlag  and BigFlag == False:
+            #     checkParam[1] += 1
+            # elif rateWinFlag  == False and BigFlag:
+            #     checkParam[2] += 1
+            # elif rateWinFlag  == False and BigFlag == False:
+            #     checkParam[3] += 1
+
+
+            if rateWinFlag:
+                checkParam[0] += 1
+            else:
+                checkParam[1] += 1
+
+            if BigFlag:
+                checkParam[2] += 1
+            else:
+                checkParam[3] += 1
+
+           
+
+            # checkSum += 1
+            # if dou:
+            #     check_1 += 1
+            # else:
+            #     check_1 -= 1 
+            
+            # if dan:
+            #     check_2 -= 1
+            # else:
+            #     check_2 += 1 
+
+
+            # if result[key].__contains__(rateDiv) == False:
+            #     result[key][rateDiv] = [0, 0, 0, 0]
+            # if result[key].__contains__("all") == False:
+            #     result[key]["all"] = [0, 0, 0, 0]
+
+            # tmp = result[key][rateDiv]
+            # alltmp = result[key]["all"]
+            
+            # if rateWinFlag and BigFlag:
+            #     tmp[0] += 1
+            #     alltmp[0] += 1
+            #     indexTmp = 0
+            #     if dan:
+            #         checkParam[indexTmp][0] += 1
+            #     else:
+            #         checkParam[indexTmp][1] += 1
+
+            #     if dou:
+            #         checkParam[indexTmp][2] += 1
+            #     else:
+            #         checkParam[indexTmp][3] += 1
+            # elif rateWinFlag  and BigFlag == False:
+            #     tmp[1] += 1
+            #     alltmp[1] += 1
+            #     indexTmp = 1
+            #     if dan:
+            #         checkParam[indexTmp][0] += 1
+            #     else:
+            #         checkParam[indexTmp][1] += 1
+
+            #     if dou:
+            #         checkParam[indexTmp][2] += 1
+            #     else:
+            #         checkParam[indexTmp][3] += 1
+            # elif rateWinFlag  == False and BigFlag:
+            #     tmp[2] += 1
+            #     alltmp[2] += 1
+            #     indexTmp = 2
+            #     if dan:
+            #         checkParam[indexTmp][0] += 1
+            #     else:
+            #         checkParam[indexTmp][1] += 1
+
+            #     if dou:
+            #         checkParam[indexTmp][2] += 1
+            #     else:
+            #         checkParam[indexTmp][3] += 1
+            # elif rateWinFlag  == False and BigFlag == False:
+            #     tmp[3] += 1
+            #     alltmp[3] += 1
+            #     indexTmp = 3
+            #     if dan:
+            #         checkParam[indexTmp][0] += 1
+            #     else:
+            #         checkParam[indexTmp][1] += 1
+
+            #     if dou:
+            #         checkParam[indexTmp][2] += 1
+            #     else:
+            #         checkParam[indexTmp][3] += 1
+
+            # result[key][rateDiv] = tmp
+            # result[key]["all"] = alltmp
+
+
+    print(checkParam)
+    print(checkSum, check_1, check_2, check_3)
+checkMain()

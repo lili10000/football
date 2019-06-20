@@ -31,7 +31,7 @@ class commend:
         str = str.replace("]", "")
         return str
 
-    def __createId(self,main, id, type,version):
+    def __createId(self,main, id, type,version=""):
         id = "{}_{}_{}".format(main, id,version)
         id = id.replace("'", " ")
         return id
@@ -175,12 +175,21 @@ class commend:
 
             type = self.complexe
 
-            id = self.__createId(main, id, type, version)
+            id = self.__createId(main, id, type,"%")
+            # print(id)
+            retn = self.sql.queryById(self.key, id)
 
-            retn = self.sql.queryCountByID(self.key, id, type)
-            if retn == None or retn[0][0] == 0:
+            if len(retn) == 0:
                 return
         
+            gameType = retn[0][3]
+            checkWin = False
+            checkBig = False
+            if "赢" in gameType:
+                checkWin = True
+            if "大" in gameType:
+                checkBig = True
+
             rateResult = 0
             winFlag = -1
             if main_score - client_score + rate > 0:
@@ -198,32 +207,59 @@ class commend:
             else:
                 bigFlag = 0
 
+            winCmp = (winFlag == 1 and checkWin) or (winFlag == -1 and checkWin == False) 
+            bigCmp = (bigFlag == 1 and checkBig) or (bigFlag == -1 and checkBig == False) 
 
 
-            if rate < 0:
-                if winFlag + bigFlag == 2:
-                    rateResult = 1
-                elif winFlag + bigFlag == 1:
-                    rateResult = 0.5
-                else:
-                    rateResult = -1
-            elif rate > 0:
-                if winFlag == 1 and bigFlag == -1:
-                    rateResult = 1
-                elif (winFlag == 1 and bigFlag == 0) or (winFlag == 0 and bigFlag == -1):
-                    rateResult = 0.5
-                else:
-                    rateResult = -1
-            elif rate == 0:
-                if winFlag + bigFlag == 2:
-                    rateResult = 1
-                elif winFlag + bigFlag == 1:
-                    rateResult = 0.5
-                else:
-                    rateResult = -1
+            if winCmp and bigCmp:
+                rateResult = 3
+            elif winFlag == 0 and bigCmp:
+                rateResult = 1
+            elif bigFlag == 0 and winCmp:
+                rateResult = 1
+            else:
+                rateResult = -1
 
-            if winFlag == 0 and bigFlag == 0:
-                rateResult = 0
+            # dan = ((main_score + client_score) % 2 == 1)
+            # shuang = ((main_score + client_score) % 2 == 0) 
+
+            # if rate < 0:
+            #     if winFlag + bigFlag == 2:
+            #         rateResult = 3
+            #     elif winFlag + bigFlag == 1:
+            #         rateResult = 1
+            #     else:
+            #         rateResult = -1
+                
+
+            # elif rate > 0:
+            #     if winFlag == 1 and bigFlag == -1:
+            #         rateResult = 3
+            #     elif (winFlag == 1 and bigFlag == 0) or (winFlag == 0 and bigFlag == -1):
+            #         rateResult = 1
+            #     else:
+            #         rateResult = -1
+
+            #     # if dan:
+            #     #     rateResult += 1
+            #     # elif shuang:
+            #     #     rateResult -= 1
+
+            # elif rate == 0:
+            #     if winFlag + bigFlag == 2:
+            #         rateResult = 3
+            #     elif winFlag + bigFlag == 1:
+            #         rateResult = 1
+            #     else:
+            #         rateResult = -1
+                
+                # if dan:
+                #     rateResult -= 1
+                # elif shuang:
+                #     rateResult += 1
+
+            # if winFlag == 0 and bigFlag == 0:
+            #     rateResult = 0
 
             retn = self.sql.queryById(self.key, id)
             # rateResult = rateResult * retn[0][4]

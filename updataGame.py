@@ -9,11 +9,11 @@ from db.mysql import sqlMgr
 import random
 import ssl
 import result_v15 as GameType
-import result_v14 as lostCal
-import result_v17 as winCal
-import result_v2 as rateWinCal
-import result_v3 as BigWinCal
-# import result_v4 as rateDivCal
+# import result_v14 as lostCal
+# import result_v17 as winCal
+# import result_v2 as rateWinCal
+# import result_v3 as BigWinCal
+import result_v6 as rateDivCal
 import _thread
 from commend import commend
 from tool import ipTool
@@ -215,8 +215,8 @@ class parser:
 def working(tableName, type = 0):
     print("start do working")
     global outputInfo
-    ipObj = ipTool()
-    ipList = ipObj.getIpList()
+    # ipObj = ipTool()
+    # ipList = ipObj.getIpList()
 
     sql = sqlMgr('localhost', 'root', '861217', 'football')
     index = 1
@@ -239,9 +239,10 @@ def working(tableName, type = 0):
         return
 
     # 买预备=========================
-    gameIndex = 0
+    # gameIndex = 0
     
     threadPool = []
+    loopSize = 0
     while index < end:
         gameIndex = 0
         while gameIndex < len(gameCode) :
@@ -279,7 +280,8 @@ def working(tableName, type = 0):
             t.start()
             threadPool.append(t)
             gameIndex += 1
-            if gameIndex % 20 == 0:
+            loopSize += 1
+            if loopSize % 20 == 0:
                 for thread in threadPool:
                     thread.join()
             
@@ -294,6 +296,7 @@ def doUpdata():
     print("start doUpdata")
     # ipList = getIpList()
     GameType.updata()
+    rateDivCal.checkMain()
     # _thread.start_new_thread(working,("k_corner",))
     # working("k_corner", 1)
     # working("k_corner")
@@ -303,6 +306,7 @@ def doUpdata():
     # BigWinCal.checkMain()
     print("end doUpdata")
 
+# doUpdata()
 # GameType.updata()
 # working("k_corner")
 # working("k_corner", 1)

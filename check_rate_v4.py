@@ -6,7 +6,8 @@ import threading
 from datetime import datetime
 # from bs4 import BeautifulSoup
 import json
-import ctypes
+# import ctypes
+from db.mysql import sqlMgr
 # from html.parser import HTMLParser
 
 
@@ -17,10 +18,12 @@ import ctypes
 # with open("tmp.txt", 'w') as f:
 #     f.write(req.text)
 
+sql = sqlMgr('localhost', 'root', '861217', 'football')
+
 mt = ""
 
 class dataElement():
-    def __init__(self, score = 0, rate = 0, name="", matchTime=0, notify=False):
+    def __init__(self, score = 0, rate = 0, name="", matchTime=-1, notify=False):
         self.score = score
         self.rate = rate
         self.name = name
@@ -30,12 +33,31 @@ class dataElement():
 
 dataRecord = {}
 
-def notifyMsg(msg):
-    # ctypes.windll.user32.MessageBoxA(0, msg.encode('gb2312'),u'赔率异常'.encode('gb2312'),0)
+def notifyMsg(msg, key, newRate, oldRate, newElement):
+    if newElement.time <= 0 and newRate*oldRate != 0 and newRate != oldRate:
+        if not newElement.notify:
+            print(msg)
+            logInfo = "{}\n".format(msg)
+            with open(r"buyPerDay.txt", 'a') as f:
+                f.write(logInfo)
+            newElement.notify = True
+        sqlInfo = "'{}','{}','{}','{}'".format(key, newRate, oldRate, -1)
+        sql.insert(sqlInfo, "k_checkRate", key)
+
+    data = sql.queryByGameId("k_checkRate", key)
+    if len(data) > 0:
+        if newElement.time > 0:     
+            sql.updateScore(self, key, newElement.score, "k_checkRate")
+        # newElement.notify = True
+    
+    return newElement
+            
+        
 
 
 
 def doCheck(rowData):
+
     try:
         jsonData = json.loads(rowData)
     except Exception as e:
@@ -56,7 +78,7 @@ def doCheck(rowData):
 
         score_sum = -1
         newRate = 0
-        time = 0
+        time = -1
         notify = False
         if dataRecord.__contains__(key):
             name = dataRecord[key].name
@@ -75,21 +97,17 @@ def doCheck(rowData):
             score_sum = host_score + guest_score
         
         rateLow = False
-        LowInfo = ""
+        # LowInfo = ""
         LowValue = 1.68
         if ('f_ld' in oneData) :
-            rateTmp = oneData['f_ld']['hdx']
-            if rateTmp != None:
-                newRate = float(oneData['f_ld']['hdx'])
+            dataTmp = oneData['f_ld']
+            if not ('hdx' in dataTmp):
+                continue
 
-            rateTmp = oneData['f_ld']['hdxsp']
-            if rateTmp != None and float(rateTmp) < LowValue:
-                rateLow = True
-                LowInfo = " 主队赔率:" +rateTmp
-            rateTmp = oneData['f_ld']['gdxsp']
-            if rateTmp != None and float(rateTmp) < LowValue:
-                rateLow = True
-                LowInfo = " 客队赔率:" +rateTmp
+            rateTmp = dataTmp['hdx']
+            if rateTmp != None:
+                newRate = float(dataTmp['hdx'])
+
 
         newElement = dataElement(score_sum,newRate, name, time, notify)
 
@@ -97,25 +115,20 @@ def doCheck(rowData):
             dataRecord[key] = newElement
         oldElement = dataRecord[key]
         dataRecord[key] = newElement
-        if time > 80:
-            continue
-
+        # if time > 0:
+        #     continue
 
         conditionScore = bool(newElement.score == oldElement.score)
-        conditionRate = bool(newElement.rate >= oldElement.rate + 0.5)
+        # if "632146" in rowData:
+        #     print(".")
+        # conditionRate = bool(newElement.rate != oldElement.rate)
 
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime+ "    " +  newElement.name + "    " + str(newElement.rate) + " vs " + str(oldElement.rate))
         msg = ""
-        if conditionScore and  conditionRate:
+        if conditionScore:
             msg = nowTime + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
-        if rateLow:
-            msg = nowTime + " " + newElement.name + " rate <" + str(LowValue)  + LowInfo
-        if msg != "" and newElement.notify == False:
-            print(msg)
-            t =threading.Thread(target=notifyMsg,args=(msg,))
-            t.start()
-            newElement.notify = True
+            newElement = notifyMsg(msg, key, newElement.rate, oldElement.rate, newElement)
             dataRecord[key] = newElement
 
     if 'mt' in jsonData:
@@ -140,12 +153,17 @@ while(True):
         print("data not modify")
 
     nowTime = datetime.now().strftime('%H:%M:%S')
-    print(nowTime," start check. url:",url)
+    # print(nowTime," start check. url:",url)
+    # print(nowTime)
+    if index % 10 == 0:
+        print(".")
+
     time.sleep(10)
 
     if index % 540 == 0:
         print("[+] start clear dataRecord")
-        for key in dataRecord:
+        keys = dataRecord.keys()
+        for key in keys:
             oneData = dataRecord[key]
             now = int(time.time())
             if (now - oneData.updata) > 5400:

@@ -101,6 +101,24 @@ class sqlMgr:
             # Rollback in case there is any error
             print ("error :" + data )
             self.db.rollback()
+    
+    def updateScore(self, id, data, tableName):
+        # inserSQL = "UPDATE "
+        # inserSQL += tableName
+        # inserSQL += " SET "
+        # inserSQL += data 
+        # inserSQL += "where id = " + id
+
+        inserSQL = "UPDATE {} SET score = '{}' where id = {}".format(tableName, data, id)
+
+        inserSQL.encode('utf-8')
+        try:  
+            self.cursor.execute(inserSQL)
+            self.db.commit()
+        except:
+            # Rollback in case there is any error
+            print ("error :" + data )
+            self.db.rollback()
 
     def updateId(self, main, time, tableName):
         inserSQL = "UPDATE "
@@ -118,7 +136,7 @@ class sqlMgr:
             self.db.rollback()
 
     def updateCommend(self, id, type,value, tableName):
-        inserSQL = "UPDATE {} SET result = {} where (id REGEXP '{}' )".format(tableName, value, id)
+        inserSQL = "UPDATE {} SET result = {} where (id like '{}' )".format(tableName, value, id)
         try:  
             self.cursor.execute(inserSQL)
             self.db.commit()
@@ -164,7 +182,7 @@ class sqlMgr:
             print ("queryByTypeAll  query error, sql:",SQL)
 
     def queryById(self, key, id):
-        SQL = u"select * from {} where (id REGEXP '{}')".format(key, id)  
+        SQL = u"select * from {} where (id like '{}')".format(key, id)  
         SQL.encode('utf-8')
 
         try:  
@@ -173,6 +191,17 @@ class sqlMgr:
             return results 
         except:
             print ("queryById  query error, sql:",SQL)
+    
+    def queryByGameId(self, key, id):
+        SQL = u"select * from {} where (id_game like '{}')".format(key, id)  
+        SQL.encode('utf-8')
+
+        try:  
+            self.cursor.execute(SQL)
+            results = self.cursor.fetchall()
+            return results 
+        except:
+            print ("queryByGameId  query error, sql:",SQL)
     
     def queryCount(self, key, name):
 
@@ -199,7 +228,7 @@ class sqlMgr:
             print ("queryCountRate  query error, sql:",SQL)
     
     def queryCountByID(self, key, id, type):
-        SQL = u"select count(*) from {} where (id REGEXP '{}' ) ".format(key, id)
+        SQL = u"select count(*) from {} where (id like '{}' ) ".format(key, id)
         SQL.encode('utf-8')
 
         try:  

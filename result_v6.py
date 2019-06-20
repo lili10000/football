@@ -1,157 +1,212 @@
+# -*- coding: utf-8 -*-
 from db.mysql import sqlMgr
+import json
 
-sql = sqlMgr('localhost', 'root', '861217', 'football')
-sizeMin = 20
-score_check = 2.5
-corner_check = 9.5
+indexList = [0,0,0,0]
+rateList = {}
+def checkMain():
 
-# name = ["意大利甲级", "英格兰超级", "西班牙甲级", "德国甲级","法国甲级"]
-name = ["英格兰冠军"]
-# name=["法国甲级"]
-# name = "英格兰超级"
-# name = "西班牙甲级"
-# name = "德国甲级"
-# name = "法国甲级"
-# name = "荷兰乙级"
-# name = "亚足联冠军联赛"
+    sql = sqlMgr('localhost', 'root', '861217', 'football')
+    gameCode = sql.queryByTypeAll("k_gamedic")
 
+    outputInfo={}
+    tableName = "k_rateDiv"
+    sql.cleanAll(tableName)
+    size = 0
+    rateSum = 0
 
-def getRate(rate):
-    # reduce = 1.05
-    # return 1/(reduce*(1-1/(rate*reduce))) 
-    if rate == 0:
-        return 0
-    # return rate
-    return round(1/rate, 2)
+    big_1 = 0
+    big_2 = 0
+    small_1 = 0
+    small_2 = 0
 
-def getResult_3(name, score):
-    data = []
-    if name == None:
-        data = sql.queryByTypeAll("k_corner")
-    else:
-        data = sql.queryByType(name, "k_corner")
+    checkParam = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    for code in gameCode:
+        id = code[0]
+        gameName = code[1]
+        data = sql.queryByTypeTime(gameName, 'k_corner')
 
-    size_big = 0
-    size_small = 0
-
-    size_low_corner = 0
-    size_high_corner = 0
-    
-    score_corner_map_small={}
-    score_corner_map_big={}
-    
-    if len(data) == 0 :
-        return
-    for one in data :
-        offset = 3
-        main_score = int(one[2])
-        client_score = int(one[3])
-        scoreSum = main_score + client_score
-
-        rateDb = one[4]
         
-        small = (float(rateDb) > -0.5 and float(rateDb) < 0.5)
-        big = not(small) 
+        outputInfo = {}
+   
+        result = {}
 
-        main_corner = int(one[6])
-        client_corner = int(one[7])
+        total = len(data)
+        for one in data:
+            main = one[0]
+            client = one[1]
+            main_score = int(one[2])
+            client_score = int(one[3])
+            rate = one[4]
+            gameType = one[5]
+            mainCorner = one[6]
+            clientCorner = one[7]
+            scoreRate = one[11]
+            time = one[9]
+            if rate == "-" or rate == "-\n" :
+                continue
+            rate = float(rate)
+            if scoreRate == "-" or scoreRate == "-\n" :
+                continue
+            scoreRate = float(scoreRate)
 
-        corner_Sum = int(one[8])
+            
 
-        is_score = (main_score > 0) and (client_score > 0)
+            rateWinFlag = False
+            if main_score - client_score + rate> 0:
+                rateWinFlag = True
+            elif main_score - client_score + rate < 0:
+                rateWinFlag = False
+            else :
+                continue
 
 
-        # if float(rateDb) >= -1 and float(rateDb) <= 1:
-        #     continue
+            BigFlag = False
+            if main_score + client_score - scoreRate > 0:
+                BigFlag = True
+            elif main_score + client_score - scoreRate < 0:
+                BigFlag = False
+            else :
+                continue
 
-        # if float(rateDb) < -1 or float(rateDb) > 1:
-        #     continue
+            dan = ((main_score + client_score) % 2 == 1)
+            shuang = ((main_score + client_score) % 2 == 0)
+            dou = (main_score > 0 and client_score > 0)
 
-        if float(rateDb) <= 0 :
-            continue
+            checkFlag = BigFlag
+            if checkFlag and dan:
+                big_1 += 1
+            elif checkFlag and shuang:
+                big_2 += 1
+            elif checkFlag == False and dan:
+                small_1 += 1
+            elif checkFlag == False and shuang:
+                small_2 += 1
 
-        def tmpFun(score_corner_map):
-           
-            rateTmp = float(rateDb)
-            result = main_score - client_score + rateTmp
-            tmp = (rateTmp < 0 and result > 0) or (rateTmp > 0 and  result <= 0) or (rateTmp == 0)
+
+
 
             key = ""
-            if False:
-                key = ""
-            elif is_score and scoreSum > score_check and corner_Sum > corner_check:
-                key="都进球 大球 大角"
-            elif not is_score and scoreSum < score_check:
-                key="非都进球 小球"
+            if rate > 0:
+                key = "lost"
+            elif rate < 0:
+                key = "win"
             else:
-                key="极端情况"
+                key = "ping"
 
-        
-
-            if not(score_corner_map.__contains__(key)):
-                score_corner_map[key] = 0
-            score_corner_map[key] += 1
+            if result.__contains__(key) == False:
+                result[key]={}
 
 
-            # if is_score and scoreSum > score_check and corner_Sum > corner_check:
-            #     key="都进球 大球 大角"
-            # elif is_score and scoreSum > score_check and corner_Sum < corner_check:
-            #     key="都进球 大球 小角"
-            # else:
-            #     return
-            # if not(score_corner_map.__contains__(key)):
-            #     score_corner_map[key] = 0
-            # score_corner_map[key] += 1
 
-        if small:
-            tmpFun(score_corner_map_small)
-            size_small += 1
-        else:
-            tmpFun(score_corner_map_big)
-            size_big += 1
+            rateDiv = scoreRate - abs(rate)
+            if result[key].__contains__(rateDiv) == False:
+                result[key][rateDiv] = [0, 0, 0, 0]
+            if result[key].__contains__("all") == False:
+                result[key]["all"] = [0, 0, 0, 0]
 
-        if corner_Sum < corner_check :
-            size_low_corner += 1
-        else:
-            size_high_corner += 1
+            tmp = result[key][rateDiv]
+            alltmp = result[key]["all"]
+            
+            if rateWinFlag and BigFlag:
+                tmp[0] += 1
+                alltmp[0] += 1
+                indexTmp = 0
+                if dan:
+                    checkParam[indexTmp][0] += 1
+                else:
+                    checkParam[indexTmp][1] += 1
+
+                if dou:
+                    checkParam[indexTmp][2] += 1
+                else:
+                    checkParam[indexTmp][3] += 1
+            elif rateWinFlag  and BigFlag == False:
+                tmp[1] += 1
+                alltmp[1] += 1
+                indexTmp = 1
+                if dan:
+                    checkParam[indexTmp][0] += 1
+                else:
+                    checkParam[indexTmp][1] += 1
+
+                if dou:
+                    checkParam[indexTmp][2] += 1
+                else:
+                    checkParam[indexTmp][3] += 1
+            elif rateWinFlag  == False and BigFlag:
+                tmp[2] += 1
+                alltmp[2] += 1
+                indexTmp = 2
+                if dan:
+                    checkParam[indexTmp][0] += 1
+                else:
+                    checkParam[indexTmp][1] += 1
+
+                if dou:
+                    checkParam[indexTmp][2] += 1
+                else:
+                    checkParam[indexTmp][3] += 1
+            elif rateWinFlag  == False and BigFlag == False:
+                tmp[3] += 1
+                alltmp[3] += 1
+                indexTmp = 3
+                if dan:
+                    checkParam[indexTmp][0] += 1
+                else:
+                    checkParam[indexTmp][1] += 1
+
+                if dou:
+                    checkParam[indexTmp][2] += 1
+                else:
+                    checkParam[indexTmp][3] += 1
+
+            result[key][rateDiv] = tmp
+            result[key]["all"] = alltmp
+
+
+        # rawData = json.dumps(result)
+
+        # keys = result.keys()
+        params = {}
+        for key in result:
+            datas = result[key]["all"]
+            countSum = sum(datas)
+            result[key].pop('all')
+            datas = [0,0,0,0]
+
+            maxDiv = 0
+            minDiv = 10
+            for div in result[key]:
+                if sum(result[key][div]) < 0.1*countSum:
+                    continue
+                datas[0] += result[key][div][0]
+                datas[1] += result[key][div][1]
+                datas[2] += result[key][div][2]
+                datas[3] += result[key][div][3]
+
+
+                if div > maxDiv:
+                    maxDiv = div
+                if div < minDiv:
+                    minDiv = div
+
+            maxIndex = 0
+            maxCount = 0
+            for index in range(4):
+                if datas[index] > maxCount:
+                    maxCount = datas[index]
+                    maxIndex = index
+
+            params[key] = {"buy":maxIndex, "maxDiv":maxDiv, "minDiv": minDiv}
+
+            
+
+
+        params = json.dumps(params)
+
+        info = "'{}','{}','{}'".format(id, gameName, params)
+        sql.insert(info, "k_gamedic_v4",id)
     
-    size = size_small
-    if size != 0:
-        print("rate < 0.5   size=",size)
-        for key in score_corner_map_small:
-            print(key," ", getRate(round(score_corner_map_small[key]/size, 2)))
-
-    
-    size = size_big 
-    if size != 0:
-        print("rate > 0.5   size=",size)
-        for key in score_corner_map_big:
-            print(key," ", getRate(round(score_corner_map_big[key]/size, 2)))
-
-    print("大角 : 小角 = ", round( size_high_corner/size_low_corner, 3))
-
-def compare(name): 
-    # getResult_2(name, 2.5)
-    # getResult_2(name, 1, 1.3, 0.01) 
-    # return
-    # min_win = 0.25
-    # getResult_2(name, 0.5, 7.5)
-    print("\n"+name)
-    getResult_3(name, 1)
-    # for i in range(4) :
-    #     getResult_3(name, i)
-    #     for j in range(6) :
-    #         getResult_2(name, 0.5+i, 7.5+j)
-    # getResult_3(name, )
-
-# compare("俄罗斯")
-# compare("中超")
-
-for i in name :
-    compare(i)
-# compare("法国乙级")
-# compare("英超")
-# compare("德甲")
-# compare("西甲")
-# compare("意甲")
-# compare("法甲")
+    # print(checkParam)
+# checkMain()

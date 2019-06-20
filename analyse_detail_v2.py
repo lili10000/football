@@ -21,7 +21,7 @@ import cal_rank_v2
 import analyse_detail
 
 
-url = "https://liansai.500.com/zuqiu-5241/jifen-14337/"
+url = "https://liansai.500.com/zuqiu-4919/jifen-13207/"
 
 
 def addOutputInfo(key, info, outputInfo):

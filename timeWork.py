@@ -1,10 +1,10 @@
 import time
 from datetime import datetime, timedelta
 import updataGame as updata
-import data_v7 as lostCheck
-import data_v4 as winCheck
-import analyse_detail_v3 as rateWinCheck
-import data_v8 as rateBigCheck
+# import data_v7 as lostCheck
+# import data_v4 as winCheck
+import analyse_detail_v4 as rateWinCheck
+# import data_v8 as rateBigCheck
 import _thread
 
 SECONDS_PER_DAY = 24 * 60 * 60
@@ -17,7 +17,7 @@ def getSleepTime():
     # skipSeconds = SECONDS_PER_DAY - delta.total_seconds()
     # print ("Must sleep %d seconds" % skipSeconds)
     # return skipSeconds
-    return 20*60
+    return 5*60
 
 
 def doOnePerDay():

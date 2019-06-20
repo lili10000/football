@@ -13,6 +13,10 @@ def checkMain():
     size = 0
     rateSum = 0
 
+    big_1 = 0
+    big_2 = 0
+    small_1 = 0
+    small_2 = 0
     for code in gameCode:
         id = code[0]
         gameName = code[1]
@@ -61,63 +65,99 @@ def checkMain():
             else :
                 continue
 
-            if rate < 0:
-                continue
+            dan = ((main_score + client_score) % 2 == 1)
+            shuang = ((main_score + client_score) % 2 == 0)
+            checkFlag = BigFlag
+            if checkFlag and dan:
+                big_1 += 1
+            elif checkFlag and shuang:
+                big_2 += 1
+            elif checkFlag == False and dan:
+                small_1 += 1
+            elif checkFlag == False and shuang:
+                small_2 += 1
+
+            key = ""
+            if rate > 0:
+                key = "主弱"
+            elif key < 0:
+                key = "主强"
+            else:
+                key = "平"
+
+            if result.__contains__(key) == False:
+                result[key]={}
+
+
 
             rateDiv = scoreRate - abs(rate)
-            if result.__contains__(rateDiv) == False:
-                result[rateDiv] = [0, 0, 0, 0]
+            if result[key].__contains__(rateDiv) == False:
+                result[key][rateDiv] = [0, 0, 0, 0]
+            if result[key].__contains__("all") == False:
+                result[key][rateDiv] = [0, 0, 0, 0]
 
-            tmp = result[rateDiv]
-
+            tmp = result[key][rateDiv]
+            alltmp = result[key]["all"]
+            
             if rateWinFlag and BigFlag:
                 tmp[0] += 1
+                alltmp[0] += 1
             elif rateWinFlag  and BigFlag == False:
                 tmp[1] += 1
+                alltmp[0] += 1
             elif rateWinFlag  == False and BigFlag:
                 tmp[2] += 1
+                alltmp[0] += 1
             elif rateWinFlag  == False and BigFlag == False:
                 tmp[3] += 1
+                alltmp[0] += 1
 
-            result[rateDiv] = tmp
+            result[key][rateDiv] = tmp
+            result[key]["all"] = alltmp
 
-        bigMax = -1
-        info = "让"
-        getData = []
-        rateDiv = 0
-        rateTmp = 0
+
+
+
+
+
+        # bigMax = -1
+        # info = "让"
+        # getData = []
+        # rateDiv = 0
+        # rateTmp = 0
        
-        info = ""
-        rateMax = 0
-        keyTmp = 0
-        for key in result:
+        # info = ""
+        # rateMax = 0
+        # keyTmp = 0
+        # for key in result:
 
-            # if key < 1.5 or key > 2.25:
-            #     continue
+        #     # if key < 1.5 or key > 2.25:
+        #     #     continue
 
-            data = result[key]
-            dataSum = data[0] + data[1]+ data[2]+ data[3]
+        #     data = result[key]
+        #     dataSum = data[0] + data[1]+ data[2]+ data[3]
             
 
-            def getRate(sum, data, rateCmp, index):
-                # global indexList
-                tmpRate = round(data/sum, 2)
-                if rateCmp < tmpRate:
-                    if tmpRate > 0.3:
-                        indexList[index] += 1
-                    return tmpRate
-                return rateCmp
+        #     def getRate(sum, data, rateCmp, index):
+        #         # global indexList
+        #         tmpRate = round(data/sum, 2)
+        #         if rateCmp < tmpRate:
+        #             if tmpRate > 0.3:
+        #                 indexList[index] += 1
+        #             return tmpRate
+        #         return rateCmp
             
-            rateTmp = rateMax
-            rateTmp = getRate(dataSum, data[0], rateTmp, 0)
-            rateTmp = getRate(dataSum, data[1], rateTmp, 1)
-            rateTmp = getRate(dataSum, data[2], rateTmp, 2)
-            rateTmp = getRate(dataSum, data[3], rateTmp, 3)
+        #     rateTmp = rateMax
+        #     rateTmp = getRate(dataSum, data[0], rateTmp, 0)
+        #     rateTmp = getRate(dataSum, data[1], rateTmp, 1)
+        #     rateTmp = getRate(dataSum, data[2], rateTmp, 2)
+        #     rateTmp = getRate(dataSum, data[3], rateTmp, 3)
 
-            if rateTmp > 0.3 and dataSum > 0.03*total and rateTmp > rateMax:
-                rateMax = rateTmp
-                keyTmp = key
-
+        #     if rateTmp > 0.3 and dataSum > 0.03*total and rateTmp > rateMax:
+        #         rateMax = rateTmp
+        #         keyTmp = key
+        #         input = "'{}','{}'".format(code[0], code[1])
+        #         sql.insert(input, "k_gamedic_v3")
                 # indexTmp = 0
                 # if data[indexTmp] < data[1] :
                 #     indexTmp = 1
@@ -133,15 +173,17 @@ def checkMain():
 
         # if len(info) > 0:
 
-        if not rateList.__contains__(keyTmp):
-            rateList[keyTmp] = 0
-        rateList[keyTmp] += 1
+    #     if not rateList.__contains__(keyTmp):
+    #         rateList[keyTmp] = 0
+    #     rateList[keyTmp] += 1
     
-    print(indexList) 
+    # print(indexList) 
 
-    keys = list(rateList.keys())
-    keys.sort(reverse = True)
-    for key in keys:
-        print(key, rateList[key])
+    # print(round(big_1/(big_1+big_2),2), round(big_2/(big_1+big_2),2), round(small_1/(small_1+small_2),2), round(small_2/(small_1+small_2),2))
+
+    # keys = list(rateList.keys())
+    # keys.sort(reverse = True)
+    # for key in keys:
+    #     print(key, rateList[key])
             
-checkMain()
+# checkMain()

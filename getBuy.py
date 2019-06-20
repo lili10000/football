@@ -6,6 +6,7 @@ sql = sqlMgr('localhost', 'root', '861217', 'football')
 now = int(time.time()) 
 dataList = sql.queryByTime("k_commend", now)
 for data in dataList:
-    print(data)
+    if "大" in data[3]:
+        print(data)
 
 

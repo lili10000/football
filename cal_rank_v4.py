@@ -67,7 +67,7 @@ for
     size = 5
 
 
-                cal()
+    cal()
     # break
 
 for gameName in record:
