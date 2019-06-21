@@ -171,11 +171,16 @@ while(True):
     if index % 540 == 0:
         print("[+] start clear dataRecord")
         keys = dataRecord.keys()
+        deletKeys = []
         for key in keys:
             oneData = dataRecord[key]
             now = int(time.time())
             if (now - oneData.updata) > 5400:
-                dataRecord.pop(key)
+                deletKeys.append(key)
+                # dataRecord.pop(key)
                 print("delete "+ key)
+
+        for key in deletKeys:
+            dataRecord.pop(key)
         print("[-] end clear dataRecord")
 
