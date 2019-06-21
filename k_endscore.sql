@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80015
 File Encoding         : 65001
 
-Date: 2019-06-20 20:34:28
+Date: 2019-06-21 18:52:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,18 +24,20 @@ CREATE TABLE `k_checkrate` (
   `newRate` float(6,3) DEFAULT NULL,
   `oldRate` float(6,3) DEFAULT NULL,
   `score` int(3) DEFAULT NULL,
+  `createTime` int(11) DEFAULT NULL,
+  `updateTime` int(11) DEFAULT NULL,
+  `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_game`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of k_checkrate
 -- ----------------------------
-INSERT INTO `k_checkrate` VALUES ('630648', '3.000', '2.750', null);
-INSERT INTO `k_checkrate` VALUES ('630805', '3.000', '3.250', null);
-INSERT INTO `k_checkrate` VALUES ('632146', '3.250', '3.000', null);
-INSERT INTO `k_checkrate` VALUES ('632361', '3.250', '3.000', null);
-INSERT INTO `k_checkrate` VALUES ('632364', '3.250', '3.000', '-1');
-INSERT INTO `k_checkrate` VALUES ('632481', '2.750', '3.000', null);
-INSERT INTO `k_checkrate` VALUES ('632509', '2.750', '2.500', null);
-INSERT INTO `k_checkrate` VALUES ('632511', '3.750', '3.500', null);
-INSERT INTO `k_checkrate` VALUES ('632618', '3.500', '3.750', '-1');
+INSERT INTO `k_checkrate` VALUES ('631010', '3.250', '3.000', '-1', '1561113710', '0', '江苏苏宁 vs 上海申花');
+INSERT INTO `k_checkrate` VALUES ('632238', '3.750', '4.000', '4', '1561082410', '1561091760', null);
+INSERT INTO `k_checkrate` VALUES ('632544', '3.250', '3.000', '-1', '1561108814', '0', '苏黎世 vs 温特图尔');
+INSERT INTO `k_checkrate` VALUES ('632711', '3.250', '3.500', '1', '1561100436', '1561109329', null);
+INSERT INTO `k_checkrate` VALUES ('632723', '5.250', '4.500', '5', '1561102155', '1561114220', null);
+INSERT INTO `k_checkrate` VALUES ('632733', '3.750', '3.500', '0', '1561107862', '1561114250', '梅特罗联 女子 vs 富勒姆联 女子');
+INSERT INTO `k_checkrate` VALUES ('632747', '5.250', '5.500', '-1', '1561103277', '0', null);
+INSERT INTO `k_checkrate` VALUES ('632782', '4.000', '4.250', '0', '1561112680', '1561114363', '安纳利 vs 北极星');
