@@ -41,13 +41,13 @@ def notifyMsg(msg, key, newRate, oldRate, newElement):
             with open(r"buyPerDay.txt", 'a') as f:
                 f.write(logInfo)
             newElement.notify = True
-        sqlInfo = "'{}','{}','{}','{}'".format(key, newRate, oldRate, -1)
+        sqlInfo = "'{}','{}','{}','{}','{}','{}'".format(key, newRate, oldRate, -1, int(time.time()), 0)
         sql.insert(sqlInfo, "k_checkRate", key)
 
     data = sql.queryByGameId("k_checkRate", key)
     if len(data) > 0:
         if newElement.time > 0:     
-            sql.updateScore(self, key, newElement.score, "k_checkRate")
+            sql.updateScore(key, newElement.score, "k_checkRate", int(time.time()))
         # newElement.notify = True
     
     return newElement
@@ -132,7 +132,10 @@ def doCheck(rowData):
             dataRecord[key] = newElement
 
     if 'mt' in jsonData:
-        mt = "?mt=" + jsonData['mt']
+        try:
+            mt = "?mt=" + str(jsonData['mt'])
+        except:
+            print(jsonData['mt'])
         return mt
 
 

@@ -102,14 +102,9 @@ class sqlMgr:
             print ("error :" + data )
             self.db.rollback()
     
-    def updateScore(self, id, data, tableName):
-        # inserSQL = "UPDATE "
-        # inserSQL += tableName
-        # inserSQL += " SET "
-        # inserSQL += data 
-        # inserSQL += "where id = " + id
+    def updateScore(self, id, data, tableName, updateTime):
 
-        inserSQL = "UPDATE {} SET score = '{}' where id = {}".format(tableName, data, id)
+        inserSQL = "UPDATE {} SET score = '{}', updateTime='{}'  where id_game = '{}'".format(tableName, data, updateTime, id)
 
         inserSQL.encode('utf-8')
         try:  
