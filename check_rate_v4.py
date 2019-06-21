@@ -149,11 +149,16 @@ while(True):
                 'accept-language': 'zh-CN,zh;q=0.9', \
                 'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
             }
-    req = requests.get(url=url , headers=headers)
-    if req.status_code == 200:
-        mt = doCheck(req.text)
-    elif req.status_code == 304:
-        print("data not modify")
+    
+    try:
+        req = requests.get(url=url , headers=headers)
+        if req.status_code == 200:
+            mt = doCheck(req.text)
+        elif req.status_code == 304:
+            print("data not modify")
+    except:
+        mt = ""
+        print("connect err")
 
     nowTime = datetime.now().strftime('%H:%M:%S')
     # print(nowTime," start check. url:",url)

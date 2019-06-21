@@ -1,3 +1,5 @@
 18:11:38 克拉斯诺达尔 vs FC Chayka new:3.25 old:3.0
 19:31:40 SJK II vs 华沙 new:3.5 old:3.75
 10:00:10 洛杉矶FC vs 圣荷西地震 new:3.75 old:4.0
+12:30:53 胡志明II 女子 vs Ha Nam 女子 new:4.5 old:5.0
+15:00:36 Cong An Nhan Dan U21 vs Ha Noi T&T 21岁以下 new:3.25 old:3.5
