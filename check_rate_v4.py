@@ -41,7 +41,7 @@ def notifyMsg(msg, key, newRate, oldRate, newElement):
             with open(r"buyPerDay.txt", 'a') as f:
                 f.write(logInfo)
             newElement.notify = True
-        sqlInfo = "'{}','{}','{}','{}','{}','{}'".format(key, newRate, oldRate, -1, int(time.time()), 0)
+        sqlInfo = "'{}','{}','{}','{}','{}','{}', '{}'".format(key, newRate, oldRate, -1, int(time.time()), 0, newElement.name)
         sql.insert(sqlInfo, "k_checkRate", key)
 
     data = sql.queryByGameId("k_checkRate", key)

@@ -3,3 +3,9 @@
 10:00:10 洛杉矶FC vs 圣荷西地震 new:3.75 old:4.0
 12:30:53 胡志明II 女子 vs Ha Nam 女子 new:4.5 old:5.0
 15:00:36 Cong An Nhan Dan U21 vs Ha Noi T&T 21岁以下 new:3.25 old:3.5
+15:29:15 胡志明II 女子 vs Ha Nam 女子 new:5.25 old:4.5
+15:47:57 胡志明 女子 vs 山罗 女子 new:5.25 old:5.5
+16:51:37 江苏苏宁 vs 上海申花 new:3.0 old:3.25
+17:04:22 梅特罗联 女子 vs 富勒姆联 女子 new:3.75 old:3.5
+17:20:14 苏黎世 vs 温特图尔 new:3.25 old:3.0
+18:24:40 安纳利 vs 北极星 new:4.0 old:4.25
