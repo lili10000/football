@@ -53,7 +53,127 @@ def notifyMsg(msg, key, newRate, oldRate, newElement):
     return newElement
             
         
+    def getParam(self, oneData, key):
+        param = {}
+        if ('plus' in oneData):
+            def getData(key, param):
+                if(key in oneData['plus']):
+                    param[key] = int(oneData['plus'][key])
+                return param
+            
+            param = getData('ha', param)            
+            param = getData('hd', param)            
+            param = getData('hqq', param)            
+            param = getData('hsf', param)    
+            param = getData('hso', param)
 
+            param = getData('ga', param)
+            param = getData('gd', param)
+            param = getData('gqq', param)
+            param = getData('gsf', param)
+            param = getData('gso', param)
+            return param
+
+        if self.dataRecord.__contains__(key):
+            if self.dataRecord[key].param != {}:
+                param = self.dataRecord[key].param
+        return param
+
+    def checkParam(self, param):
+        hostBig = True
+        guestBig = True
+
+        def dataCompare(hostKey, guestKey,hostBig, guestBig):
+            if param.__contains__(hostKey) and param.__contains__(guestKey):
+                if param[hostKey] > param[guestKey]:
+                    guestBig = False
+                elif param[hostKey] < param[guestKey]:
+                    hostBig = False
+                else:
+                    guestBig = False
+                    hostBig = False
+            return hostBig, guestBig
+        hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hqq','gqq',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig)
+        return hostBig,guestBig
+
+    def getType(self, oneData, key):
+        matchType = ""
+        if ('league' in oneData):
+            matchType += oneData['league']['n'] + '  '
+        if self.dataRecord.__contains__(key):
+            matchType = self.dataRecord[key].type
+        matchType = clearStr(matchType)
+        return matchType
+
+    def getName(self, oneData, key):
+        name = ""
+        if ('league' in oneData):
+            name += oneData['league']['n'] + '  '
+            
+        if ('host' in oneData): 
+            host = oneData['host']['n']
+            guest = oneData['guest']['n']
+            name += "A " + host + " vs B " + guest  + " C"
+        if self.dataRecord.__contains__(key):
+            name = self.dataRecord[key].name
+        return name
+
+    def getScoreSum(self, oneData, key):
+        score_sum = -1
+        dataKey = 'rd'
+        host_score = 0
+        guest_score = 0
+        if self.dataRecord.__contains__(key):
+            score_sum = self.dataRecord[key].score
+
+        if (dataKey in oneData):
+            host_score = int(oneData[dataKey]['hg'])
+            guest_score = int(oneData[dataKey]['gg'])
+            score_sum = host_score + guest_score
+        return score_sum, host_score, guest_score
+    
+
+    def getRate(self, oneData, key):
+        newRate = 0     
+        if self.dataRecord.__contains__(key):
+            newRate = self.dataRecord[key].rate
+
+        LowInfo = ""
+        if ('f_ld' in oneData) :
+            if ('hdx' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['hdx']
+                if rateTmp != None:
+                    newRate = float(oneData['f_ld']['hdx'])
+        return newRate
+
+    def checkLowRate(self,oneData, key):
+        LowInfo = ""
+        timeNow = self.dataRecord[key].time
+        score = self.dataRecord[key].score
+
+        if ('f_ld' in oneData) :
+            print(oneData)
+            if ('hdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['hdxsp']
+                if rateTmp != None and float(rateTmp) < self.lowValue:
+                    LowInfo = " 主队赔率:" +rateTmp
+            if ('gdxsp' in oneData['f_ld']):
+                rateTmp = oneData['f_ld']['gdxsp']
+                if rateTmp != None and float(rateTmp) < self.lowValue:
+                    LowInfo = " 客队赔率:" +rateTmp
+        return LowInfo
+
+    def getTime(self, oneData, key):
+        timeNow = 0   
+        if self.dataRecord.__contains__(key):
+            timeNow = self.dataRecord[key].time
+        if ('events_graph' in oneData):
+            timeNow = int(oneData['events_graph']['status'])
+        return timeNow
 
 
 def doCheck(rowData):

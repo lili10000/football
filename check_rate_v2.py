@@ -6,8 +6,9 @@ import threading
 from datetime import datetime
 import json
 import ctypes
+from db.mysql import sqlMgr
 # import itchat
-from check_strategy import checkStartegy
+# from check_strategy import checkStartegy
 
 
 
@@ -29,15 +30,13 @@ class dataElement():
         self.hostScore = hostScore
         self.guestScore = guestScore
         self.param = param
+        
 
 weixin = True
 weixin = False
 
 
-# def notifyMsg(msg):
-def notifyMsg(msg, userName):
-    #itchat.send(msg,toUserName = userName)
-    return
+
 
 class dataCheck():
     def __init__(self, weixin):
@@ -53,15 +52,34 @@ class dataCheck():
         self.timeCmp = 85
 
         self.scoreStatic = {}
-        self.strategy = checkStartegy()
+        # self.strategy = checkStartegy()
 
         self.weixin = weixin
         self.userName = ''
+        self.sql = sqlMgr('localhost', 'root', '861217', 'football')
 
         if self.weixin:
             itchat.auto_login(hotReload=True)
             users = itchat.search_friends(name='在路上')
             self.userName = users[0]['UserName']
+
+    def notifyMsg(self, msg, key, newRate, oldRate, newElement):
+
+        if not newElement.notify:
+            print(msg)
+            logInfo = "{}\n".format(msg)
+            with open(r"buyPerDay.txt", 'a') as f:
+                f.write(logInfo)
+            newElement.notify = True
+        # sqlInfo = "'{}','{}','{}','{}','{}','{}', '{}'".format(key, newRate, oldRate, -1, int(time.time()), 0, newElement.name)
+        # self.sql.insert(sqlInfo, "k_checkRate", key)
+
+        # data = self.sql.queryByGameId("k_checkRate", key)
+        # if len(data) > 0:
+        #     if newElement.time > 0:     
+        #         self.sql.updateScore(key, newElement.score, "k_checkRate", int(time.time()))
+        # newElement.notify = True
+        return newElement
 
     def startCheck(self):
         
@@ -80,23 +98,25 @@ class dataCheck():
         
         nowTime = datetime.now().strftime('%H:%M:%S')
         # print(nowTime," start check. url:",url)
-        if time.time() % (60*10) == 0 :
-            print(nowTime)
+        if index % 10 == 0:
+            print(".")
 
-        self.index += 1
-        if self.index % 540 == 0:
+        time.sleep(10)
+
+        if index % 540 == 0:
             print("[+] start clear dataRecord")
-            deleteKeys = []
-            for key in self.dataRecord:
+            keys = self.dataRecord.keys()
+            deletKeys = []
+            for key in keys:
                 oneData = self.dataRecord[key]
                 now = int(time.time())
                 if (now - oneData.updata) > 5400:
-                    deleteKeys.append(key)
-            
-            print("delete size"+ len(deleteKeys))
-            for key in deleteKeys:
+                    deletKeys.append(key)
+                    # dataRecord.pop(key)
+                    print("delete "+ key)
+
+            for key in deletKeys:
                 self.dataRecord.pop(key)
-                # print("delete "+ key)
             print("[-] end clear dataRecord")
 
         # if self.index % 60 == 0:
@@ -152,9 +172,7 @@ class dataCheck():
                     guestBig = False
                 elif param[hostKey] < param[guestKey]:
                     hostBig = False
-                else:
-                    guestBig = False
-                    hostBig = False
+
             return hostBig, guestBig
         hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
@@ -266,40 +284,28 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        if newElement.time > 52 or newElement.time < 35:
-            return msg
-        if newElement.time < 37 and newElement.notify == False:
-            newElement.notify = True
-            rateDiv = newElement.rate - newElement.score
-            condition = (rateDiv == 1.5 and newElement.score == 1)
-            condition = condition or (rateDiv == 1.25 and newElement.score == 0)
-            # condition = condition or (rateDiv == 2.5 and newElement.score == 0)
+    
+        hostBig, guestBig = self.checkParam(newElement.param)
+        
+        conditionScore = False
+        if newElement.time < 20 or newElement.time > 25 or newElement.score > 0 :
+            return
+        if  ((newElement.initRate <= 0.5 and newElement.initRate > 0 and hostBig) or \
+             (newElement.initRate >= -0.5 and newElement.initRate < 0 and guestBig)):
+            
+            conditionScore = True
 
-            if condition:
-                msg = nowTime +" " + newElement.name + "    score:"+ str(newElement.score) + " 小"
+        msg = ""
+        if hostBig:
+            msg = "主"
+        elif guestBig:
+            msg = "客"
 
-            condition = (rateDiv == 1.75 and newElement.score == 1)
-            if condition:
-                msg = nowTime +" " + newElement.name + "    score:"+ str(newElement.score) + " 大"
-
-        return msg
-        # hostBig, guestBig = self.checkParam(newElement.param)
-
-        # if newElement.time <= 45:
-        #     if (newElement.initRate <= -0.5 and newElement.guestScore > 0 and hostBig) or \
-        #     (newElement.initRate >= 0.5 and newElement.hostScore > 0 and guestBig):
-        #         msg = nowTime +" " + newElement.name
-
-        # return msg
-
-    def sendMsg(self, key, newElement, msg):
-        if msg != "" and newElement.notify == False:
-            print(msg)
-            t =threading.Thread(target=notifyMsg,args=(msg,self.userName,))
-            # t =threading.Thread(target=notifyMsg,args=(msg,))
-            t.start()
-            newElement.notify = True
+        if conditionScore:
+            msg += " " + str(newElement.time) + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
+            newElement = self.notifyMsg(msg, key, newElement.rate, oldElement.rate, newElement)
             self.dataRecord[key] = newElement
+
 
     def doCheck(self, rowData):
         try:
@@ -324,8 +330,8 @@ class dataCheck():
             param = self.getParam(oneData, key)
 
             newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param)
-            msg = self.getNotifyMsg(oneData, key, newElement)
-            self.sendMsg(key, newElement, msg)
+
+            self.getNotifyMsg(oneData, key, newElement)
 
         if 'mt' in jsonData:
             self.mt = "?mt=" + jsonData['mt']
