@@ -7,10 +7,16 @@ from datetime import datetime
 import json
 import ctypes
 from db.mysql import sqlMgr
+import jpush as jpush
 # import itchat
 # from check_strategy import checkStartegy
 
-
+app_key = "e52d41ac94ff8efa72fb225b"
+master_secret = "d3db9b965b618f538c4276c9"
+_jpush = jpush.JPush(app_key, master_secret)
+push = _jpush.create_push()
+push.audience = jpush.all_
+push.platform = jpush.all_
 
 def clearStr(str):
     str = str.replace(" ", "")
@@ -71,14 +77,17 @@ class dataCheck():
             with open(r"buyPerDay.txt", 'a') as f:
                 f.write(logInfo)
             newElement.notify = True
-        # sqlInfo = "'{}','{}','{}','{}','{}','{}', '{}'".format(key, newRate, oldRate, -1, int(time.time()), 0, newElement.name)
-        # self.sql.insert(sqlInfo, "k_checkRate", key)
-
-        # data = self.sql.queryByGameId("k_checkRate", key)
-        # if len(data) > 0:
-        #     if newElement.time > 0:     
-        #         self.sql.updateScore(key, newElement.score, "k_checkRate", int(time.time()))
-        # newElement.notify = True
+            try:
+                push.notification = jpush.notification(alert=msg)
+                push.send()
+            except common.Unauthorized:
+                raise common.Unauthorized("Unauthorized")
+            except common.APIConnectionException:
+                raise common.APIConnectionException("conn error")
+            except common.JPushFailure:
+                print ("JPushFailure")
+            except:
+                print ("push Exception")
         return newElement
 
     def startCheck(self):
@@ -302,7 +311,7 @@ class dataCheck():
             msg = "客"
 
         if conditionScore:
-            msg += " " + str(newElement.time) + " " + newElement.name + " new:" + str(newElement.rate) +  " old:" + str(oldElement.rate)
+            msg += " " + str(newElement.time) + " " + newElement.name
             newElement = self.notifyMsg(msg, key, newElement.rate, oldElement.rate, newElement)
             self.dataRecord[key] = newElement
 
