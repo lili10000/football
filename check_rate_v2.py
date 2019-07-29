@@ -168,9 +168,9 @@ class dataCheck():
 
         def dataCompare(hostKey, guestKey,hostBig, guestBig):
             if param.__contains__(hostKey) and param.__contains__(guestKey):
-                if param[hostKey] > param[guestKey]:
+                if param[hostKey] >= param[guestKey]:
                     guestBig = False
-                elif param[hostKey] < param[guestKey]:
+                elif param[hostKey] <= param[guestKey]:
                     hostBig = False
 
             return hostBig, guestBig
@@ -290,8 +290,8 @@ class dataCheck():
         conditionScore = False
         if newElement.time < 20 or newElement.time > 25 or newElement.score > 0 :
             return
-        if  ((newElement.initRate <= 0.5 and newElement.initRate > 0 and hostBig) or \
-             (newElement.initRate >= -0.5 and newElement.initRate < 0 and guestBig)):
+        if  ((newElement.rate <= 0.5 and newElement.rate > 0 and hostBig) or \
+             (newElement.rate >= -0.5 and newElement.rate < 0 and guestBig)):
             
             conditionScore = True
 
