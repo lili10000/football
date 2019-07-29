@@ -80,14 +80,8 @@ class dataCheck():
             try:
                 push.notification = jpush.notification(alert=msg)
                 push.send()
-            except common.Unauthorized:
-                raise common.Unauthorized("Unauthorized")
-            except common.APIConnectionException:
-                raise common.APIConnectionException("conn error")
-            except common.JPushFailure:
-                print ("JPushFailure")
-            except:
-                print ("push Exception")
+            except Exception as e:
+                print ("Exception:", repr(e))
         return newElement
 
     def startCheck(self):
@@ -299,8 +293,8 @@ class dataCheck():
         conditionScore = False
         if newElement.time < 20 or newElement.time > 25 or newElement.score > 0 :
             return
-        if  ((newElement.rate <= 0.5 and newElement.rate > 0 and hostBig) or \
-             (newElement.rate >= -0.5 and newElement.rate < 0 and guestBig)):
+        if  ((newElement.initRate <= 0.5 and newElement.initRate > 0 and hostBig) or \
+             (newElement.initRate >= -0.5 and newElement.initRate < 0 and guestBig)):
             
             conditionScore = True
 
