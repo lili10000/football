@@ -177,9 +177,20 @@ class dataCheck():
                     hostBig = False
 
             return hostBig, guestBig
+
+        def dataCompareV2(hostKey, guestKey,hostBig, guestBig):
+            if param.__contains__(hostKey) and param.__contains__(guestKey):
+                if param[hostKey] + param[guestKey] == 0:
+                    return hostBig, guestBig
+                if param[hostKey] >= param[guestKey]:
+                    guestBig = False
+                elif param[hostKey] <= param[guestKey]:
+                    hostBig = False
+
+            return hostBig, guestBig
         hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
-        hostBig, guestBig = dataCompare('hqq','gqq',hostBig, guestBig)
+        hostBig, guestBig = dataCompareV2('hqq','gqq',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig)
         return hostBig,guestBig
@@ -291,12 +302,13 @@ class dataCheck():
         hostBig, guestBig = self.checkParam(newElement.param)
         
         conditionScore = False
-        if newElement.time < 20 or newElement.time > 25 or newElement.score > 0 :
+        if newElement.time < 20 or newElement.time > 30 or newElement.score > 0 :
             return
-        if  ((newElement.initRate <= 0.5 and newElement.initRate > 0 and hostBig) or \
-             (newElement.initRate >= -0.5 and newElement.initRate < 0 and guestBig)):
+        if((newElement.initRate <= 1.5 and newElement.initRate > 0 and hostBig) or \
+             (newElement.initRate >= -1.5 and newElement.initRate < 0 and guestBig)):
             
             conditionScore = True
+
 
         msg = ""
         if hostBig:
