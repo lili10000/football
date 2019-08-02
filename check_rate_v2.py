@@ -175,7 +175,6 @@ class dataCheck():
                     guestBig = False
                 elif param[hostKey] <= param[guestKey]:
                     hostBig = False
-
             return hostBig, guestBig
 
         def dataCompareV2(hostKey, guestKey,hostBig, guestBig):
@@ -191,9 +190,23 @@ class dataCheck():
         hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
         hostBig, guestBig = dataCompareV2('hqq','gqq',hostBig, guestBig)
-        hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig)
-        hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig) #射偏
+        hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig) #射正
         return hostBig,guestBig
+
+    # def checkParam(self, param):
+    #     hostBig = True
+    #     guestBig = True
+
+    #     def dataCompare(hostKey, guestKey,hostBig, guestBig):
+    #         if param.__contains__(hostKey) and param.__contains__(guestKey):
+    #             if param[hostKey] + param[guestKey] > 0:
+    #                 guestBig = False
+    #                 hostBig = False
+    #         return hostBig, guestBig
+    #     hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig) #射偏
+    #     hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig) #射正
+    #     return hostBig,guestBig
 
     def getType(self, oneData, key):
         matchType = ""
@@ -239,10 +252,15 @@ class dataCheck():
 
         LowInfo = ""
         if ('f_ld' in oneData) :
-            if ('hdx' in oneData['f_ld']):
-                rateTmp = oneData['f_ld']['hdx']
+            if ('hrf' in oneData['f_ld']): # 让球
+                rateTmp = oneData['f_ld']['hrf']
                 if rateTmp != None:
-                    newRate = float(oneData['f_ld']['hdx'])
+                    newRate = float(oneData['f_ld']['hrf'])
+            
+            # if ('hdx' in oneData['f_ld']): #大小
+            #     rateTmp = oneData['f_ld']['hdx']
+            #     if rateTmp != None:
+            #         newRate = float(oneData['f_ld']['hdx'])
         return newRate
 
     def checkLowRate(self,oneData, key):
@@ -302,11 +320,9 @@ class dataCheck():
         hostBig, guestBig = self.checkParam(newElement.param)
         
         conditionScore = False
-        if newElement.time < 20 or newElement.time > 30 or newElement.score > 0 :
+        if newElement.time < 20   or newElement.score > 0  or newElement.rate != 0:
             return
-        if((newElement.initRate <= 1.5 and newElement.initRate > 0 and hostBig) or \
-             (newElement.initRate >= -1.5 and newElement.initRate < 0 and guestBig)):
-            
+        if( abs (newElement.initRate) < 1 and (hostBig or guestBig)):
             conditionScore = True
 
 
