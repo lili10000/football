@@ -320,9 +320,10 @@ class dataCheck():
         hostBig, guestBig = self.checkParam(newElement.param)
         
         conditionScore = False
-        if newElement.time < 20   or newElement.score > 0  or newElement.rate != 0:
+        if newElement.time < 25   or (newElement.hostScore - newElement.guestScore) != 0  or newElement.score == -1  or \
+            (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
             return
-        if( abs (newElement.initRate) < 1 and (hostBig or guestBig)):
+        if( (hostBig and newElement.rate > 0)  or (guestBig and newElement.rate < 0)):
             conditionScore = True
 
 
@@ -330,6 +331,7 @@ class dataCheck():
         if hostBig:
             msg = "主"
         elif guestBig:
+            return
             msg = "客"
 
         if conditionScore:
