@@ -324,7 +324,8 @@ class dataCheck():
         #    (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
         #    return
 
-        if newElement.time < 30  or newElement.score == -1 or newElement.hostScore > newElement.guestScore or newElement.time > 75 :
+        if newElement.time < 30  or newElement.score == -1 or newElement.hostScore > newElement.guestScore or \
+            (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
             return
         
         if( (hostBig and newElement.rate >=  0 )  or (guestBig and newElement.rate < 0)):
