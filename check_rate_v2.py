@@ -187,8 +187,8 @@ class dataCheck():
                     hostBig = False
 
             return hostBig, guestBig
-        hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig)
-        hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig)
+        hostBig, guestBig = dataCompare('ha','ga',hostBig, guestBig) #进攻
+        hostBig, guestBig = dataCompare('hd','gd',hostBig, guestBig) #危险进攻
         hostBig, guestBig = dataCompareV2('hqq','gqq',hostBig, guestBig)
         hostBig, guestBig = dataCompare('hsf','gsf',hostBig, guestBig) #射偏
         hostBig, guestBig = dataCompare('hso','gso',hostBig, guestBig) #射正
@@ -320,9 +320,13 @@ class dataCheck():
         hostBig, guestBig = self.checkParam(newElement.param)
         
         conditionScore = False
-        if newElement.time < 30   or (newElement.hostScore - newElement.guestScore) != 0  or newElement.score == -1  or \
-            (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
+        #if newElement.time < 30   or (newElement.hostScore - newElement.guestScore) != 0  or newElement.score == -1  or \
+        #    (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
+        #    return
+
+        if newElement.time < 30  or newElement.score == -1 or newElement.hostScore > newElement.guestScore or newElement.time > 75 :
             return
+        
         if( (hostBig and newElement.rate >=  0 )  or (guestBig and newElement.rate < 0)):
             conditionScore = True
 
