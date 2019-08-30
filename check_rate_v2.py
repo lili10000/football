@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 import json
 import ctypes
-from db.mysql import sqlMgr
+# from db.mysql import sqlMgr
 import jpush as jpush
 # import itchat
 # from check_strategy import checkStartegy
@@ -62,22 +62,17 @@ class dataCheck():
 
         self.weixin = weixin
         self.userName = ''
-        self.sql = sqlMgr('localhost', 'root', '861217', 'football')
-
-        if self.weixin:
-            itchat.auto_login(hotReload=True)
-            users = itchat.search_friends(name='在路上')
-            self.userName = users[0]['UserName']
+        # self.sql = sqlMgr('localhost', 'root', '861217', 'football')
 
     def notifyMsg(self, msg, key, newRate, oldRate, newElement):
 
         if not newElement.notify:
             print(msg)
-            logInfo = "{}\n".format(msg)
-            with open(r"buyPerDay.txt", 'a') as f:
-                f.write(logInfo)
             newElement.notify = True
             try:
+                logInfo = "{}\n".format(msg)
+                with open(r"buyPerDay.txt", 'a') as f:
+                    f.write(logInfo)
                 push.notification = jpush.notification(alert=msg)
                 push.send()
             except Exception as e:
@@ -355,21 +350,24 @@ class dataCheck():
         dataArray = jsonData['rs']
         for oneData in dataArray:
             # print(oneData)
-            if ('id' in oneData) == False: 
+            try:
+                if ('id' in oneData) == False: 
+                    continue
+                key = oneData['id']
+                matchType = self.getType(oneData, key)
+                name = self.getName(oneData, key)
+                score_sum, host_score, guest_score = self.getScoreSum(oneData, key)
+                newRate = self.getRate(oneData, key)
+                timeNow = self.getTime(oneData, key)
+                notify = self.getNotify(oneData, key)
+                initRate = self.getInitRate(oneData, key)
+                param = self.getParam(oneData, key)
+
+                newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param)
+
+                self.getNotifyMsg(oneData, key, newElement)
+            except Exception as e:
                 continue
-            key = oneData['id']
-            matchType = self.getType(oneData, key)
-            name = self.getName(oneData, key)
-            score_sum, host_score, guest_score = self.getScoreSum(oneData, key)
-            newRate = self.getRate(oneData, key)
-            timeNow = self.getTime(oneData, key)
-            notify = self.getNotify(oneData, key)
-            initRate = self.getInitRate(oneData, key)
-            param = self.getParam(oneData, key)
-
-            newElement = dataElement(score_sum,newRate, name, timeNow, notify,matchType,initRate, host_score, guest_score,param)
-
-            self.getNotifyMsg(oneData, key, newElement)
 
         if 'mt' in jsonData:
             self.mt = "?mt=" + jsonData['mt']
