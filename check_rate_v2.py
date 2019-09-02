@@ -62,6 +62,7 @@ class dataCheck():
 
         self.weixin = weixin
         self.userName = ''
+        self.session = requests.session()
         # self.sql = sqlMgr('localhost', 'root', '861217', 'football')
 
     def notifyMsg(self, msg, key, newRate, oldRate, newElement):
@@ -84,7 +85,7 @@ class dataCheck():
         url = 'https://live.dszuqiu.com/ajax/score/data' + self.mt
 
         try:
-            req = requests.get(url=url , headers=self.headers)
+            req = self.session.get(url=url , headers=self.headers)
             if req.status_code == 200:
                 self.doCheck(req.text)
             # elif req.status_code == 304:
