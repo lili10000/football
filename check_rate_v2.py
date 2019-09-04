@@ -1,15 +1,10 @@
 # encoding=utf8
 import requests
-import re
 import time
-import threading
 from datetime import datetime
 import json
-import ctypes
-# from db.mysql import sqlMgr
 import jpush as jpush
-# import itchat
-# from check_strategy import checkStartegy
+
 
 app_key = "e52d41ac94ff8efa72fb225b"
 master_secret = "d3db9b965b618f538c4276c9"
