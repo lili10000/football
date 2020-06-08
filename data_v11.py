@@ -342,12 +342,12 @@ class dataCheck():
 
         msg = ""
         cornerDiv = 1.5
-        if abs(initCorner - corner) > 1.5:
-            msg = "小角"
-            conditionScore = True
-        # if corner < initCorner-cornerDiv:
+        # if abs(initCorner - corner) > 1.5:
         #     msg = "小角"
         #     conditionScore = True
+        if corner < initCorner-cornerDiv:
+            msg = "小角"
+            conditionScore = True
         # elif corner > initCorner+cornerDiv:
         #     msg = "大角"
         #     conditionScore = True
