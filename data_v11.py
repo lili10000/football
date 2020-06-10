@@ -346,7 +346,7 @@ class dataCheck():
         #     msg = "小角"
         #     conditionScore = True
         if corner < initCorner-cornerDiv:
-            msg = "小角"
+            msg = "小角 [{}|{}] ".format(corner, initCorner)
             conditionScore = True
         # elif corner > initCorner+cornerDiv:
         #     msg = "大角"
