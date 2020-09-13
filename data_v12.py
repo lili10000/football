@@ -138,8 +138,6 @@ class dataCheck():
                         initRate = float(tmpStr)
 
         if self.dataRecord.__contains__(key):
-            if self.dataRecord[key].time > 0:
-                return initRate
             if self.dataRecord[key].initScore != -1:
                 initRate = self.dataRecord[key].initScore
         return initRate
