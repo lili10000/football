@@ -107,8 +107,8 @@ class dataCheck():
         if now > self.timeSave + (15*60):
             self.timeSave = now
             # self.keyGame = self.sql.queryByTypeAll('k_namerate')
-            print(datetime.now().strftime('%H:%M:%S'), "saveDataSize:", len(self.DBSave), "buyBigWin:", self.buyBigWin,
-                  "buyBigLost:", self.buyBigLost, "buySmallWin:", self.buySmallWin, "buySmallLost:", self.buySmallLost)
+            # print(datetime.now().strftime('%H:%M:%S'), "saveDataSize:", len(self.DBSave), "buyBigWin:", self.buyBigWin,
+            #       "buyBigLost:", self.buyBigLost, "buySmallWin:", self.buySmallWin, "buySmallLost:", self.buySmallLost)
 
         self.index += 1
         if self.index % 540 == 0:
@@ -137,9 +137,9 @@ class dataCheck():
                     if isinstance(tmpStr, str):
                         initRate = float(tmpStr)
 
-        if self.dataRecord.__contains__(key):
-            if self.dataRecord[key].initScore != -1:
-                initRate = self.dataRecord[key].initScore
+        # if self.dataRecord.__contains__(key):
+        #     if self.dataRecord[key].initScore != -1:
+        #         initRate = self.dataRecord[key].initScore
         return initRate
 
     def getInitHalfRate(self, oneData, key):
@@ -150,9 +150,9 @@ class dataCheck():
                     tmpStr = oneData['sd']['h']['hdx']
                     if isinstance(tmpStr, str):
                         initRate = float(tmpStr)
-        if self.dataRecord.__contains__(key):
-            if self.dataRecord[key].inithalfScore != -1:
-                initRate = self.dataRecord[key].inithalfScore
+        # if self.dataRecord.__contains__(key):
+        #     if self.dataRecord[key].inithalfScore != -1:
+        #         initRate = self.dataRecord[key].inithalfScore
         return initRate
 
     def getNowRate(self, oneData, key):
@@ -250,7 +250,11 @@ class dataCheck():
 
         now = int(time.time())
 
-        if newElement.time != 45 or newElement.notify == True or newElement.score > 3 or newElement.initScore == -1:
+        
+        if newElement.time != 45 :
+            return msg
+
+        if  newElement.notify == True or newElement.score > 3 or newElement.initScore == -1:
             return msg
 
         if (newElement.initScore - newElement.inithalfScore) - (newElement.nowRate - newElement.score) >= 0.5:
@@ -289,7 +293,7 @@ class dataCheck():
             notify = self.getNotify(oneData, key)
             initRate = self.getInitRate(oneData, key)
             initHlafRate = self.getInitHalfRate(oneData, key)
-            initRate = self.getInitRate(oneData, key)
+            # initRate = self.getInitRate(oneData, key)
             # nowRate = self.getNowRate(oneData, key)
 
             # param = self.getParam(oneData, key)
