@@ -1,10 +1,12 @@
 # encoding=utf8
-import requests
-import re
-import time
-import threading
-from datetime import datetime
 import json
+import re
+import threading
+import time
+from datetime import datetime
+
+import requests
+
 # import ctypes
 # import itchat
 # from check_strategy import checkStartegy
@@ -18,7 +20,7 @@ def clearStr(str):
 
 
 class dataElement():
-    def __init__(self, score=0, rate=0, name="", matchTime=0, notify=False, matchType="", initScore=-1, inithalfScore=-1, nowRate=-1, hostScore=0, guestScore=0):
+    def __init__(self, score=-1, rate=0, name="", matchTime=0, notify=False, matchType="", initScore=-1, inithalfScore=-1, nowRate=-1, hostScore=0, guestScore=0):
         self.score = score
         self.rate = rate
         self.name = name
@@ -189,10 +191,10 @@ class dataCheck():
         return name
 
     def getScoreSum(self, oneData, key):
-        score_sum = -1
+        score_sum = -2
         dataKey = 'rd'
-        host_score = 0
-        guest_score = 0
+        host_score = -1
+        guest_score = -1
         if self.dataRecord.__contains__(key):
             score_sum = self.dataRecord[key].score
 
@@ -250,11 +252,10 @@ class dataCheck():
 
         now = int(time.time())
 
-        
-        if newElement.time != 45 :
+        if newElement.time != 45 or newElement.score < 0:
             return msg
 
-        if  newElement.notify == True or newElement.score > 3 or newElement.initScore == -1:
+        if newElement.notify == True or newElement.score > 3 or newElement.initScore == -1:
             return msg
 
         if (newElement.initScore - newElement.inithalfScore) - (newElement.nowRate - newElement.score) >= 0.5:
