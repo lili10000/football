@@ -173,6 +173,8 @@ class dataCheck():
 
         def dataCompare(hostKey, guestKey, hostBig, guestBig):
             if param.__contains__(hostKey) and param.__contains__(guestKey):
+                if param[hostKey] + param[guestKey] < 4:
+                    return False, False
                 if param[hostKey] >= param[guestKey]:
                     guestBig = False
                 elif param[hostKey] <= param[guestKey]:
@@ -329,28 +331,18 @@ class dataCheck():
 
         nowTime = datetime.now().strftime('%H:%M:%S')
 
-        # hostBig, guestBig = self.checkParam(newElement.param)
-        corner = self.getCorner(oneData, key)
-        initCorner = newElement.initCorner
+        hostBig, guestBig = self.checkParam(newElement.param)
         conditionScore = False
-        # if newElement.time < 30   or (newElement.hostScore - newElement.guestScore) != 0  or newElement.score == -1  or \
-        #    (newElement.hostScore + newElement.guestScore) != newElement.score or newElement.time > 75 :
-        #    return
 
-        if newElement.time < 45 or newElement.time > 55 or initCorner < 5 or corner < 5:
+
+        if newElement.time < 30 or newElement.time > 60:
             return
 
-        msg = ""
-        cornerDiv = 1.5
-        # if abs(initCorner - corner) > 1.5:
-        #     msg = "小角"
-        #     conditionScore = True
-        if corner < initCorner-cornerDiv:
-            msg = "小角 [{}|{}] ".format(corner, initCorner)
+        if hostBig and newElement.hostScore <= newElement.guestScore:
             conditionScore = True
-        # elif corner > initCorner+cornerDiv:
-        #     msg = "大角"
-        #     conditionScore = True
+        if guestBig and newElement.hostScore >= newElement.guestScore:
+            conditionScore = True
+        
 
         if conditionScore:
             msg += " " + str(newElement.time) + " " + newElement.name
