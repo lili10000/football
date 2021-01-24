@@ -327,6 +327,12 @@ class dataCheck():
         if self.dataRecord.__contains__(key) == False:
             self.dataRecord[key] = newElement
         oldElement = self.dataRecord[key]
+        if oldElement.guestScore > newElement.guestScore:
+            newElement.guestScore = oldElement.guestScore
+        if oldElement.hostScore > newElement.hostScore:
+            newElement.hostScore = oldElement.hostScore
+    
+        
         self.dataRecord[key] = newElement
 
         nowTime = datetime.now().strftime('%H:%M:%S')
@@ -335,7 +341,7 @@ class dataCheck():
         conditionScore = False
 
 
-        if newElement.time < 30 or newElement.time > 60:
+        if newElement.time < 30 or newElement.time > 50:
             return
 
         if hostBig and newElement.hostScore <= newElement.guestScore:
@@ -345,7 +351,7 @@ class dataCheck():
         
 
         if conditionScore:
-            msg += " " + str(newElement.time) + " " + newElement.name
+            msg += " " + str(newElement.time) + " " +str(newElement.hostScore) + ":"+ str(newElement.guestScore) + " " + newElement.name
             newElement = self.notifyMsg(
                 msg, key, newElement.rate, oldElement.rate, newElement)
             self.dataRecord[key] = newElement
