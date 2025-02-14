@@ -27,6 +27,12 @@ def getFileList(name):
 
     return retnList
 
+def writeResult(info):
+    path = os.path.dirname(__file__)
+    file = "{}/result.txt".format(path)
+    with open(file, 'a',encoding='utf-8') as f:
+        f.write(info)
+
 
 if __name__ == "__main__":
     getFileList("36")
